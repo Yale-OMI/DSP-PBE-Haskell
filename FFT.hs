@@ -61,7 +61,7 @@ wavList wav = let
 --performs FFT, converts to polar pairs and then to triples
 constellateAll :: [[Complex Double]] -> [[(Int,Double,Double)]]
 constellateAll ls = let
-    ars1 = map (\xs -> listArray (0,S.frameRes) xs) ls
+    ars1 = map (\xs -> listArray (0,(S.frameRes - 1)) xs) ls
     in map (listTriple.assocs.constellate.fft) ars1
 --gets 5 peaks
 getPeaks :: [[(Int,Double,Double)]] -> [[(Int,Double,Double)]]
