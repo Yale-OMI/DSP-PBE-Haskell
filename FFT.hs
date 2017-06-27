@@ -23,7 +23,7 @@ constellate arr1 =
       in listArray (0,((length list1) - 1)) polar1
 
 -- mkFrames takes assocs of audio file and breaks it into 4096 sample (.09s) frames (overlapped by 50%)
-mkFrames :: [Complex Double] -> [[Complex Double]]
+mkFrames :: [Double] -> [[Double]]
 mkFrames list1 =
   if (length list1) < S.frameRes --Settings.framerate
     then []
@@ -54,20 +54,20 @@ comparePeaks l1 l2 = let
       else 1000.000
     in zipWith f l1 l2
 --takes wave file and turns it's values into list of Complex Doubles
-wavList :: (Either String (Audio Int16)) -> [Complex Double]
+wavList :: (Either String (Audio Int16)) -> [Double]
 wavList wav = let
   l1 = assocs $ sampleData $ head $ rights[wav]
-  in map (cis.toSample.snd) l1
+  in map (toSample.snd) l1
 --performs FFT, converts to polar pairs and then to triples
-constellateAll :: [[Complex Double]] -> [[(Int,Double,Double)]]
+constellateAll :: [[Double]] -> [[(Int,Double,Double)]]
 constellateAll ls = let
     ars1 = map (\xs -> listArray (0,(S.frameRes - 1)) xs) ls
-    in map (listTriple.assocs.constellate.fft) ars1
+    in map (listTriple.assocs.constellate.rfft) ars1
 --gets 5 peaks
 getPeaks :: [[(Int,Double,Double)]] -> [[(Int,Double,Double)]]
 getPeaks ts = let
-  srts = map (reverse.(sortBy (comparing get2))) ts
-  in map (tail.(take S.numPeaks)) srts
+  srts = map (reverse.(sortBy (comparing get2)).tail.(take (S.frameRes`div`2))) ts
+  in map (take S.numPeaks) srts
 
 getResults :: [[(Int,Double,Double)]] -> [[(Int,Double,Double)]] -> Double
 getResults d1 d2 = let

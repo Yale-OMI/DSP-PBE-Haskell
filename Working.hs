@@ -1,4 +1,4 @@
-module Untitled where
+module Working where
 
 import FFT
 import Codec.Wav
@@ -7,6 +7,8 @@ import Data.Int
 import Data.Array
 import Data.Complex
 import Numeric.Transform.Fourier.FFT
+import Data.Ord
+import Data.List
 import qualified Settings as S
 main :: IO()
 main = do
@@ -16,6 +18,9 @@ main = do
   let wav = wavList w1
   let frame = head $ mkFrames wav
   let aframe = listArray (0,(S.frameRes - 1)) frame
-  let points = constellate $ rfft aframe
-  --print $ tail $ take 2048 $ assocs points
-  print points
+  let points = rfft aframe
+  let pairs = (map (polar.snd) (assocs points))
+  let rels = tail $ take 22051 pairs
+  let newlist = assocs $ listArray (1,22050) rels
+  let sorts = sortBy (comparing (fst.snd)) newlist
+  print sorts
