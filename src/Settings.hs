@@ -1,5 +1,5 @@
 module Settings where
--- each frequency bin is 10.7666016 Hz and each frame is 0.09287982s long
+-- each bin is 1Hz and each frame is 1s
 frameRes :: Int
 frameRes = 44100
 
