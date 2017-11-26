@@ -1,10 +1,12 @@
 module Wavchecker where
+
 import Data.Audio
 import Codec.Wav
 import Data.Int
 import Data.Either
 import Data.Array.IArray
 import Numeric.Extra
+
 zeroCross :: [Double] -> Double
 zeroCross ds
   |(length ds) == 1                                 = 0

@@ -1,6 +1,9 @@
 {-# LANGUAGE DataKinds #-}
 
+module VividTest where
+
 import Vivid
+
 theSound = sd (60 ::I "note") $ do
     wobble <- sinOsc (freq_ 5) ? KR ~* 10 ~+ 10
     s <- 1 ~* sinOsc (freq_ $ midiCPS (V::V "note") ~+ wobble)

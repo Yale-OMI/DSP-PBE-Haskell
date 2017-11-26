@@ -1,8 +1,10 @@
 module Wav2 where
+
 import Data.Audio
 import Codec.Wav
 import Data.Int
 import Data.Either
+
 main :: IO ()
 main = do
   w1 <- importFile "Test.wav" :: IO(Either String (Audio Int16))

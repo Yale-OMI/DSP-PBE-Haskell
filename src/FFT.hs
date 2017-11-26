@@ -1,9 +1,10 @@
 module FFT where
+
 -- need to create frequency frames for peaks after the FFT has been applied
 import Data.Complex
 import Data.List
 import Data.Ord
-import HSoM.Examples.SpectrumAnalysis
+--import HSoM.Examples.SpectrumAnalysis
 import Codec.Wav
 import Data.Audio
 import Data.Either
