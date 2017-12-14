@@ -1,4 +1,6 @@
 module Settings where
+
+
 -- each bin is 1Hz and each frame is 1s
 frameRes :: Int
 frameRes = 44100
