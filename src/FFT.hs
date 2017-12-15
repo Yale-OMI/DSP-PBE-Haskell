@@ -16,7 +16,7 @@ import Numeric.Transform.Fourier.FFT
 
 import qualified Settings as S
 
-peakResults :: (Either String (Audio Int16)) -> (Either String (Audio Int16)) -> Double
+peakResults :: Audio Int16 -> Audio Int16 -> Double
 peakResults w1 w2 = let
   peak1 = getPeaks $ constellateAll $ mkFrames $ wavList w1
   peak2 = getPeaks $ constellateAll $ mkFrames $ wavList w2
@@ -82,9 +82,9 @@ freqBins ts =
   else (take S.binSize ts):(freqBins (drop S.binSize ts))
 
 --takes wave file and turns it's values into list of Complex Doubles
-wavList :: (Either String (Audio Int16)) -> [Double]
+wavList :: Audio Int16 -> [Double]
 wavList wav = let
-  l1 = assocs $ sampleData $ head $ rights[wav]
+  l1 = assocs $ sampleData wav
   in map (toSample.snd) l1
 
 

@@ -1,16 +1,24 @@
+{-# LANGUAGE PartialTypeSignatures #-}
+
 module Synth where
 
+import Codec.Wav
 
 import FFT
-import Data.Audio
-import Codec.Wav
-import Data.Int
+import VividRunner
+
+import Types.Common
 
 -- | generate the Vivid program to turn the in_example to the out_example
-synth :: FilePath -> FilePath -> String
-synth in_example out_example = do 
-  w1 <- importFile in_example  :: IO(Either String (Audio Int16))
-  w2 <- importFile out_example :: IO(Either String (Audio Int16))
-  let diff = peakResults w1 w2
+synthCode :: (FilePath, AudioFormat) -> (FilePath, AudioFormat) -> IO String
+synthCode (in_filepath,in_audio) (out_filepath,out_audio) = do 
+  testFilter in_filepath out_audio lpFilter >>= print
+  return "generated code"
 
-trySynth :: _ -> Audio Int16 -> Audio Int16 -> AuralDistance
+testFilter :: FilePath -> AudioFormat -> _ -> IO AuralDistance
+testFilter in_fp outAudio vividCode = do
+  newOutFilepath <- runFilter in_fp vividCode
+  newAudio <- importFile newOutFilepath :: IO(Either String AudioFormat)
+  case newAudio of
+    Left e -> error e
+    Right a -> return $ peakResults outAudio a
