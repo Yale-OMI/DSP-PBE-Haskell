@@ -10,11 +10,17 @@ import System.Exit
 dir = "Sounds/"
 main :: IO ()
 main = do
+  let f x = return $ either (error "failed") id x
   w1 <- importFile $ dir++"PianoC.wav" :: IO(Either String (Audio Int16))
   w2 <- importFile $ dir++"PianoSoft.wav" :: IO(Either String (Audio Int16))
   w3 <- importFile $ dir++"PianoFilter.wav" :: IO(Either String (Audio Int16))
   w4 <- importFile $ dir++"HornC.wav" :: IO(Either String (Audio Int16))
   w5 <- importFile $ dir++"PianoCSharp.wav" :: IO(Either String (Audio Int16))
+  w1 <- f w1
+  w2 <- f w2
+  w3 <- f w3
+  w4 <- f w4
+  w5 <- f w5
   let t1v1 = peakResults w1 w1
   let t1v3 = peakResults w1 w3
   let t1v4 = peakResults w1 w4

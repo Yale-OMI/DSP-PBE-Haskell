@@ -16,4 +16,4 @@ To install
 
 To test
 
-   cabal test
+   cabal test --show-details=streaming
