@@ -1,5 +1,6 @@
 {-# LANGUAGE PartialTypeSignatures #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Synth where
 
@@ -11,12 +12,26 @@ import Vivid
 
 import Types.Common
 
+
+data Filter = 
+    HPF Float
+  | LPF Float
+  | Compose Filter Filter
+  deriving (Show)
+
+--wont type check for some reason
+--toVivid :: Filter -> (Signal -> SDBody' x Signal)
+toVivid = \case 
+    HPF t -> (\bufs -> hpf (freq_ (t::Float), in_ bufs))
+    LPF t -> (\bufs -> lpf (freq_ (t::Float), in_ bufs))
+    Compose f f' -> (\bufs -> do ((toVivid f).(toVivid f')) bufs)
+
 -- | generate the Vivid program to turn the in_example to the out_example
-synthCode :: (FilePath, AudioFormat) -> (FilePath, AudioFormat) -> IO String
-synthCode (in_filepath,in_audio) (out_filepath,out_audio) = do 
-  testFilter in_filepath out_audio ((lpFilter 200)) >>= print
-  testFilter in_filepath out_audio (lpFilter 1000) >>= print
-  return "generated code"
+synthCode :: (FilePath, AudioFormat) -> (FilePath, AudioFormat) -> IO (Filter)
+synthCode (in_filepath,in_audio) (out_filepath,out_audio) = do
+  let f = toVivid $ LPF 200 
+  testFilter in_filepath out_audio (f ::  Signal -> SDBody' '[] Signal)
+  return (LPF 200)
 
 testFilter :: FilePath -> AudioFormat -> (Signal -> SDBody' '[] Signal) -> IO AuralDistance
 testFilter in_fp outAudio vividCode = do
@@ -30,4 +45,4 @@ testFilter in_fp outAudio vividCode = do
 lpFilter :: Float -> Signal -> SDBody' x Signal
 lpFilter l bufStream =  do
   let myLPF bufs = lpf (freq_ (l::Float), in_ bufs)
-  myLPF $ myLPF bufStream
+  (myLPF . myLPF) bufStream

@@ -29,6 +29,8 @@ executable musicByExample
      , directory
      , filepath
      , dsp >= 0.2.4
+ ghc-options:
+    -Wall 
 
 
 Test-Suite Simple
