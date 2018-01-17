@@ -1,0 +1,11 @@
+\section{Introduction}
+
+We introduce the problem of DSP programming by example.
+
+\subsection{Gradient Descent}
+
+One trouble with this approach is that we have lots of local minimums in the space of optimization.
+Take the example of trying to learn a low-pass filter threshold.
+If our initial threshold is too low (cutting off too much), and just on the other side of the threshold is a frequency we need, SGD will easily send us in that direction.
+However, if the spectrogram of waveform has a spectrum that is inactive, SGD will detect a pleteau and tell us we have found a global minimum, when in fact we are stuck in a local minimum.
+We may be able to use some randomized restarting to hop over these. 
