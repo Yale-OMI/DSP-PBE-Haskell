@@ -7,6 +7,12 @@ import Data.Int
 
 import System.Exit
 
+----------
+--
+--  Tests the aural distance function for sanity
+--
+----------
+
 dir = "Sounds/"
 main :: IO ()
 main = do
