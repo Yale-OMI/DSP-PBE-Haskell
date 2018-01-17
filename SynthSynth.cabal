@@ -29,8 +29,42 @@ executable musicByExample
      , directory
      , filepath
      , dsp >= 0.2.4
+     , random
+     , lens
+     , random-shuffle
+     , process >=1.4
+     , unordered-containers >=0.2.8.0
+     , hashable >= 1.2.6.0
  ghc-options:
     -Wall 
+    -O2
+    -threaded
+    "-with-rtsopts=-N"
+
+executable mbeProfiling
+  main-is:
+    Profiling.hs
+  hs-source-dirs: src
+  ghc-options:
+    -O2
+    -threaded
+    -fprof-auto
+    "-with-rtsopts=-N -p -s -h -i0.1"
+  build-depends:       
+       base >=4.10 && <4.11
+     , extra >=1.5 && <1.6
+     , array >=0.5 && <0.6
+     , HCodecs >=0.5
+     , vivid
+     , directory
+     , filepath
+     , dsp >= 0.2.4
+     , random
+     , lens
+     , random-shuffle
+     , process >=1.4
+     , unordered-containers >=0.2.8.0
+     , hashable >= 1.2.6.0
 
 
 Test-Suite Simple
