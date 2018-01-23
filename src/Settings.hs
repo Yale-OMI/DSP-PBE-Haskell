@@ -13,3 +13,8 @@ numPeaks = 6
 
 binSize :: Int
 binSize = 200
+
+-- a higher value reduces the resolution of the fft
+-- but can significantly improve running time
+resolution :: Int
+resolution = 0

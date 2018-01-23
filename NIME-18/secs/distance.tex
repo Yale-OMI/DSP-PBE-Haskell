@@ -1,0 +1,33 @@
+
+\section{Aural Distance}
+
+As a distance metric, we used as a starting point the literature on acoustic fingerprinting.
+Acoustic fingerprinting is the concept of creating a condensed, distinct summary of an audio file that can be used later to identify that audio file or to look it up in a database.
+Acoustic fingerprints represent how the file will sound to the human ear regardless of how it is represented in a digital format.
+There are numerous ways to develop acoustic fingerprints and companies like Shazam and Sound-Hound have developed complex algorithms to create accurate fingerprints even from low quality files recorded on a cellphone mic.
+One of Shazam’s engineers released a paper detailing their process several years ago.
+I used this paper as an inspiration for my checker.
+The Shazam method uses Fast Fourier Transforms to convert the WAVE file into a spectrogram plotted over time.
+Then they plot the (frequency,time) coordinates with the greatest amplitude to create a star map of points that become the files audio fingerprint.
+I use a similar strategy by first performing a real Fast Fourier Transform on the imported WAVE file and then picking out the frequency peaks in each time frame.
+
+
+Fast Fourier Transforms are the key to a good acoustic fingerprint.
+Prior to this project, I had only heard of Fourier Transforms in passing and had no idea what they did or how they worked.
+I was able to find several Haskell libraries that provide DFT and FFT functions but the majority of my reading on this topic was on how to interpret the results of these functions.
+The results of these functions are not presented in an intuitive manner and one must take into account negative frequencies.
+The return arrays are presented with the zero frequency component or DC, followed by positive frequencies up until the Nyquist frequency (sampling frequency divided by 2) after which all the elements represent negative frequencies which are irrelevant to a spectrogram.
+For this reason, I had to adjust the checker to only observe the array elements from to the Nyquist frequency and exclude the zeroth element and all the negative frequency.
+
+In my readings about the results of FFT I came across the topic of spectral leakage.
+Frequency and time are continuous spectra.
+FFT, however, relies on a discrete representation of the sound wave over time and therefore returns a discrete representation of the frequency spectrum.
+Each return element is a frequency ”bin”, and depending on the scale of your return array the size of this bins varies.
+In order for each bin to correspond to 1 Hz the size of the return vector must be equal to the sampling frequency (44,100 Hz).
+If each bin is not 1 Hz, you can expect to see the effects of spectral leakage.
+This occurs when the bins do not correspond to the exact frequency peaks of the sound.
+The amplitude from the peaks that fall in between bins will ”leak” over into the closest bin and create a distorted spectrogram.
+For this reason I had to adjust the size of the FFT return arrays to be 44,100.
+Although this slows down the process of FFT, it provides the most accurate representation of the sound and for our purposes frequency accuracy is paramount.
+
+

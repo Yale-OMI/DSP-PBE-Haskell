@@ -4,17 +4,16 @@ module FFT (peakResults) where
 import Data.Complex
 import Data.List
 import Data.Ord
---import HSoM.Examples.SpectrumAnalysis
-import Codec.Wav
 import Data.Audio
-import Data.Either
-import Data.Maybe
 import Numeric.Extra
 import Data.Int
 import Data.Array.IArray
 import Numeric.Transform.Fourier.FFT
 
+import Types.Common
 import qualified Settings as S
+
+import Debug.Trace 
 
 peakResults :: Audio Int16 -> Audio Int16 -> Double
 peakResults w1 w2 = let
@@ -22,43 +21,56 @@ peakResults w1 w2 = let
   peak2 = getPeaks $ constellateAll $ mkFrames $ wavList w2
   in getResults peak1 peak2
 
-getResults :: [(Int,Double,Double)] -> [(Int,Double,Double)] -> Double
+getResults :: [Peak] -> [Peak] -> Double
 getResults d1 d2 = let
-   distances = zipWith (comparePeaks) d1 d2
+   distances = zipWith (comparePeak) d1 d2
    average ls = sum ls / genericLength ls
    in average distances 
 
--- compares the lists of peaks in each frame and gets percent difference between them
-comparePeaks :: (Int,Double,Double) -> (Int,Double,Double) -> Double
-comparePeaks t1 t2 = let
-  f1 = get1 t1
-  f2 = get1 t2
-  a1 = get2 t1
-  a2 = get2 t2
+-- compare a peak to get distance on xy plane based on freq and amp
+-- can also try other metrics here
+comparePeak :: Peak -> Peak -> Double
+comparePeak t1 t2 = let
+  freq1 = intToDouble $ get1 t1
+  freq2 = intToDouble $ get1 t2
+  amp1 = get2 t1
+  amp2 = get2 t2
   upstep = 2 ** (1/12)
   downstep = 2 ** (-1/12)
-  in if (intToDouble f2) > ((intToDouble f1) * downstep) && (intToDouble f2) < ((intToDouble f1) * upstep)
+  distance (x1, y1) (x2, y2) = sqrt (x'*x' + y'*y')
+    where
+      x' = x1 - x2
+      y' = y1 - y2
+  in distance (freq1,amp1) (freq2,amp2)
+    {-
+    if 
+      (intToDouble f2) > ((intToDouble f1) * downstep) && 
+      (intToDouble f2) < ((intToDouble f1) * upstep)
     then (abs((a2 - a1)/a1))
-    else 1000.000
+    else traceShow t1 1000.000-}
 
 
 --gets 5 peaks
-getPeaks :: [[(Int,Double,Double)]] -> [(Int,Double,Double)]
-getPeaks ts = let
-  freqs = map freqBins ts
-  peaks = map findPeaks freqs
-  in concat peaks
+getPeaks :: [[Peak]] -> [Peak]
+getPeaks ts = concatMap (findPeaks. freqBins) ts
 
-findPeaks :: [[(Int,Double,Double)]] -> [(Int,Double,Double)]
+findPeaks :: [[Peak]] -> [Peak]
 findPeaks ts = let
   srts = map (last.(sortBy (comparing get2))) ts
   in take 5 srts
 
+remove_every_nth :: Int -> [a] -> [a]
+remove_every_nth = recur 1
+    where recur _ _ []     = []
+          recur i n (x:xs) = if i == n
+            then recur 1 n xs
+            else x:recur (i+1) n xs
 
 --performs FFT, converts to polar pairs and then to triples
-constellateAll :: [[Double]] -> [[(Int,Double,Double)]]
+constellateAll :: [[Double]] -> [[Peak]]
 constellateAll ls = let
-    ars1 = map (\xs -> listArray (0,(S.frameRes - 1)) xs) ls
+    sparsifying n= foldr (.) id (replicate n (remove_every_nth 2))
+    ars1 = sparsifying S.resolution $ map (\xs -> listArray (0,(S.frameRes - 1)) xs) ls
     in map (listTriple.(take (S.frameRes `div` 2)).assocs.constellate.rfft) ars1
 
 -- constellate takes results of FFT and turns it into (amp,phase) at each frequency point
@@ -75,7 +87,7 @@ mkFrames list1 =
     then []
     else (take S.frameRes list1):(mkFrames (drop S.overlap list1))
 
-freqBins :: [(Int,Double,Double)] -> [[(Int,Double,Double)]]
+freqBins :: [Peak] -> [[Peak]]
 freqBins ts =
   if (length ts) < S.binSize
   then []
@@ -97,6 +109,7 @@ listTriple xs = let
     in if null xs
       then []
       else (a,b,c):(listTriple (tail xs))
+
 --gets 1st item of triple
 get1 :: (a,b,c) -> a
 get1 (a,_,_) = a

@@ -1,7 +1,4 @@
 {-# LANGUAGE PartialTypeSignatures #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric #-}
 
 
 module SGD where
@@ -19,14 +16,7 @@ import GHC.Generics
 import Control.Lens
 import Control.Monad
 
-data Thetas = Thetas{
-   _lpfThreshold :: Double,
-   _hpfThreshold :: Double
-   } deriving (Eq,Show,Generic,Hashable)
-
-makeLenses ''Thetas
-
-type ResCache = H.HashMap Thetas Double
+import Types.Filter
 
 -- | Use data type Theta for params to be passed to eval fxn
 -- | calc new theta and build map of theta to value to avoid recomputation
@@ -69,7 +59,7 @@ partialDerivative f part t cache = do
        Nothing -> f t >>= (\v -> return (v, H.insert t v cache))
   print x1
   -- x2 is not likely to ever be calculated again, so dont bother saving it in the newCache
-  x2 <- f (over part (\x -> x*1.01) t)
+  x2 <- f (over part (\x -> x*1.05) t)
   print x2
-  return $ (((x2 - x1) / 0.01),newCache)
+  return $ (((x2 - x1) / 0.05),newCache)
 
