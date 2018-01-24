@@ -1,3 +1,18 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{1}
+
+\bibitem{sygus2014}
+R.~Alur, R.~Bodik, E.~Dallal, D.~Fisman, P.~Garg, G.~Juniwal, H.~Kress-Gazit,
+  P.~Madusudan, M.~Martin, M.~Raghothman, S.~Saha, S.~Seshia, R.~Singh,
+  A.~Solar-Lezama, E.~Torlak, and E.~Udupa.
+\newblock Syntax-guided synthesis.
+\newblock {\em Dependable Software Systems Engineering, NATO Science for Peace
+  and Security Series}, 2014.
+\newblock Avaible at
+  \url{http://sygus.seas.upenn.edu/files/sygus_extended.pdf}.
+
+\bibitem{sygus2017}
+R.~Alur, D.~Fisman, R.~Singh, and A.~Solar{-}Lezama.
+\newblock Sygus-comp 2017: Results and analysis.
+\newblock {\em CoRR}, abs/1711.11438, 2017.
 
 \end{thebibliography}
