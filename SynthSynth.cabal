@@ -46,6 +46,7 @@ library
      , process >=1.4
      , unordered-containers >=0.2.8.0
      , hashable >= 1.2.6.0
+     , parallel >= 3.2.1.1
  ghc-options:
     -Wall 
     -O2
@@ -60,7 +61,7 @@ executable Prof
      -O2
      -threaded
      -fprof-auto
-     "-with-rtsopts=-N -p -s -h -i0.1"
+     "-with-rtsopts=-N4 -s -h -i0.1"
    build-depends:       
        base >=4.10 && <4.11
      , SynthSynth

@@ -28,7 +28,7 @@ optimize tester = fst $
   multiVarSGD 
     [lpfThreshold, hpfThreshold]
     2 --batch size (how many directions to test)
-    0.0001 --convergance goal
+    1 --convergance goal
     10 --learn rate
     (Thetas {_lpfThreshold=4000,_hpfThreshold=1,_ringzFreq=30,_ringzApp=0,_lpfApp=0,_hpfApp=0}) 
     (Thetas {_lpfThreshold=1000,_hpfThreshold=1000,_ringzFreq=30,_ringzApp=1,_lpfApp=1,_hpfApp=1}) 

@@ -10,6 +10,8 @@ import Data.Int
 import Data.Array.IArray
 import Numeric.Transform.Fourier.FFT
 
+import Control.Parallel.Strategies
+
 import Types.Common
 import qualified Settings as S
 
@@ -17,8 +19,8 @@ import Debug.Trace
 
 peakResults :: Audio Int16 -> Audio Int16 -> Double
 peakResults w1 w2 = let
-  peak1 = getPeaks $ constellateAll $ mkFrames $ wavList w1
-  peak2 = getPeaks $ constellateAll $ mkFrames $ wavList w2
+  mapTup f (x,y) = withStrategy (parTuple2 rdeepseq rdeepseq) (f x,f y)
+  (peak1, peak2) = mapTup (getPeaks. constellateAll. mkFrames. wavList) (w1,w2)
   in getResults peak1 peak2
 
 getResults :: [Peak] -> [Peak] -> Double

@@ -17,4 +17,4 @@ binSize = 200
 -- a higher value reduces the resolution of the fft
 -- but can significantly improve running time
 resolution :: Int
-resolution = 0
+resolution = 4
