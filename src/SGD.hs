@@ -11,55 +11,63 @@ import System.Random.Shuffle
 import System.Random
 
 import qualified Data.HashMap.Strict as H
-import Data.Hashable
 import GHC.Generics
 import Control.Lens
 import Control.Monad
 
 import Types.Filter
+import qualified Settings as S
+
+import Debug.Trace
 
 -- | Use data type Theta for params to be passed to eval fxn
 -- | calc new theta and build map of theta to value to avoid recomputation
-multiVarSGD :: _ -> Int -> Double -> Double -> Thetas -> Thetas -> ResCache -> (Thetas -> IO Double) -> (Thetas, ResCache)
-multiVarSGD thetaSelectors batchSize goal learnRate t t_prev cache f =
-  let
-    --TODO better convergance fxn
-    converged = (abs((_lpfThreshold t)-(_lpfThreshold t_prev)) <= goal)
-    -- NB use a fixed theta for takeStep, but update a seperate copy of theta in the fold
-    (updatedThetas, newCache) = foldr (takeStep learnRate t f) (t,cache) (stochasticBatch batchSize thetaSelectors)
+multiVarSGD :: RandomGen g => _ -> g -> Int -> Double -> Double -> Thetas -> Thetas -> ResCache -> (Thetas -> IO Double) -> IO (Thetas, ResCache)
+multiVarSGD thetaSelectors g batchSize goal learnRate t t_best cache f = do
+  -- NB use a fixed theta for takeStep, but update a seperate copy of theta in the fold
+  (updatedThetas, newCache) <- foldM (takeStep learnRate t f) (t,cache) (stochasticBatch g batchSize thetaSelectors)
+    -- converge if you try to descend and still do the best
+  let converged = thetaDiff updatedThetas t_best <= goal
+    -- check if the updated choice is better (since we are working in highly non-convex space)
+  (thisVal, newCache') <- runIO newCache f updatedThetas
+  (oldBest,_)          <- runIO cache f t_best
+  let 
+    newBest = if thisVal<oldBest then updatedThetas else t_best
+    --every now and then go back to the best we had found
+    t' = traceShow (H.size cache) $ if (H.size cache) `mod` (S.restartRound) == 0 then newBest else updatedThetas
+    -- build the call to try again, allowing us to explore worse directions, but every n step returning to best
+    continueGD = multiVarSGD thetaSelectors (snd $ next g) batchSize goal learnRate t' newBest newCache' f
 
-    continueGD = multiVarSGD thetaSelectors batchSize goal learnRate updatedThetas t newCache f
-  in
-    if not converged
-    then continueGD
-    else (trace "finished SGD" t, newCache)
+  if not converged && (H.size cache <6) 
+  then (trace "\n\n" continueGD)
+  else return (trace ("finished SGD"++(show thisVal)) t, newCache)
 
-stochasticBatch :: Int -> [a] -> [a]
-stochasticBatch batchSize xs =
-  take batchSize $ shuffle' xs (length xs) rand
- where
-  --TODO get rid of unsafe here, pass in the gen from the top io level and there is no problem
-  rand = unsafePerformIO newStdGen
-
+stochasticBatch :: RandomGen g => g -> Int -> [a] -> [a]
+stochasticBatch g batchSize xs =
+  take batchSize $ shuffle' xs (length xs) g
 
 -- TODO get rid of unsafe here? (actually its fine here, but would be a nice exercise to fix)
-takeStep :: Double -> Thetas -> (Thetas -> IO Double) -> _ -> (Thetas,ResCache) -> (Thetas,ResCache)
-takeStep learnRate t f part (updatedTheta,cache) = let
-  (deriveCalc, newCache) = unsafePerformIO $ partialDerivative f part t cache
- in
-  (over part (\x -> max 0 $ x - learnRate * deriveCalc) updatedTheta, newCache)
+takeStep :: Double -> Thetas -> (Thetas -> IO Double) -> (Thetas,ResCache) -> _ -> IO (Thetas,ResCache)
+takeStep learnRate t f (updatedTheta,cache) part = do 
+  (deriveCalc, newCache) <- partialDerivative f part t cache
+  return (over part (\x -> max (-1) $ min 1 $ x - learnRate * deriveCalc) updatedTheta, newCache)
 
 -- TODO there must be a better way
 -- but for now just move in one direction and interpolate 
 partialDerivative :: (Thetas -> IO Double) -> _ -> Thetas -> ResCache -> IO (Double, ResCache)
 partialDerivative f part t cache = do
   --lookup in cache
-  (x1, newCache) <- case H.lookup t cache of
-       Just v -> return (v,cache)
-       Nothing -> f t >>= (\v -> return (v, H.insert t v cache))
+  (x1, newCache) <- runIO cache f t
   print x1
   -- x2 is not likely to ever be calculated again, so dont bother saving it in the newCache
-  x2 <- f (over part (\x -> x*1.05) t)
+  x2 <- f (over part (\x -> x+0.02) t)
   print x2
-  return $ (((x2 - x1) / 0.05),newCache)
+  return $ (((x2 - x1) / 0.02),newCache)
 
+runIO :: ResCache -> (Thetas -> IO Double) -> Thetas -> IO (Double,ResCache)
+runIO cache f t = do 
+  (x, newCache) <- case H.lookup t cache of
+    Just v -> return (v,cache)
+    Nothing -> f t >>= (\v -> return (v, traceShow ("ADDED TO CACHE - NEW SIZE = "++(show (1+(H.size cache)))) $ H.insert t v cache))
+  return (x,newCache)
+  

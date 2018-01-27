@@ -10,7 +10,4 @@ sudo mount -t tmpfs -o size=256m tmpfs ./tmp/
 
 cabal run
 
-#unmount so we dont have lingereing disk taking space (is that even how this works?)
-umount ./tmp
-rm -rf ./tmp
 

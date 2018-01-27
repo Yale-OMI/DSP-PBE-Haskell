@@ -3,18 +3,21 @@ module Settings where
 
 -- each bin is 1Hz and each frame is 1s
 frameRes :: Int
-frameRes = 44100
+frameRes = 4096
 
 overlap :: Int
-overlap = 22050
+overlap = 2048
 
+-- number of peaks to extract in spectral analysis/fingerprinting
 numPeaks :: Int
-numPeaks = 6
+numPeaks = 14
 
 binSize :: Int
 binSize = 200
 
+restartRound :: Int
+restartRound = 3
 -- a higher value reduces the resolution of the fft
 -- but can significantly improve running time
 resolution :: Int
-resolution = 4
+resolution = 0

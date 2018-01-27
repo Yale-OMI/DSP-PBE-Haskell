@@ -7,14 +7,10 @@ module VividRunner where
 
 import Vivid
 
-import Control.Monad
-
-runFilter :: FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> IO(String)
-runFilter srcFile vCode = do
+runFilter :: FilePath -> FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> IO(String)
+runFilter out_filepath srcFile vCode = do
    writeNRT out_filepath $ vAction srcFile vCode
    return out_filepath
- where
-   out_filepath = "tmp/out.wav"
 
 
 vAction :: FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> _
@@ -28,6 +24,6 @@ vAction srcFile vCode = do
      vCode $ toSig s0
 
    -- This is janky and there's a solution:
-   wait 2 -- length in secs of the sample
+   wait 1.0 -- length in secs of the sample
 
 

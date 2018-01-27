@@ -43,13 +43,11 @@ comparePeak t1 t2 = let
     where
       x' = x1 - x2
       y' = y1 - y2
-  in distance (freq1,amp1) (freq2,amp2)
-    {-
-    if 
-      (intToDouble f2) > ((intToDouble f1) * downstep) && 
-      (intToDouble f2) < ((intToDouble f1) * upstep)
-    then (abs((a2 - a1)/a1))
-    else traceShow t1 1000.000-}
+  in 
+    {-if amp2 == 0
+    then 1000 --penalize zero files
+    else -}
+    distance (freq1,amp1) (freq2,amp2)
 
 
 --gets 5 peaks
@@ -59,7 +57,7 @@ getPeaks ts = concatMap (findPeaks. freqBins) ts
 findPeaks :: [[Peak]] -> [Peak]
 findPeaks ts = let
   srts = map (last.(sortBy (comparing get2))) ts
-  in take 5 srts
+  in take S.numPeaks srts
 
 remove_every_nth :: Int -> [a] -> [a]
 remove_every_nth = recur 1
@@ -89,17 +87,18 @@ mkFrames list1 =
     then []
     else (take S.frameRes list1):(mkFrames (drop S.overlap list1))
 
+--takes wave file and turns it's values into list of Complex Doubles
+wavList :: Audio Int16 -> [Double]
+wavList wav = let
+    l1 = sampleData wav
+  in take (16384*10) $ elems $ amap toSample l1
+
+
 freqBins :: [Peak] -> [[Peak]]
 freqBins ts =
   if (length ts) < S.binSize
   then []
   else (take S.binSize ts):(freqBins (drop S.binSize ts))
-
---takes wave file and turns it's values into list of Complex Doubles
-wavList :: Audio Int16 -> [Double]
-wavList wav = let
-  l1 = assocs $ sampleData wav
-  in map (toSample.snd) l1
 
 
 -- listTriple turns tuple of int and tuple and makes it into a triple
