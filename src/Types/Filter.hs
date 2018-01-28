@@ -6,6 +6,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE MultiWayIf #-}
 
 module Types.Filter where
 
@@ -62,6 +63,15 @@ thetaDiff t t' = let
 
 type ResCache = H.HashMap Thetas Double
 
+-- Given two thetas, which field did we change
+thetaFieldChange t t' = if
+  | _lpfThreshold t - _lpfThreshold t' /= 0 -> "lpfThreshold"
+  | _hpfThreshold t - _hpfThreshold t' /= 0 -> "hpfThreshold"
+  | _lpfApp       t - _lpfApp      t' /= 0 -> "lpfApp"
+  | _hpfApp       t - _hpfApp      t' /= 0 -> "hpfApp"
+  | _whiteApp     t - _whiteApp    t' /= 0 -> "whiteApp"
+  | _ampApp       t - _ampApp      t' /= 0 -> "ampApp"
+  | otherwise                              -> "unsupported field change"
 
 --TODO this is a fixed form for now, which is fine as long as the filter are associative
 --later we should be able to generate different applciation orders
@@ -80,14 +90,14 @@ thetaToFilter t = AmpApp (realToFrac $ _ampApp t) $
 --TODO need feature scaling
 toVivid :: Filter -> (SDBody' '[] Signal -> SDBody' '[] Signal)
 toVivid = let
-   freqScale x = (x+1)*10000  -- freq operations 0<x<20k Hz
-   ampScale x = (x+1)/2.2       -- amp operations 0<x<.9 so there is always space to explore 'up' for derivative calcuation
-   delayScale x = (x+1)         -- delay operations 0<x<2
+   freqScale x = ((x+1)*10000)+100  -- freq operations 100<x<16k Hz
+   ampScale x = (x+1)/2.2           -- amp operations 0<x<.9 so there is always space to explore 'up' for derivative calcuation
+   delayScale x = (x+1)             -- delay operations 0<x<2
  in \case 
-      HPF t a  -> (\bufs -> (ampScale a::Float) ~* hpf (freq_ (freqScale t::Float), in_ bufs))
-      LPF t a  -> (\bufs -> (ampScale a::Float) ~* lpf (freq_ (freqScale t::Float), in_ bufs))
-      WhiteNoise a -> traceShow ("whiteNoise("++(show $ ampScale a)++")") (\bufs -> ((ampScale a::Float) ~* whiteNoise) ~+ bufs)
-      Ringz f d a -> (\bufs -> (ampScale a::Float) ~* ringz (freq_ (freqScale f::Float), decaySecs_ (delayScale d::Float), in_ bufs))
-      Compose f f' -> (\bufs -> do ((toVivid f) bufs ~+ (toVivid f') bufs))
-      AmpApp a f -> (\bufs -> do (((a+2)/3) ~* ((toVivid f) bufs))) -- can only turn down the total vol down to 1/3
+      HPF t a        -> (\bufs -> (ampScale a::Float) ~* hpf (freq_ (freqScale t::Float), in_ bufs))
+      LPF t a        -> (\bufs -> (ampScale a::Float) ~* lpf (freq_ (freqScale t::Float), in_ bufs))
+      WhiteNoise a   -> (\bufs -> (ampScale a::Float) ~* whiteNoise) 
+      Ringz f d a    -> (\bufs -> (ampScale a::Float) ~* ringz (freq_ (freqScale f::Float), decaySecs_ (delayScale d::Float), in_ bufs))
+      Compose f f'   -> (\bufs -> do (((toVivid f) bufs) ~+ ((toVivid f') bufs)))
+      AmpApp a f     -> (\bufs -> do (((a+2)/3) ~* ((toVivid f) bufs))) -- can only turn down the total vol down to 1/3
 

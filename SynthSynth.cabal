@@ -26,10 +26,10 @@ library
   exposed-modules:     FFT 
                        Types.Common
                        Synth
-  other-modules:       VividRunner
-                       SGD 
-                       Settings 
                        Types.Filter
+                       VividRunner
+  other-modules:       SGD
+                       Settings 
 
   build-depends:       
        base >=4.10 && <4.11
@@ -48,7 +48,7 @@ library
      , hashable >= 1.2.6.0
      , parallel >= 3.2.1.1
  ghc-options:
-    -Wall 
+--    -Wall 
     -O3
     -fprof-auto
 

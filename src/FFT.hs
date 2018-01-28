@@ -50,15 +50,6 @@ comparePeak t1 t2 = let
     distance (freq1,amp1) (freq2,amp2)
 
 
---gets 5 peaks
-getPeaks :: [[Peak]] -> [Peak]
-getPeaks ts = concatMap (findPeaks. freqBins) ts
-
-findPeaks :: [[Peak]] -> [Peak]
-findPeaks ts = let
-  srts = map (last.(sortBy (comparing get2))) ts
-  in take S.numPeaks srts
-
 remove_every_nth :: Int -> [a] -> [a]
 remove_every_nth = recur 1
     where recur _ _ []     = []
@@ -91,7 +82,16 @@ mkFrames list1 =
 wavList :: Audio Int16 -> [Double]
 wavList wav = let
     l1 = sampleData wav
-  in take (16384*10) $ elems $ amap toSample l1
+  in take (16384*1) $ elems $ amap toSample l1
+
+--gets 5 peaks
+getPeaks :: [[Peak]] -> [Peak]
+getPeaks ts = concatMap (findPeaks. freqBins) ts
+
+findPeaks :: [[Peak]] -> [Peak]
+findPeaks ts = let
+  srts = map (last.(sortBy (comparing get2))) ts
+  in take S.numPeaks srts
 
 
 freqBins :: [Peak] -> [[Peak]]
