@@ -12,3 +12,15 @@ If our initial threshold is too low (cutting off too much), and just on the othe
 However, if the spectrogram of waveform has a frequency spectrum that is mostly inactive, SGD will detect a plateau and tell us we have found a global minimum, when in fact we are stuck in a local minimum.
 We may be able to use some randomized restarting to hop over these.
 
+\subsection{Refinement Type Driven Synthesis}
+
+Refinement types are a way of giving an abstract description of the behavior of a function.
+For example, we can describe the function \texttt{map:: [a] -> [b]}, that captures some properties of the behvaoir of the function, \texttt{f :: xs:[a] -> ys:[b] | length xs==length ys}, in this case that the length of the lists are still equal.
+In a similar style for DSP, we can write predicates about the filters available to us during synthesis.
+For example, a low-pass filter could be described a the refinement type that says the amplitude of the frequencies greater than the threshold have decreased in the output \texttt{Audio}.
+
+\texttt{lpf :: threshold:Float -> xs:Audio -> ys:Audio | amp(threshold,xs) < amp(threshold,ys)}
+
+
+
+
