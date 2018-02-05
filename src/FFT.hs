@@ -3,6 +3,7 @@ module FFT (peakResults) where
 -- need to create frequency frames for peaks after the FFT has been applied
 import Data.Complex
 import Data.List
+import Data.List.Split
 import Data.Ord
 import Data.Audio
 import Numeric.Extra
@@ -33,10 +34,10 @@ getResults d1 d2 = let
 -- can also try other metrics here
 comparePeak :: Peak -> Peak -> Double
 comparePeak t1 t2 = let
-  freq1 = intToDouble $ get1 t1
-  freq2 = intToDouble $ get1 t2
-  amp1 = get2 t1
-  amp2 = get2 t2
+  freq1 = intToDouble $ getFreq t1
+  freq2 = intToDouble $ getFreq t2
+  amp1 = getAmp t1
+  amp2 = getAmp t2
   upstep = 2 ** (1/12)
   downstep = 2 ** (-1/12)
   distance (x1, y1) (x2, y2) = sqrt (x'*x' + y'*y')
@@ -47,7 +48,8 @@ comparePeak t1 t2 = let
     {-if amp2 == 0
     then 1000 --penalize zero files
     else -}
-    distance (freq1,amp1) (freq2,amp2)
+    --traceShow ((show freq1)++" "++(show amp1)++", "++(show freq2)++" "++(show amp2) ) 
+    distance (freq1,amp1) (freq2,amp2) -- + 1/(amp2+0.00001)
 
 
 remove_every_nth :: Int -> [a] -> [a]
@@ -57,7 +59,7 @@ remove_every_nth = recur 1
             then recur 1 n xs
             else x:recur (i+1) n xs
 
---performs FFT, converts to polar pairs and then to triples
+-- | performs FFT on a list of samples, and conversts each sample to a list of peaks as the triple (freq,amp,phase)
 constellateAll :: [[Double]] -> [[Peak]]
 constellateAll ls = let
     sparsifying n= foldr (.) id (replicate n (remove_every_nth 2))
@@ -68,7 +70,7 @@ constellateAll ls = let
 constellate :: Array Int (Complex Double) -> Array Int (Double,Double)
 constellate arr1 =
   let list1 = assocs arr1
-      polar1 = map (polar.snd) list1
+      polar1 = map (polar.snd) list1 --TODO use amap for array
       in listArray (0,((length list1) - 1)) polar1
 
 -- mkFrames takes assocs of audio file and breaks it into 4096 sample (.09s) frames (overlapped by 50%)
@@ -82,41 +84,31 @@ mkFrames list1 =
 wavList :: Audio Int16 -> [Double]
 wavList wav = let
     l1 = sampleData wav
-  in take (16384*1) $ elems $ amap toSample l1
+  in take (16384*10) $ elems $ amap toSample l1
 
---gets 5 peaks
+-- | with the peaks for a list of frames, chose
 getPeaks :: [[Peak]] -> [Peak]
-getPeaks ts = concatMap (findPeaks. freqBins) ts
+getPeaks ts = let
+  freqBins :: [Peak] -> [[Peak]]
+  freqBins = chunksOf S.binSize -- partition a sample's peaks by freq
+ in
+  concatMap (findPeaks. freqBins) ts
 
+-- | for a given sample's peaks in each freq bin, 
+--   get the biggest (by amp) in each bin
+--   then take the biggest numPeaks of those
 findPeaks :: [[Peak]] -> [Peak]
 findPeaks ts = let
-  srts = map (last.(sortBy (comparing get2))) ts
-  in take S.numPeaks srts
+   largestPeaksPerBin = map (last.(sortBy (comparing getAmp))) ts
+--  in take S.numPeaks $ reverse $ sortBy (comparing getAmp) largestPeaksPerBin
+  in take S.numPeaks  largestPeaksPerBin
 
+traceMe x = traceShow x x
 
-freqBins :: [Peak] -> [[Peak]]
-freqBins ts =
-  if (length ts) < S.binSize
-  then []
-  else (take S.binSize ts):(freqBins (drop S.binSize ts))
 
 
 -- listTriple turns tuple of int and tuple and makes it into a triple
 listTriple :: [(a,(b,b))] -> [(a,b,b)]
-listTriple xs = let
-    a = (fst.head) xs
-    b = (fst.snd.head) xs
-    c = (snd.snd.head) xs
-    in if null xs
-      then []
-      else (a,b,c):(listTriple (tail xs))
+listTriple xs = 
+   map (\(x,(y,z)) -> (x,y,z)) xs
 
---gets 1st item of triple
-get1 :: (a,b,c) -> a
-get1 (a,_,_) = a
---gets 2nd item of triple
-get2 :: (a,b,c) -> b
-get2 (_,b,_) = b
---gets 3rd item of triple
-get3 :: (a,b,c) -> c
-get3 (_,_,c) = c

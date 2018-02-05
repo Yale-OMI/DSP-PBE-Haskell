@@ -28,7 +28,7 @@ synthCode (in_filepath,in_audio) (out_filepath,out_audio) = do
   return synthedFilter
 
 --thetaSelectors = [lpfThreshold, hpfThreshold,ringzFreq,ringzDecaySecs,ringzApp,lpfApp,hpfApp,whiteApp,ampApp]
-thetaSelectors = [lpfThreshold, lpfApp, whiteApp, ampApp]
+thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, whiteApp, ampApp]
 
 optimize rGen tester initFilter = multiVarSGD 
     thetaSelectors

@@ -1,129 +1,162 @@
-% Template for NIME 2018
-%
-% Modified by Luke Dahl on 17 October 2-17
-% Modified by Cumhur Erkut on <2016-10-11 Tue>
-% Modified by Edgar Berdahl on 5 November 2014
-% Modified by Baptiste Caramiaux on 25 November 2013
-% Modified by Kyogu Lee on 7 October 2012
-% Modified by Georg Essl on 7 November 2011
-%
-% Based on "sig-alternate.tex" V1.9 April 2009
-% This file should be compiled with "nime-alternate.cls"
+%% For double-blind review submission
+\documentclass[acmsmall,screen]{acmart}\settopmatter{printfolios=true}
+
+\usepackage{etex}
+%% For single-blind review submission
+%\documentclass[acmlarge,review]{acmart}\settopmatter{printfolios=true}
+%% For final camera-ready submission
+%\documentclass[acmlarge]{acmart}\settopmatter{}
+
+%% Note: Authors migrating a paper from PACMPL format to traditional
+%% SIGPLAN proceedings format should change 'acmlarge' to
+%% 'sigplan,10pt'.
 
 
-\documentclass{nime-alternate}
+%% Some recommended packages.
+                        %% http://ctan.org/pkg/booktabs
+\usepackage{subcaption} %% For complex figures with subfigures/subcaptions
+                        %% http://ctan.org/pkg/subcaption
+
+
+\newcommand{\cL}{{\cal L}}
+\let\terms\undefined
 
 \input{preamble}
 
+
+\makeatletter\if@ACM@journal\makeatother
+%% Journal information (used by PACMPL format)
+%% Supplied to authors by publisher for camera-ready submission
+
+%% Copyright information
+%% Supplied to authors (based on authors' rights management selection;
+%% see authors.acm.org) by publisher for camera-ready submission
+%\setcopyright{acmcopyright}
+%\setcopyright{acmlicensed}
+%\setcopyright{rightsretained}
+%\copyrightyear{2017}           %% If different from \acmYear
+
+
+%% Bibliography style
+\bibliographystyle{ACM-Reference-Format}
+%% Citation style
+%% Note: author/year citations are required for papers published as an
+%% issue of PACMPL.
+\citestyle{acmauthoryear}   %% For author/year citations
+
+\setcopyright{acmcopyright}
+\acmPrice{}
+\acmDOI{10.1145/3133888}
+\acmYear{2017}
+\copyrightyear{2017}
+\acmJournal{PACMPL}
+\acmVolume{1}
+\acmNumber{ICFP}
+\acmArticle{64}
+\acmMonth{10}
+
+
 \begin{document}
-%
-% --- Author Metadata here ---
-%\conferenceinfo{NIME'17,}{May 15-19, 2017, Aalborg University Copenhagen, Denmark.}
-\conferenceinfo{NIME'18,}{June 3-6, 2018, Blacksburg, Virginia, USA.}
 
+%% Title information
 \title{Synthesizing DSP Filters with Programming By Example}
+                                        %% [Short Title] is optional;
+                                        %% when present, will be used in
+                                        %% header instead of Full Title.
+%\titlenote{with title note}             %% \titlenote is optional;
+                                        %% can be repeated if necessary;
+                                        %% contents suppressed with 'anonymous'
+%\subtitle{Subtitle}                     %% \subtitle is optional
+%\subtitlenote{with subtitle note}       %% \subtitlenote is optional;
+                                        %% can be repeated if necessary;
+                                        %% contents suppressed with 'anonymous'
 
 
-%
-% You need the command \numberofauthors to handle the 'placement
-% and alignment' of the authors beneath the title.
-%
-% For aesthetic reasons, we recommend 'three authors at a time'
-% i.e. three 'name/affiliation blocks' be placed beneath the title.
-%
-% NOTE: You are NOT restricted in how many 'rows' of
-% "name/affiliations" may appear. We just ask that you restrict
-% the number of 'columns' to three.
-%
-% Because of the available 'opening page real-estate'
-% we ask you to refrain from putting more than six authors
-% (two rows with three columns) beneath the article title.
-% More than six makes the first-page appear very cluttered indeed.
-%
-% Use the \alignauthor commands to handle the names
-% and affiliations for an 'aesthetic maximum' of six authors.
-% Add names, affiliations, addresses for
-% the seventh etc. author(s) as the argument for the
-% \additionalauthors command.
-% These 'additional authors' will be output/set for you
-% without further effort on your part as the last section in
-% the body of your article BEFORE References or any Appendices.
+%% Author information
+%% Contents and number of authors suppressed with 'anonymous'.
+%% Each author should be introduced by \author, followed by
+%% \authornote (optional), \orcid (optional), \affiliation, and
+%% \email.
+%% An author may have multiple affiliations and/or emails; repeat the
+%% appropriate command.
+%% Many elements are not rendered, but should be provided for metadata
+%% extraction tools.
 
-\numberofauthors{4} %  in this sample file, there are a *total*
-% of EIGHT authors. SIX appear on the 'first-page' (for formatting
-% reasons) and the remaining two appear in the \additionalauthors section.
-%
-\author{
-% You can go ahead and credit any number of authors here,
-% e.g. one 'row of three' or two rows (consisting of one row of three
-% and a second row of one, two or three).
-%
-% The command \alignauthor (no curly braces needed) should
-% precede each author name, affiliation/snail-mail address and
-% e-mail address. Additionally, tag each line of
-% affiliation/address with \affaddr, and tag the
-% e-mail address with \email.
-%
-% 1st. author
-\alignauthor
-Mark Santolucito\\
-       \affaddr{Yale University}\\
-       \affaddr{51 Prospect St.}\\
-       \affaddr{New Haven, CT}\\
-       \email{mark.santolucito@yale.edu}
-% 2nd. author
-\alignauthor
-Tom Murphy\\
-       \affaddr{Vivid}\\
-       \affaddr{P.O. Box 1212}\\
-       \affaddr{Dublin, Ohio 43017-6221}\\
-       \email{...}
-\and
-% 3rd. author
-\alignauthor Aedan Lombardo\\
-       \affaddr{Yale University}\\
-       \affaddr{51 Prospect St.}\\
-       \affaddr{New Haven, CT}\\
-       \email{aedan.lombardo@yale.edu}
-%4th
-\alignauthor Ruzica Piskac\\
-       \affaddr{Yale University}\\
-       \affaddr{51 Prospect St.}\\
-       \affaddr{New Haven, CT}\\
-       \email{ruzica.piskac@yale.edu}
+%% Author with single affiliation.
+\author{Mark Santolucito}
+\orcid{0000-0001-8646-4364}             %% \orcid is optional
+\affiliation{
+  \department{Computer Science}              %% \department is recommended
+  \institution{Yale University}            %% \institution is required
+  \streetaddress{51 Prospect St.}
+  \city{New Haven}
+  \state{CT}
+  \postcode{06511}
+  \country{USA}
 }
-% For your initial submission you MUST ANONYMIZE the authors.
+\email{mark.santolucito@yale.edu}          %% \email is recommended
 
-\maketitle
-%100-200 words
+\author{Ruzica Piskac}
+\affiliation{
+  \department{Computer Science}              %% \department is recommended
+  \institution{Yale University}            %% \institution is required
+  \streetaddress{51 Prospect St.}
+  \city{New Haven}
+  \state{CT}
+  \postcode{06511}
+  \country{USA}
+}
+\email{ruzica.piskac@yale.edu}          %% \email is recommended
+
+
+\titlenote{This research was sponsored by the NSF under grants
+CCF-1302327 and CCF-1715387.}
+
+
+
+
+%% Paper note
+%% The \thanks command may be used to create a "paper note" ---
+%% similar to a title note or an author note, but not explicitly
+%% associated with a particular element.  It will appear immediately
+%% above the permission/copyright statement.
+%\thanks{with paper note}                %% \thanks is optional
+                                        %% can be repeated if necesary
+                                        %% contents suppressed with 'anonymous'
+
+
+%% Abstract
+%% Note: \begin{abstract}...\end{abstract} environment must come
+%% before \maketitle command
 \begin{abstract}
 Programming by example allows users to create programs without coding, by simply specifying input and output pairs.
 We introduce the problem of digital signal processing programming by example, where users specify input and output wave files, and our tool can automatically synthesize a program that transforms the input to the output.
 This program can then be applied to new wave files, giving users a new way to interact with music and program code.
 \end{abstract}
 
-\keywords{NIME, proceedings, \LaTeX, template}
 
-% ------- CCS Concepts
-% Here is where you enter the CCS Concepts for your paper.
-%
-% It is strongly recommended that authors view the submission form prior to starting to write the paper, which includes information on the CCS Concepts. 
-% 
-%The 2012 ACM Computing Classification System (CCS) replaces the traditional 1998 version, which has served as the de facto standard classification system for the computing field. It is being integrated into the search capabilities and visual topic displays of the ACM Digital Library. Please enter the CCS XML code for the classification terms that describe your paper. To get the XML code, please use the following procedure, which is demonstrated using three NIME-related example terms: Applied computing~Sound and music computing, Applied computing~Performing arts, and Information systems~Music retrieval.
-%
-% 1) Browse to the website http://dl.acm.org/ccs_flat.cfm.
-% 2) Select one to three classification terms from the website that describe your paper (e.g. for the example paper Applied computing~Sound and music computing, Applied computing~Performing arts, and Information systems~Music retrieval.).
-% 3) For each classification you need to select the relevance (e.g. for this example, Sound and music computing is "high", Performing arts is "low", and Music retrieval is "Medium")
-% 4) Once you have selected the last term, click on "view CCS Tex Code". This will generate some code, which includes some CCSXML and some lines beginning with \ccsdesc.
-% 5) Keep all of this code, as you will need it for entering into the Precision Conference System paper submission form.
-% 6) For this document, keep only the \ccsdesc lines. Here is what you would paste for the classification example:
+%% 2012 ACM Computing Classification System (CSS) concepts
+%% Generate at 'http://dl.acm.org/ccs/ccs.cfm'.
+\begin{CCSXML}
+%<ccs2012>
+%<concept>
+%<concept_id>10011007.10011006.10011008</concept_id>
+%<concept_desc>Software and its engineering~General programming languages</concept_desc>
+%<concept_significance>500</concept_significance>
+%</concept>
+%<concept>
+%<concept_id>10003456.10003457.10003521.10003525</concept_id>
+%<concept_desc>Social and professional topics~History of programming languages</concept_desc>
+%<concept_significance>300</concept_significance>
+%</concept>
+%</ccs2012>
+\end{CCSXML}
 
-\ccsdesc[500]{Applied computing~Sound and music computing}
-\ccsdesc[100]{Applied computing~Performing arts}
-\ccsdesc[300]{Information systems~Music retrieval}
+%\ccsdesc[500]{Software and its engineering~General programming languages}
+%\ccsdesc[300]{Social and professional topics~History of programming languages}
+%% End of generated code
+\maketitle
 
-% this line creates the CCS Concepts section.
-\printccsdesc
 
 
 \input{secs/intro}
@@ -137,9 +170,6 @@ This program can then be applied to new wave files, giving users a new way to in
 
 \input{secs/future}
 
-%ACKNOWLEDGMENTS are optional
-\section{Acknowledgments}
-This work was supported the NSF grant XXXXXXXX and by viewers like you.
 
 %
 % The following two commands are all you need in the

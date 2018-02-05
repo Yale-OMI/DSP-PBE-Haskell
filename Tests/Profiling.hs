@@ -16,17 +16,17 @@ import Control.Monad
 
 main = do
   let 
-      inEx = "Sounds2/cartoon010.wav"
-      outEx = "Sounds2/cartoon010-lpf800.wav"
-      --inEx = "Sounds2/pinkFloydOrig.wav"
-      --outEx = "Sounds2/pinkFloydFilt.wav"
+      --inEx = "Sounds2/cartoon010.wav"
+      --outEx = "Sounds2/cartoon010-lpf800.wav"
+      inEx = "Sounds2/pinkFloydOrig.wav"
+      outEx = "Sounds2/pinkFloydFilt.wav"
   fileActions <- mapM importFile [inEx,outEx] :: IO [Either String (AudioFormat)]
-  let testFilters = take 40 $map (\x-> (Thetas {_lpfThreshold=(x),_hpfThreshold=(-1),_ringzFreq=1,_ringzDecaySecs=1,_ringzApp=(-1),_lpfApp=(1),_hpfApp=(-1),_whiteApp=(-1),_ampApp=(1)})) [-(0.960),(-0.958)..]
+  let testFilters = take 20 $map (\x-> (Thetas {_lpfThreshold=(x),_hpfThreshold=(-1),_ringzFreq=1,_ringzDecaySecs=1,_ringzApp=(-1),_lpfApp=(1),_hpfApp=(-1),_whiteApp=(-1),_ampApp=(1)})) [-(0.99),(-0.98)..]
   case sequence fileActions of
     Right fs -> do
-      --rs <- mapM (\t -> testFilter inEx (head$ tail fs) $ thetaToFilter t) testFilters
-      --printList $ zip [(-0.960),(-0.958)..] rs
-      synthCode (inEx, head fs) (outEx, head $ tail fs) >>= print
+      rs <- mapM (\t -> testFilter inEx (head$ tail fs) $ thetaToFilter t) testFilters
+      printList $ zip [(-0.99),(-0.98)..] rs
+      --synthCode (inEx, head fs) (outEx, head $ tail fs) >>= print
     Left e -> error e
   return ()
 
