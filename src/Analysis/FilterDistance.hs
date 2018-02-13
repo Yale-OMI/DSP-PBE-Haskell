@@ -2,10 +2,29 @@
 {-# LANGUAGE PartialTypeSignatures #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module VividRunner where
--- Courtesy of Murphy :)
+module Analysis.FilterDistance (
+    runFilter,
+    testFilter )
+  where
+
+import Codec.Wav
+
+import Analysis.FFT
+import Types.Common
+import Types.Filter
 
 import Vivid
+
+-- | Tells us the distance between the current filter results and the target audio data
+testFilter :: FilePath -> AudioFormat -> Filter -> IO AuralDistance
+testFilter in_fp outAudio f= do
+  let vividCode = toVivid f
+  newOutFilepath <- runFilter "tmp/out.wav" in_fp vividCode
+  newAudio <- importFile newOutFilepath :: IO(Either String AudioFormat)
+  case newAudio of
+    Left e -> error e
+    Right a -> return $ peakResults outAudio a
+
 
 runFilter :: FilePath -> FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> IO(String)
 runFilter out_filepath srcFile vCode = do

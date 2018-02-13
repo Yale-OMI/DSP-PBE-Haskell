@@ -23,12 +23,12 @@ library
   default-language: Haskell2010
   other-extensions:    DataKinds
   hs-source-dirs: src
-  exposed-modules:     FFT 
-                       Types.Common
-                       Synth
+  exposed-modules:     Analysis.FFT 
+                       Analysis.FilterDistance
+                       Synth.Synth
                        Types.Filter
-                       VividRunner
-  other-modules:       SGD
+                       Types.Common
+  other-modules:       Synth.SGD
                        Settings 
 
   build-depends:       
@@ -54,16 +54,14 @@ library
     -fprof-auto
 
 
---Test-Suite Prof
-executable Prof
+executable musicSynth
    default-language: Haskell2010
    hs-source-dirs: Tests
-   main-is: Profiling.hs
+   main-is: Synthesis.hs
    ghc-options:
      -O2
      -threaded
-     -fprof-auto
-     "-with-rtsopts=-N4 -p -s -h -i0.1"
+     "-with-rtsopts=-N4"
    build-depends:       
        base >=4.10 && <4.11
      , SynthSynth
@@ -71,16 +69,15 @@ executable Prof
      , directory
      , filepath
 
-Test-Suite Simple
+Test-Suite Analysis
    type: exitcode-stdio-1.0
    default-language: Haskell2010
    hs-source-dirs: Tests
-   main-is: Simple.hs
+   main-is: Analysis.hs
    ghc-options:
      -O2
      -threaded
-     -fprof-auto
-     "-with-rtsopts=-N4 -p -s -h -i0.1"
+     "-with-rtsopts=-N4"
    build-depends:       
        base >=4.10 && <4.11
      , SynthSynth

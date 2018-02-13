@@ -1,4 +1,4 @@
-module FFT (peakResults) where
+module Analysis.FFT (peakResults) where
 
 -- need to create frequency frames for peaks after the FFT has been applied
 import Data.Complex

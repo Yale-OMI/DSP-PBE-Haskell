@@ -1,6 +1,6 @@
 module Main where
 
-import FFT
+import Analysis.FFT
 import Data.Audio
 import Codec.Wav
 import Data.Int
@@ -9,15 +9,17 @@ import System.Exit
 
 import Control.Concurrent.ParallelIO.Global
 
-
+import PrintAudio
 ----------
 --
 --  Tests the aural distance function for sanity
 --
 ----------
 
-dir = "Sounds/"
+dir = "Sounds/AnalysisBenchmarks/"
 main :: IO ()
+main' = printAudio $ dir++"PianoC.wav"
+
 main = do
   ws <- parallel $ map getFile [ "PianoC.wav"
                                 , "PianoFilter.wav"

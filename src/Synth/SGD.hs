@@ -1,7 +1,7 @@
 {-# LANGUAGE PartialTypeSignatures #-}
 
 
-module SGD where
+module Synth.SGD where
 
 import Debug.Trace
 
