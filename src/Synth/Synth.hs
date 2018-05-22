@@ -16,15 +16,27 @@ import Types.Filter
 
 import qualified Data.HashMap.Strict as H
 
+
+
+-- | initial points for thetas in GD
+--   this can have a large impact on the effectivness of learning
+--   might consider randomize restart as well
+--   TODO: init value depend on the refinement type inference results
+initFilter = (Thetas {
+  _lpfThreshold=(-0.8), _lpfApp=(1),
+  _hpfThreshold=(-1), _hpfApp=(-1),
+  _ringzFreq=1, _ringzDecaySecs=1, _ringzApp=(-1),
+  _whiteApp=(-1),
+  _ampApp=1})
+
 -- | generate the Vivid program to turn the in_example to the out_example
 synthCode :: (FilePath, AudioFormat) -> (FilePath, AudioFormat) -> IO (Filter)
 synthCode (in_filepath,in_audio) (out_filepath,out_audio) = do
-  let initFilter =
-          (Thetas {_lpfThreshold=(-0.8),_hpfThreshold=(-1),_ringzFreq=1,_ringzDecaySecs=1,_ringzApp=(-1),_lpfApp=(1),_hpfApp=(-1),_whiteApp=(-1),_ampApp=1})
   synthedFilter <- refineFilter in_filepath out_audio initFilter
   runFilter "tmp2/final.wav" in_filepath $ toVivid synthedFilter
   return synthedFilter
 
+-- | selects the thetas should we vary during GD
 --thetaSelectors = [lpfThreshold, hpfThreshold,ringzFreq,ringzDecaySecs,ringzApp,lpfApp,hpfApp,whiteApp,ampApp]
 thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, whiteApp, ampApp]
 

@@ -87,7 +87,8 @@ thetaToFilter t = AmpApp (realToFrac $ _ampApp t) $
      )
 
 
---TODO need feature scaling
+--implements feature scaling so during GD our thetas are -1<t<1
+--we onyl scale them back to the appropriate values when we need to apply theatas in a filter
 toVivid :: Filter -> (SDBody' '[] Signal -> SDBody' '[] Signal)
 toVivid = let
    freqScale x = ((x+1)*10000)+100  -- freq operations 100<x<16k Hz
