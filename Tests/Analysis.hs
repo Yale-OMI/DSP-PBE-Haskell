@@ -20,11 +20,16 @@ dir = "Sounds/AnalysisBenchmarks/"
 main :: IO ()
 main' = printAudio $ dir++"PianoC.wav"
 
+
+filenames = 
+  [ "PianoC.wav"
+  , "PianoFilter.wav"
+  , "HornCSharp.wav"
+  , "PianoCSharp.wav"]
+
+
 main = do
-  ws <- parallel $ map getFile [ "PianoC.wav"
-                                , "PianoFilter.wav"
-                                , "HornCSharp.wav"
-                                , "PianoCSharp.wav"]
+  ws <- parallel $ map getFile filenames
   let tuplify [w1,w2,w3,w4] = (w1,w2,w3,w4)
   let (w1,w2,w3,w4) = tuplify ws
   let t1v1 = peakResults w1 w1
@@ -36,24 +41,25 @@ main = do
 
   let t3v4 = peakResults w3 w4
 
+  mapM_ print $ zip [1..] filenames
   --identity
-  checkTest "id" 0 (==) t1v1
+  checkTest "id d(1,1)" 0 (==) t1v1
 
   --assocativty
-  checkTest "assoc1" (abs $ t1v3-t3v1) (<) 3
-  checkTest "assoc2" (abs $ t1v4-t4v1) (<) 3
+  checkTest "assoc d(1,3)=d(3,1)" (abs $ t1v3-t3v1) (<) 3
+  checkTest "assoc d(1,4)=d(4,1)" (abs $ t1v4-t4v1) (<) 3
 
   --filter is less than pitch
-  checkTest "filter less than pitch" t1v2 (<) t1v4
+  checkTest "filter d(1,2) less than pitch d(1,4)" t1v2 (<) t1v4
 
   --filter is less than instrument
-  checkTest "filter less than instrument" t1v2 (<) t1v3
+  checkTest "filter d(1,2) less than instrument d(1,3)" t1v2 (<) t1v3
   
   --instrument is more than 500
-  checkTest "instrument > 500" t1v3 (>) 500
+  checkTest "instrument d(1,3) > 500" t1v3 (>) 500
 
   --pitch is more than 500
-  checkTest "pitch > 500" t1v4 (>) 500
+  checkTest "pitch d(1,4) > 500" t1v4 (>) 500
 
   
 
@@ -67,7 +73,9 @@ getFile filepath = do
 
 checkTest :: String -> Double -> (Double-> Double-> Bool) -> Double -> IO()
 checkTest tName v1 f v2 = do
-  print ("Running: "++tName++" "++(show v1)++" "++(show v2))
+  putStrLn $ "Running: "++tName
+  putStrLn $ "  result:    "++(show v1)
+  putStrLn $ "  threshold: "++(show v2)
   if v1 `f` v2
     then return ()
     else print "FAILED" >> exitFailure

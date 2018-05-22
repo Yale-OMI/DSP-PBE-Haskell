@@ -17,17 +17,17 @@ main = do
   setLocaleEncoding utf8
   setFileSystemEncoding utf8
   setForeignEncoding utf8  
+  args <- getArgs
+  when (length args /= 2) $ error "Usage: musicSynth <in file> <out file>"
 
   let 
-      inEx = "Sounds/SynthesisBenchmarks/Constructed/cartoon010.wav"
-      outEx = "Sounds/SynthesisBenchmarks/Constructed/cartoon010-lpf800.wav" 
+      inEx = head args
+      outEx = head $ tail args 
   fileActions <- mapM importFile [inEx,outEx] :: IO [Either String (AudioFormat)]
-  let testFilters = take 20 $ map (\x-> (Thetas {_lpfThreshold=(x),_hpfThreshold=(-1),_ringzFreq=1,_ringzDecaySecs=1,_ringzApp=(-1),_lpfApp=(1),_hpfApp=(-1),_whiteApp=(-1),_ampApp=(1)})) [-(0.99),(-0.98)..]
+  let testFilters = take 20 $map (\x-> (Thetas {_lpfThreshold=(x),_hpfThreshold=(-1),_ringzFreq=1,_ringzDecaySecs=1,_ringzApp=(-1),_lpfApp=(1),_hpfApp=(-1),_whiteApp=(-1),_ampApp=(1)})) [-(0.99),(-0.98)..]
   case sequence fileActions of
     Right fs -> do
-      rs <- mapM (\t -> testFilter inEx (head$ tail fs) $ thetaToFilter t) testFilters
-      printList $ zip [(-0.99),(-0.98)..] rs
-      --synthCode (inEx, head fs) (outEx, head $ tail fs) >>= print
+      synthCode (inEx, head fs) (outEx, head $ tail fs) >>= print
     Left e -> error e
   return ()
 

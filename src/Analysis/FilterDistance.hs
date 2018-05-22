@@ -19,7 +19,7 @@ import Vivid
 testFilter :: FilePath -> AudioFormat -> Filter -> IO AuralDistance
 testFilter in_fp outAudio f= do
   let vividCode = toVivid f
-  newOutFilepath <- runFilter "tmp/out.wav" in_fp vividCode
+  newOutFilepath <- runFilter "tmp2/out.wav" in_fp vividCode
   newAudio <- importFile newOutFilepath :: IO(Either String AudioFormat)
   case newAudio of
     Left e -> error e
