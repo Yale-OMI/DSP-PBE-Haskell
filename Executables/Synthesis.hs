@@ -27,7 +27,7 @@ main = do
   let testFilters = take 20 $map (\x-> (Thetas {_lpfThreshold=(x),_hpfThreshold=(-1),_ringzFreq=1,_ringzDecaySecs=1,_ringzApp=(-1),_lpfApp=(1),_hpfApp=(-1),_whiteApp=(-1),_ampApp=(1)})) [-(0.99),(-0.98)..]
   case sequence fileActions of
     Right fs -> do
-      synthCode (inEx, head fs) (outEx, head $ tail fs) >>= print
+      synthCode (inEx, head fs) (outEx, head $ tail fs) >>= print --TODO indent here
     Left e -> error e
   return ()
 

@@ -3,9 +3,9 @@ MAIN=src/Main.hs
 BLDDIR=bld
 
 default: 
-	cabal install
+	cabal build
 
-test :
+test: default
 	cabal test --show-details=streaming
 
 haddock:

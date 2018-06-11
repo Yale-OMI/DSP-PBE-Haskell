@@ -18,6 +18,9 @@ import qualified Settings as S
 
 import Debug.Trace
 
+-- TODO move to Utils
+indent = ("\n" ++) . unlines. map ("   "++). lines
+
 -- | Use data type Theta for params to be passed to eval fxn
 -- | calc new theta and build map of theta to value to avoid recomputation
 multiVarSGD :: RandomGen g => _ -> g -> Int -> Double -> Double -> Thetas -> Thetas -> ResCache -> (Thetas -> IO Double) -> IO (Thetas, ResCache)
@@ -36,11 +39,11 @@ multiVarSGD thetaSelectors g batchSize goal learnRate t t_best cache f = do
     -- build the call to try again, allowing us to explore worse directions, but every n step returning to best
     continueGD = multiVarSGD thetaSelectors (snd $ next g) batchSize goal learnRate t' newBest newCache' f
 
-  S.debug $ "Current candidate is "++(show $ thetaToFilter updatedThetas)
+  S.debug $ "Current best candidate is"++(indent $ show $ thetaToFilter updatedThetas)
   S.debug $ "Current score is "++(show thisVal)
   
   if not converged 
-  then (trace "\n\n" continueGD)
+  then (trace "\n" continueGD)
   else return (trace ("finished SGD with score = "++(show thisVal)) t, newCache)
 
 stochasticBatch :: RandomGen g => g -> Int -> [a] -> [a]
@@ -53,9 +56,10 @@ takeStep learnRate t f (updatedTheta,cache) part = do
   let newTheta = over part (\x -> x - (min 0.2 (learnRate * deriveCalc))) updatedTheta --not allowed to move more than 0.2 in a single step
   let boundedNewTheta = over part (\x -> max (-1) $ min 1 $ x) newTheta
   S.debug ("Adjusting "++(thetaFieldChange newTheta updatedTheta)++" by "++(show (thetaDiff updatedTheta boundedNewTheta)))
-  S.debug ("New theta is "++(show $ thetaToFilter boundedNewTheta))
+  S.debug ("Scoring program...\n"++(indent $ show $ thetaToFilter boundedNewTheta))
   S.debug ""
   return (boundedNewTheta, newCache)
+
 
 -- TODO there must be a better way
 -- but for now just move in one direction and interpolate 

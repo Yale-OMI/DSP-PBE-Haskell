@@ -38,13 +38,14 @@ synthCode (in_filepath,in_audio) (out_filepath,out_audio) = do
 
 -- | selects the thetas should we vary during GD
 --thetaSelectors = [lpfThreshold, hpfThreshold,ringzFreq,ringzDecaySecs,ringzApp,lpfApp,hpfApp,whiteApp,ampApp]
-thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, whiteApp, ampApp]
+--thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, whiteApp, ampApp]
+thetaSelectors = [lpfThreshold, lpfApp, ampApp]
 
 optimize rGen tester initFilter = multiVarSGD
     thetaSelectors
     rGen
     4 --batch size (how many directions to test)
-    0.001 --convergance goal
+    0.01 --convergance goal
     0.001 --learn rate
     initFilter
     (Thetas {_lpfThreshold=2,_hpfThreshold=2,_ringzFreq=2,_ringzDecaySecs=2,_ringzApp=2,_lpfApp=2,_hpfApp=2,_whiteApp=1,_ampApp=1})

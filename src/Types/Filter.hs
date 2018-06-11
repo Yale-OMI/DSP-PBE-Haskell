@@ -18,6 +18,8 @@ import Data.Hashable
 import GHC.Generics
 import Control.Lens
 
+import Text.Printf
+
 import Debug.Trace
 
 data Filter = 
@@ -27,7 +29,21 @@ data Filter =
   | WhiteNoise Float
   | Compose Filter Filter
   | AmpApp Float Filter
-  deriving (Show)
+
+instance Show Filter where
+  show (Compose f f') = (show f) ++ (" >>> \n") ++ (show f')
+  show (AmpApp x f) = "SetVolume: " ++ (printf "%.2f" x) ++ "% \n" ++ show f
+  show (WhiteNoise x) = "WhiteNoise: " ++ (showAmp x) ++ "% "
+  show (HPF fq a) = "HiPass: "++ (showFreq fq) ++ " " ++ (showAmp a)
+  show (LPF fq a) = "LoPass: "++ (showFreq fq) ++ " " ++ (showAmp a)
+  show (Ringz fq1 fq2 a) = "Ringz..."
+
+freqScale x = ((x+1)*10000)+100  -- freq operations 100<x<16k Hz
+ampScale x = (x+1)/2.2           -- amp operations 0<x<.9 so there is always space to explore 'up' for derivative calcuation
+
+showAmp amp = "amp@"++(printf "%.2f" $ ampScale amp)
+showFreq freq = "freq@" ++ (printf "%.0f" $ freqScale freq) 
+
 
 --TODO merge with Filter
 -- all these are bounded with -1<x<1, and scaled back later
@@ -75,6 +91,7 @@ thetaFieldChange t t' = if
 
 --TODO this is a fixed form for now, which is fine as long as the filter are associative
 --later we should be able to generate different applciation orders
+thetaToFilter :: Thetas -> Filter
 thetaToFilter t = AmpApp (realToFrac $ _ampApp t) $
   Compose 
      (LPF (realToFrac $ _lpfThreshold t) (realToFrac $ _lpfApp t))
@@ -86,13 +103,10 @@ thetaToFilter t = AmpApp (realToFrac $ _ampApp t) $
    --    )
      )
 
-
 --implements feature scaling so during GD our thetas are -1<t<1
 --we onyl scale them back to the appropriate values when we need to apply theatas in a filter
 toVivid :: Filter -> (SDBody' '[] Signal -> SDBody' '[] Signal)
 toVivid = let
-   freqScale x = ((x+1)*10000)+100  -- freq operations 100<x<16k Hz
-   ampScale x = (x+1)/2.2           -- amp operations 0<x<.9 so there is always space to explore 'up' for derivative calcuation
    delayScale x = (x+1)             -- delay operations 0<x<2
  in \case 
       HPF t a        -> (\bufs -> (ampScale a::Float) ~* hpf (freq_ (freqScale t::Float), in_ bufs))
