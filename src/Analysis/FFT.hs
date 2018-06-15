@@ -1,4 +1,4 @@
-module Analysis.FFT (peakResults) where
+module Analysis.FFT (peakResults, peakList) where
 
 -- need to create frequency frames for peaks after the FFT has been applied
 import Data.Complex
@@ -18,11 +18,13 @@ import qualified Settings as S
 
 import Debug.Trace 
 
-peakResults :: Audio Int16 -> Audio Int16 -> Double
-peakResults w1 w2 = let
-  mapTup f (x,y) = withStrategy (parTuple2 rdeepseq rdeepseq) (f x,f y)
-  (peak1, peak2) = mapTup (getPeaks. constellateAll. mkFrames. wavList) (w1,w2)
-  in getResults peak1 peak2
+peakResults :: AudioFormat -> AudioFormat -> Double
+peakResults w1 w2 =
+  getResults (peakList w1) (peakList w2)
+ 
+peakList :: AudioFormat -> [Peak]
+peakList = 
+  getPeaks. constellateAll. mkFrames. wavList
 
 getResults :: [Peak] -> [Peak] -> Double
 getResults d1 d2 = let
@@ -81,7 +83,7 @@ mkFrames list1 =
     else (take S.frameRes list1):(mkFrames (drop S.overlap list1))
 
 --takes wave file and turns it's values into list of Complex Doubles
-wavList :: Audio Int16 -> [Double]
+wavList :: AudioFormat -> [Double]
 wavList wav = let
     l1 = sampleData wav
   in take (16384*10) $ elems $ amap toSample l1

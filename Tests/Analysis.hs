@@ -5,6 +5,8 @@ import Data.Audio
 import Codec.Wav
 import Data.Int
 
+import Types.Common
+
 import System.Exit
 
 import Control.Concurrent.ParallelIO.Global
@@ -65,10 +67,10 @@ main = do
 
   stopGlobalPool
 
-getFile :: FilePath -> IO(Audio Int16)
+getFile :: FilePath -> IO(AudioFormat)
 getFile filepath = do
   let f x = either (error "failed") id x
-  w <- importFile $ dir++filepath :: IO(Either String (Audio Int16))
+  w <- importFile $ dir++filepath :: IO(Either String (AudioFormat))
   return $ f w 
 
 checkTest :: String -> Double -> (Double-> Double-> Bool) -> Double -> IO()

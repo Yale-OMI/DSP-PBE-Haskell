@@ -30,6 +30,19 @@ data Filter =
   | Compose Filter Filter
   | AmpApp Float Filter
 
+-- | initial points for thetas in GD
+--   this can have a large impact on the effectivness of learning
+--   might consider randomize restart as well
+--   TODO: init value depend on the refinement type inference results
+initFilter :: Thetas
+initFilter = (Thetas {
+  _lpfThreshold=(-0.8), _lpfApp=(1),
+  _hpfThreshold=(-1), _hpfApp=(-1),
+  _ringzFreq=1, _ringzDecaySecs=1, _ringzApp=(-1),
+  _whiteApp=(-1),
+  _ampApp=1})
+
+
 instance Show Filter where
   show (Compose f f') = (show f) ++ (" >>> \n") ++ (show f')
   show (AmpApp x f) = "SetVolume: " ++ (printf "%.2f" x) ++ "% \n" ++ show f

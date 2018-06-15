@@ -8,6 +8,7 @@ module Synth.Synth where
 import System.Random
 
 import Synth.SGD
+import Synth.RTypeFilterGuess
 
 import Analysis.FilterDistance
 
@@ -16,24 +17,17 @@ import Types.Filter
 
 import qualified Data.HashMap.Strict as H
 
-
-
--- | initial points for thetas in GD
---   this can have a large impact on the effectivness of learning
---   might consider randomize restart as well
---   TODO: init value depend on the refinement type inference results
-initFilter = (Thetas {
-  _lpfThreshold=(-0.8), _lpfApp=(1),
-  _hpfThreshold=(-1), _hpfApp=(-1),
-  _ringzFreq=1, _ringzDecaySecs=1, _ringzApp=(-1),
-  _whiteApp=(-1),
-  _ampApp=1})
+import qualified Settings as S
 
 -- | generate the Vivid program to turn the in_example to the out_example
 synthCode :: (FilePath, AudioFormat) -> (FilePath, AudioFormat) -> IO (Filter)
 synthCode (in_filepath,in_audio) (out_filepath,out_audio) = do
+  --First, determine a 'best guess' initFilter
+  --TODO this might need to be a in a loop if we can learn a better after SGD
+  let myInitFilter = guessInitFilter in_audio out_audio 
+  --Once we have an initFilter, we refine it with SGD
   synthedFilter <- refineFilter in_filepath out_audio initFilter
-  runFilter "tmp2/final.wav" in_filepath $ toVivid synthedFilter
+  runFilter (S.tmpDir++S.finalWav) in_filepath $ toVivid synthedFilter
   return synthedFilter
 
 -- | selects the thetas should we vary during GD

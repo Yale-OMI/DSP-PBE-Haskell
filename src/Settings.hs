@@ -24,3 +24,9 @@ resolution = 0
 
 debug :: String -> IO ()
 debug = putStrLn
+
+tmpDir :: String
+tmpDir = "tmp2/"
+
+finalWav :: String
+finalWav = "final.wav" 

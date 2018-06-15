@@ -29,6 +29,7 @@ library
                        Types.Filter
                        Types.Common
   other-modules:       Synth.SGD
+                       Synth.RTypeFilterGuess
                        Settings 
 
   build-depends:       

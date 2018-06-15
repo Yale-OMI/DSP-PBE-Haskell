@@ -18,7 +18,7 @@ printAsMatlab :: [(Double,Float)] -> IO()
 printAsMatlab as =
   mapM_ (\(t,s)-> putStrLn ((show s)++" "++(show t)++"")) as
 
-wavList :: Audio Int16 -> [(Double,Float)]
+wavList :: AudioFormat -> [(Double,Float)]
 wavList wav = let
     l1 = sampleData wav
   in zip (take (16384*10) $ elems $ amap toSample l1) [(1/44100),(2/44100)..]

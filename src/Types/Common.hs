@@ -7,7 +7,7 @@ type AuralDistance = Double
 type AudioFormat = Audio Int16 
 
 
--- (freq, amp, phase)
+-- | (freq, amp, phase)
 type Peak = (Int,Double,Double) 
 
 --gets 1st item of triple
