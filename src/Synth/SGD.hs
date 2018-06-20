@@ -18,8 +18,7 @@ import qualified Settings as S
 
 import Debug.Trace
 
--- TODO move to Utils
-indent = ("\n" ++) . unlines. map ("   "++). lines
+import Utils
 
 -- | Use data type Theta for params to be passed to eval fxn
 -- | calc new theta and build map of theta to value to avoid recomputation

@@ -52,6 +52,7 @@ instance Show Filter where
   show (Ringz fq1 fq2 a) = "Ringz..."
 
 freqScale x = ((x+1)*10000)+100  -- freq operations 100<x<16k Hz
+invFreqScale x = ((x-100)/10000)-1
 ampScale x = (x+1)/2.2           -- amp operations 0<x<.9 so there is always space to explore 'up' for derivative calcuation
 
 showAmp amp = "amp@"++(printf "%.2f" $ ampScale amp)

@@ -31,6 +31,7 @@ library
   other-modules:       Synth.SGD
                        Synth.RTypeFilterGuess
                        Settings 
+                       Utils
 
   build-depends:       
        base >=4.10 && <4.11
