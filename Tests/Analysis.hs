@@ -6,6 +6,7 @@ import Codec.Wav
 import Data.Int
 
 import Types.Common
+import Utils 
 
 import System.Exit
 
@@ -34,7 +35,7 @@ main = do
 constallationTest = do
   f <- getFile "PianoC.wav"
   print $ "First time slice peaks of PianoC.wav: "
-  print $ head $ peakList f 
+  putStrLn $ listToCSV $ head $ peakList f 
   
 
 comparisonTests = do

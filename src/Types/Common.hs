@@ -10,6 +10,7 @@ type OverTime = []
 type OverFreq = []
 
 -- | (freq, amp, phase)
+--   TODO migrate to data type 
 type Peak = (Int,Double,Double) 
 
 --gets 1st item of triple

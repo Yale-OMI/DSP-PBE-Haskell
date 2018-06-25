@@ -15,7 +15,8 @@ guessInitFilter in_audio out_audio = let
   -- TODO rethink this, since the types of peaks1 and peaks2 have now changed to [[Peak]]
   lpf_init = takeLast fst (map (lpf_refinement_template peaks1 peaks2) lpf_thresholds)
  in 
-  initFilter {_lpfThreshold = maybe 0 (invFreqScale . snd) $ traceMe lpf_init } --TODO replace 0
+  initFilter {_lpfThreshold = maybe 0 (invFreqScale . snd) $ trace ((listToCSV $ head peaks1) ++ "\n" ++ (listToCSV $ head peaks2)) lpf_init } --TODO replace 0
+
  
 lpf_thresholds = [350,400..1500]
 
@@ -34,8 +35,8 @@ lpf_refinement_template ps1 ps2 thres = let
   ps1Integral = sum $ map sumAmps $ thresFreqs ps1
   ps2Integral = sum $ map sumAmps $ thresFreqs ps2
  in 
-  (trace ((show thres) ++ " - " ++ (show ps1Integral) ++ " > " ++ (show ps2Integral) ++ "\n" ++
-          (show $ head ps1) ++ " \n ---- \n " ++ (show $ head ps2))
+  (trace ((show thres) ++ " - " ++ (show (ps1Integral - ps2Integral)) ++ "\n")
+          -- ++ (show $ head ps1) ++ " \n ---- \n " ++ (show $ head ps2))
     ps1Integral > ps2Integral, thres)
 
 --hpf_refinements :: [([Peak] -> [Peak] -> Bool)]

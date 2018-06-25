@@ -27,7 +27,7 @@ synthCode (in_filepath,in_audio) (out_filepath,out_audio) = do
   --First, determine a 'best guess' initFilter
   --TODO this might need to be a in a loop if we can learn a better after SGD
   let myInitFilter = guessInitFilter in_audio out_audio 
-  debugPrint myInitFilter
+  debugPrint $ show myInitFilter
   --Once we have an initFilter, we refine it with SGD
   synthedFilter <- refineFilter in_filepath out_audio myInitFilter
   runFilter (S.tmpDir++S.finalWav) in_filepath $ toVivid synthedFilter

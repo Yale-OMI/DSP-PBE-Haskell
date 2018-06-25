@@ -53,7 +53,8 @@ comparePeak peak1 peak2 = let
 --   find the freq peaks that are most predominate for each time slice
 peakList :: AudioFormat -> OverTime (OverFreq Peak)
 peakList = 
-  getMainPeaks. constellateAll. mkFrames. wavList
+  --getMainPeaks. constellateAll. mkFrames. wavList
+  constellateAll. mkFrames. wavList
 
 
 --takes wave file and turns it's values into list of Complex Doubles
@@ -73,9 +74,12 @@ mkFrames list1 =
 -- | performs FFT on a list of samples, and conversts each sample to a list of peaks as the triple (freq,amp,phase)
 --   returns a list (in the time domain) of peaks (freq domain) 
 constellateAll :: OverTime (OverTime Double) -> OverTime (OverFreq Peak)
-constellateAll ls = let
+constellateAll timeSlices = let
+    -- what the heck does this do?
     sparsifying n= foldr (.) id (replicate n (remove_every_nth 2))
-    ars1 = sparsifying S.resolution $ map (\xs -> listArray (0,(S.frameRes - 1)) xs) ls
+    ars1 = --sparsifying S.resolution $ 
+               --why not length sample here?
+               map (\samples -> listArray (0,(S.frameRes - 1)) samples) timeSlices
     in map (listTriple.(take (S.frameRes `div` 2)).assocs.constellate.rfft) ars1
 
 -- constellate takes results of FFT and turns it into (amp,phase) at each frequency point

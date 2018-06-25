@@ -2,6 +2,7 @@ module Utils where
 
 import qualified Debug.Trace as D
 import qualified Settings
+import Types.Common
 
 traceMe x = D.traceShow x x
 trace printVal returnVal= 
@@ -11,8 +12,12 @@ trace printVal returnVal=
 
 debugPrint x =
   if Settings.debug
-  then print x
+  then putStrLn x
   else return ()
+
+listToCSV :: [Peak] -> String
+listToCSV = 
+  concatMap (\(f,a,p) -> (show f) ++ ", " ++ (show a) ++ "\n")
 
 -- | Take the first instance from a list that satisfies the predicate
 takeLast :: (a -> Bool) -> [a] -> Maybe a

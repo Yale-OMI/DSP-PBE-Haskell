@@ -17,7 +17,7 @@ numPeaks = 45
 -- what is the tolerance for considering two frequences to basically be the same
 -- not in units of freq, but in how many peaks we allowed during constallation
 binSize :: Int
-binSize = 2
+binSize = 20
 
 restartRound :: Int
 restartRound = 6
