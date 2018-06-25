@@ -19,29 +19,35 @@ import PrintAudio
 ----------
 
 dir = "Sounds/AnalysisBenchmarks/"
-main :: IO ()
-main' = printAudio $ dir++"PianoC.wav"
-
-
 filenames = 
   [ "PianoC.wav"
   , "PianoFilter.wav"
   , "HornCSharp.wav"
   , "PianoCSharp.wav"]
 
-
+main :: IO ()
+--main' = printAudio $ dir++"PianoC.wav"
 main = do
+  constallationTest
+  comparisonTests
+
+constallationTest = do
+  f <- getFile "PianoC.wav"
+  print $ "First time slice peaks of PianoC.wav: "
+  print $ head $ peakList f 
+  
+
+comparisonTests = do
   ws <- parallel $ map getFile filenames
   let tuplify [w1,w2,w3,w4] = (w1,w2,w3,w4)
   let (w1,w2,w3,w4) = tuplify ws
-  let t1v1 = peakResults w1 w1
-  let t1v2 = peakResults w1 w2
-  let t1v3 = peakResults w1 w3
-  let t3v1 = peakResults w3 w1
-  let t1v4 = peakResults w1 w4
-  let t4v1 = peakResults w4 w1
-
-  let t3v4 = peakResults w3 w4
+  let t1v1 = auralDistance w1 w1
+  let t1v2 = auralDistance w1 w2
+  let t1v3 = auralDistance w1 w3
+  let t3v1 = auralDistance w3 w1
+  let t1v4 = auralDistance w1 w4
+  let t4v1 = auralDistance w4 w1
+  let t3v4 = auralDistance w3 w4
 
   mapM_ print $ zip [1..] filenames
   --identity
@@ -57,14 +63,15 @@ main = do
   --filter is less than instrument
   checkTest "filter d(1,2) less than instrument d(1,3)" t1v2 (<) t1v3
   
+  --pitch is more than 500
+  checkTest "inst+pitch d(1,3) more than pitch d(1,4)" t1v3 (>) t1v4
+  
   --instrument is more than 500
   checkTest "instrument d(1,3) > 500" t1v3 (>) 500
 
   --pitch is more than 500
   checkTest "pitch d(1,4) > 500" t1v4 (>) 500
-
   
-
   stopGlobalPool
 
 getFile :: FilePath -> IO(AudioFormat)

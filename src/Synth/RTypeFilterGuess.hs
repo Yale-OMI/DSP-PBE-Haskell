@@ -12,11 +12,12 @@ guessInitFilter in_audio out_audio = let
   peaks1 = peakList in_audio
   peaks2 = peakList out_audio
   -- the highest threshold for a lpf is the strongest refinement type we can guess
+  -- TODO rethink this, since the types of peaks1 and peaks2 have now changed to [[Peak]]
   lpf_init = takeLast fst (map (lpf_refinement_template peaks1 peaks2) lpf_thresholds)
  in 
-  initFilter {_lpfThreshold = maybe 0 (invFreqScale . snd) lpf_init } --TODO replace 0
+  initFilter {_lpfThreshold = maybe 0 (invFreqScale . snd) $ traceMe lpf_init } --TODO replace 0
  
-lpf_thresholds = [300,400..15000]
+lpf_thresholds = [350,400..1500]
 
 
 -- TODO maybe returns a probabilty/score?
@@ -24,15 +25,21 @@ lpf_thresholds = [300,400..15000]
 
 -- Peak = (freq, amp, phase)
 
--- | have the amplitudes of the freqs greater than the threshold decreased?
---   the amps dont need to match, we are just checking all freqs above thres
-lpf_refinement_template :: [Peak] -> [Peak] -> Double -> (Bool,Double)
+-- | We can find a ref type for lpf by taking the integral of the amplitudes of freq up to a threshold
+--   As soon as we detect a decrease in the amps, it is possible we have a lpf at that threshold
+lpf_refinement_template :: [[Peak]] -> [[Peak]] -> Double -> (Bool,Double)
 lpf_refinement_template ps1 ps2 thres = let
-  --freqAmpDecrease (f1,a1,_) (f2,a2,_) = 
-  thresFreqs = filter (\(f,_,_) -> fromIntegral f > thres) 
-  ps1' = thresFreqs ps1
-  ps2' = thresFreqs ps2
-  in (True, thres) 
+  thresFreqs = map (filter (\(f,_,_) -> fromIntegral f < thres))
+  sumAmps = sum . map getAmp
+  ps1Integral = sum $ map sumAmps $ thresFreqs ps1
+  ps2Integral = sum $ map sumAmps $ thresFreqs ps2
+ in 
+  (trace ((show thres) ++ " - " ++ (show ps1Integral) ++ " > " ++ (show ps2Integral) ++ "\n" ++
+          (show $ head ps1) ++ " \n ---- \n " ++ (show $ head ps2))
+    ps1Integral > ps2Integral, thres)
 
 --hpf_refinements :: [([Peak] -> [Peak] -> Bool)]
+
+
+
 

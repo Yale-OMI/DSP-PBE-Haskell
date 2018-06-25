@@ -3,8 +3,6 @@
 
 module Synth.SGD where
 
-import Debug.Trace
-
 import System.Random.Shuffle
 import System.Random
 
@@ -15,8 +13,6 @@ import Control.Monad
 
 import Types.Filter
 import qualified Settings as S
-
-import Debug.Trace
 
 import Utils
 
@@ -38,8 +34,8 @@ multiVarSGD thetaSelectors g batchSize goal learnRate t t_best cache f = do
     -- build the call to try again, allowing us to explore worse directions, but every n step returning to best
     continueGD = multiVarSGD thetaSelectors (snd $ next g) batchSize goal learnRate t' newBest newCache' f
 
-  S.debug $ "Current best candidate is"++(indent $ show $ thetaToFilter updatedThetas)
-  S.debug $ "Current score is "++(show thisVal)
+  debugPrint $ "Current best candidate is"++(indent $ show $ thetaToFilter updatedThetas)
+  debugPrint $ "Current score is "++(show thisVal)
   
   if not converged 
   then (trace "\n" continueGD)
@@ -55,9 +51,9 @@ takeStep learnRate t f (updatedTheta,cache) part = do
   (deriveCalc, newCache) <- partialDerivative f part t cache
   let newTheta = over part (\x -> x - (min 0.2 (learnRate * deriveCalc))) updatedTheta --not allowed to move more than 0.2 in a single step
   let boundedNewTheta = over part (\x -> max (-1) $ min 1 $ x) newTheta
-  S.debug ("Adjusting "++(thetaFieldChange newTheta updatedTheta)++" by "++(show (thetaDiff updatedTheta boundedNewTheta)))
-  S.debug ("Scoring program...\n"++(indent $ show $ thetaToFilter boundedNewTheta))
-  S.debug ""
+  debugPrint ("Adjusting "++(thetaFieldChange newTheta updatedTheta)++" by "++(show (thetaDiff updatedTheta boundedNewTheta)))
+  debugPrint ("Scoring program...\n"++(indent $ show $ thetaToFilter boundedNewTheta))
+  debugPrint ""
   return (boundedNewTheta, newCache)
 
 
@@ -68,10 +64,10 @@ partialDerivative f part t cache = do
   let s = 0.001 --derivative step size
   --lookup in cache
   (x1, newCache) <- runIO cache f t
-  S.debug $ "Calculating Partial Derivative wrt "++(thetaFieldChange t (over part (\x -> x+s) t))
+  debugPrint $ "Calculating Partial Derivative wrt "++(thetaFieldChange t (over part (\x -> x+s) t))
   -- x2 is not likely to ever be calculated again, so dont bother saving it in the newCache
   x2 <- f (over part (\x -> x+s) t)
-  S.debug $ "Derivative in "++(thetaFieldChange t (over part (\x -> x+s) t))++" = "++(show $ (x1-x2)/s)
+  debugPrint $ "Derivative in "++(thetaFieldChange t (over part (\x -> x+s) t))++" = "++(show $ (x1-x2)/s)
   return $ (((x2 - x1) / s),newCache)
 
 runIO :: ResCache -> (Thetas -> IO Double) -> Thetas -> IO (Double,ResCache)

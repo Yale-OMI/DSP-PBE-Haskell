@@ -6,6 +6,8 @@ import Data.Int
 type AuralDistance = Double
 type AudioFormat = Audio Int16 
 
+type OverTime = []
+type OverFreq = []
 
 -- | (freq, amp, phase)
 type Peak = (Int,Double,Double) 

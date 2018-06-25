@@ -11,9 +11,13 @@ The goal of this project is to build filter by providing example sound files
 ## Usage
 
 To install 
-
-   cabal install
+ 
+   make
 
 To test
 
-   cabal test --show-details=streaming
+   make test
+
+To run
+
+   dist/build/musicSynth/musicSynth Sounds/SynthesisBenchmarks/Constructed/cartoon010.wav Sounds/SynthesisBenchmarks/Constructed/cartoon010-lpf800.wav 

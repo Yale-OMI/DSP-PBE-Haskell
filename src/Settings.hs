@@ -1,6 +1,8 @@
 module Settings where
 
 
+debug = True
+
 -- each bin is 1Hz and each frame is 1s
 frameRes :: Int
 frameRes = 4096
@@ -12,6 +14,8 @@ overlap = 2048
 numPeaks :: Int
 numPeaks = 45
 
+-- what is the tolerance for considering two frequences to basically be the same
+-- not in units of freq, but in how many peaks we allowed during constallation
 binSize :: Int
 binSize = 2
 
@@ -21,9 +25,6 @@ restartRound = 6
 -- but can significantly improve running time
 resolution :: Int
 resolution = 0
-
-debug :: String -> IO ()
-debug = putStrLn
 
 tmpDir :: String
 tmpDir = "tmp2/"

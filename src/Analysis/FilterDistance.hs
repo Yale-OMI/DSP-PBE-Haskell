@@ -23,7 +23,7 @@ testFilter in_fp outAudio f= do
   newAudio <- importFile newOutFilepath :: IO(Either String AudioFormat)
   case newAudio of
     Left e -> error e
-    Right a -> return $ peakResults outAudio a
+    Right a -> return $ auralDistance outAudio a
 
 
 runFilter :: FilePath -> FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> IO(String)
