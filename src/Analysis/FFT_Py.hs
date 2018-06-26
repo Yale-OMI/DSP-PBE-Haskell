@@ -5,6 +5,7 @@
 module Analysis.FFT_Py (peakListPython) where
 
 import Types.Common
+import qualified Settings as S
 
 import System.IO.Unsafe
 
@@ -20,7 +21,11 @@ default (T.Text)
 -- I would rather not to this, but the Haskell one just isnt working
 peakListPython :: FilePath -> OverTime (OverFreq Peak)
 peakListPython audio_fp = let
-  x = unsafePerformIO $ shelly $ run (fromString "python") ["fft.py", T.pack $ audio_fp]
+  x = unsafePerformIO $ shelly $ run (fromString "python") 
+           [  "fft.py"
+            , T.pack $ audio_fp
+            , T.pack $ show S.frameRes
+            , T.pack $ show S.overlap]
  in
   trace (audio_fp ++ " " ++ show x) [[(0,0,0)]]
 
