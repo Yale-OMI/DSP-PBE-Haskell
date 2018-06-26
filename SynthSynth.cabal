@@ -32,6 +32,7 @@ library
   other-modules:       Synth.SGD
                        Synth.RTypeFilterGuess
                        Settings 
+                       Analysis.FFT_Py
   build-depends:       
        base >=4.10 && <4.11
      , extra >=1.5 && <1.6
@@ -49,6 +50,8 @@ library
      , hashable >= 1.2.6.0
      , parallel >= 3.2.1.1
      , split >= 0.2.3.1
+     , shelly
+     , text
  ghc-options:
 --    -Wall 
     -O3

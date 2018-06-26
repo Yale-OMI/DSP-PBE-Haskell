@@ -7,7 +7,7 @@ import Analysis.FFT
 
 import Utils
 
-guessInitFilter :: AudioFormat -> AudioFormat -> Thetas
+guessInitFilter :: (FilePath,AudioFormat) -> (FilePath,AudioFormat) -> Thetas
 guessInitFilter in_audio out_audio = let
   peaks1 = peakList in_audio
   peaks2 = peakList out_audio

@@ -26,10 +26,10 @@ synthCode :: (FilePath, AudioFormat) -> (FilePath, AudioFormat) -> IO (Filter)
 synthCode (in_filepath,in_audio) (out_filepath,out_audio) = do
   --First, determine a 'best guess' initFilter
   --TODO this might need to be a in a loop if we can learn a better after SGD
-  let myInitFilter = guessInitFilter in_audio out_audio 
+  let myInitFilter = guessInitFilter (in_filepath,in_audio) (out_filepath,out_audio)
   debugPrint $ show myInitFilter
   --Once we have an initFilter, we refine it with SGD
-  synthedFilter <- refineFilter in_filepath out_audio myInitFilter
+  synthedFilter <- refineFilter in_filepath (out_filepath,out_audio) myInitFilter
   runFilter (S.tmpDir++S.finalWav) in_filepath $ toVivid synthedFilter
   return synthedFilter
 
@@ -50,9 +50,9 @@ optimize rGen tester initFilter = multiVarSGD
     tester
 
 -- | Adjust the params of a filter to get the best score
-refineFilter :: FilePath -> AudioFormat -> Thetas -> IO Filter
-refineFilter i o initF = do
-  let tester = testFilter i o . thetaToFilter
+refineFilter :: FilePath -> (FilePath, AudioFormat) -> Thetas -> IO Filter
+refineFilter in_audio_fp (out_fp, out_audio) initF = do
+  let tester = testFilter in_audio_fp (out_fp, out_audio) . thetaToFilter
   rGen <- getStdGen
   solution <- optimize rGen tester initF
   return $ thetaToFilter $ fst solution

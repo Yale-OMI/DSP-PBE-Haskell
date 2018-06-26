@@ -16,14 +16,15 @@ import Types.Filter
 import Vivid
 
 -- | Tells us the distance between the current filter results and the target audio data
-testFilter :: FilePath -> AudioFormat -> Filter -> IO AuralDistance
-testFilter in_fp outAudio f= do
+testFilter :: FilePath -> (FilePath, AudioFormat) -> Filter -> IO AuralDistance
+testFilter in_fp (out_fp,outAudio) f= do
   let vividCode = toVivid f
   newOutFilepath <- runFilter "tmp2/out.wav" in_fp vividCode
   newAudio <- importFile newOutFilepath :: IO(Either String AudioFormat)
   case newAudio of
     Left e -> error e
-    Right a -> return $ auralDistance outAudio a
+    --Right a -> return $ auralDistance outAudio a
+    Right a -> return $ auralDistance (out_fp,outAudio) (newOutFilepath,a)
 
 
 runFilter :: FilePath -> FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> IO(String)

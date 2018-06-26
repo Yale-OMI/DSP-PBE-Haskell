@@ -13,14 +13,16 @@ import Numeric.Transform.Fourier.FFT
 
 import Control.Parallel.Strategies
 
+import Analysis.FFT_Py
+
 import Types.Common
 import qualified Settings as S
 import Utils
 
-auralDistance :: AudioFormat -> AudioFormat -> Double
-auralDistance w1 w2 = let
-  ps1 = peakList w1
-  ps2 = peakList w2
+auralDistance :: (FilePath, AudioFormat) -> (FilePath, AudioFormat) -> Double
+auralDistance a1 a2 = let
+  ps1 = peakList a1
+  ps2 = peakList a2
   -- since I am not looking at time shifting filter for now, I can zipWith over time to remove the time domain
   -- NB this means the times need to line up 'exactly', ie this will not work well for real-world examples
   --    but only for contrsucted examples where I apply the filter to the sample myself (eg in audacity)
@@ -51,10 +53,12 @@ comparePeak peak1 peak2 = let
 
 -- | break an audio file into time slices and i
 --   find the freq peaks that are most predominate for each time slice
-peakList :: AudioFormat -> OverTime (OverFreq Peak)
-peakList = 
+peakList :: (FilePath, AudioFormat) -> OverTime (OverFreq Peak)
+peakList (fp,a) = 
   --getMainPeaks. constellateAll. mkFrames. wavList
-  constellateAll. mkFrames. wavList
+  -- constellateAll. mkFrames. wavList
+  peakListPython fp
+
 
 
 --takes wave file and turns it's values into list of Complex Doubles
@@ -62,7 +66,7 @@ wavList :: AudioFormat -> OverTime Double
 wavList wav = let
     l1 = sampleData wav
   --takes at most a certain time frame
-  in take (16384*10) $ elems $ amap toSample l1
+  in take (16384*10) $ elems $ amap (toSample) l1
 
 -- mkFrames takes assocs of audio file and breaks it into 4096 sample (.09s) frames (overlapped by 50%)
 mkFrames :: OverTime Double -> OverTime (OverTime Double)

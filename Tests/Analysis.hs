@@ -35,11 +35,12 @@ main = do
 constallationTest = do
   f <- getFile "PianoC.wav"
   print $ "First time slice peaks of PianoC.wav: "
-  putStrLn $ listToCSV $ head $ peakList f 
+  putStrLn $ listToCSV $ head $ peakList (dir++"PianoC.wav",f)
   
 
 comparisonTests = do
-  ws <- parallel $ map getFile filenames
+  ws' <- parallel $ map getFile filenames
+  let ws = zip filenames ws'
   let tuplify [w1,w2,w3,w4] = (w1,w2,w3,w4)
   let (w1,w2,w3,w4) = tuplify ws
   let t1v1 = auralDistance w1 w1
