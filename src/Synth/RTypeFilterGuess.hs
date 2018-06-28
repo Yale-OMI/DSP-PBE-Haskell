@@ -5,6 +5,7 @@ import Types.Filter
 
 import Analysis.FFT
 
+import Text.Printf
 import Utils
 
 guessInitFilter :: (FilePath,AudioFormat) -> (FilePath,AudioFormat) -> IO Thetas
@@ -12,15 +13,16 @@ guessInitFilter in_audio out_audio = do
   peaks1 <- peakList in_audio
   peaks2 <- peakList out_audio
   -- the highest threshold for a lpf is the strongest refinement type we can guess
-  -- TODO rethink this, since the types of peaks1 and peaks2 have now changed to [[Peak]]
   let 
+    -- TODO replace with a fold
     lpf_init = takeLast fst (map (lpf_refinement_template peaks1 peaks2) lpf_thresholds)
   
-  return $ initFilter {_lpfThreshold = (-0.92)}
-  --return $ initFilter {_lpfThreshold = maybe 0 (invFreqScale . snd) $ trace ((listToCSV $ head peaks1) ++ "\n" ++ (listToCSV $ head peaks2)) lpf_init } --TODO replace 0
+  return $ initFilter {
+             -- TODO replace 0
+             _lpfThreshold = maybe 0 (invFreqScale . snd) lpf_init } 
 
  
-lpf_thresholds = [350,400..1500]
+lpf_thresholds = [350,400..2500]
 
 
 -- TODO maybe returns a probabilty/score?
@@ -40,7 +42,7 @@ lpf_refinement_template ps1 ps2 thres = let
   ps1Integral = sum $ map sumAmps $ thresFreqs ps1
   ps2Integral = sum $ map sumAmps $ thresFreqs ps2
  in 
-  (trace ((show thres) ++ " - " ++ (show (ps1Integral - ps2Integral)) ++ "\n")
+  (trace ((show thres) ++ "," ++ (printf "%.6f" (ps1Integral - ps2Integral)))
           -- ++ (show $ head ps1) ++ " \n ---- \n " ++ (show $ head ps2))
     ps1Integral > ps2Integral, thres)
 
