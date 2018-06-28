@@ -24,7 +24,7 @@ testFilter in_fp (out_fp,outAudio) f= do
   case newAudio of
     Left e -> error e
     --Right a -> return $ auralDistance outAudio a
-    Right a -> return $ auralDistance (out_fp,outAudio) (newOutFilepath,a)
+    Right a -> auralDistance (out_fp,outAudio) (newOutFilepath,a)
 
 
 runFilter :: FilePath -> FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> IO(String)

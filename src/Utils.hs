@@ -17,7 +17,7 @@ debugPrint x =
 
 listToCSV :: [Peak] -> String
 listToCSV = 
-  concatMap (\(f,a,p) -> (show f) ++ ", " ++ (show a) ++ "\n")
+  concatMap (\(f,a) -> (show f) ++ ", " ++ (show a) ++ "\n")
 
 -- | Take the first instance from a list that satisfies the predicate
 takeLast :: (a -> Bool) -> [a] -> Maybe a

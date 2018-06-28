@@ -39,7 +39,7 @@ multiVarSGD thetaSelectors g batchSize goal learnRate t t_best cache f = do
   
   if not converged 
   then (trace "\n" continueGD)
-  else return (trace ("finished SGD with score = "++(show thisVal)) t, newCache)
+  else return (trace ("\n\n\nFinished SGD with score = "++(show thisVal)) t_best, newCache)
 
 -- TODO make sure we always take the thetas that were the most effective in the previous step
 stochasticBatch :: RandomGen g => g -> Int -> [a] -> [a]

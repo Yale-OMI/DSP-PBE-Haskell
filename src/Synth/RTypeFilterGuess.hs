@@ -7,15 +7,17 @@ import Analysis.FFT
 
 import Utils
 
-guessInitFilter :: (FilePath,AudioFormat) -> (FilePath,AudioFormat) -> Thetas
-guessInitFilter in_audio out_audio = let
-  peaks1 = peakList in_audio
-  peaks2 = peakList out_audio
+guessInitFilter :: (FilePath,AudioFormat) -> (FilePath,AudioFormat) -> IO Thetas
+guessInitFilter in_audio out_audio = do
+  peaks1 <- peakList in_audio
+  peaks2 <- peakList out_audio
   -- the highest threshold for a lpf is the strongest refinement type we can guess
   -- TODO rethink this, since the types of peaks1 and peaks2 have now changed to [[Peak]]
-  lpf_init = takeLast fst (map (lpf_refinement_template peaks1 peaks2) lpf_thresholds)
- in 
-  initFilter {_lpfThreshold = maybe 0 (invFreqScale . snd) $ trace ((listToCSV $ head peaks1) ++ "\n" ++ (listToCSV $ head peaks2)) lpf_init } --TODO replace 0
+  let 
+    lpf_init = takeLast fst (map (lpf_refinement_template peaks1 peaks2) lpf_thresholds)
+  
+  return $ initFilter {_lpfThreshold = (-0.92)}
+  --return $ initFilter {_lpfThreshold = maybe 0 (invFreqScale . snd) $ trace ((listToCSV $ head peaks1) ++ "\n" ++ (listToCSV $ head peaks2)) lpf_init } --TODO replace 0
 
  
 lpf_thresholds = [350,400..1500]
@@ -26,11 +28,14 @@ lpf_thresholds = [350,400..1500]
 
 -- Peak = (freq, amp, phase)
 
+
+-- this is problematic, since the score (As it is wrtten now) will always increase as we add freqs
+
 -- | We can find a ref type for lpf by taking the integral of the amplitudes of freq up to a threshold
 --   As soon as we detect a decrease in the amps, it is possible we have a lpf at that threshold
 lpf_refinement_template :: [[Peak]] -> [[Peak]] -> Double -> (Bool,Double)
 lpf_refinement_template ps1 ps2 thres = let
-  thresFreqs = map (filter (\(f,_,_) -> fromIntegral f < thres))
+  thresFreqs = map (filter (\(f,_) -> fromIntegral f < thres))
   sumAmps = sum . map getAmp
   ps1Integral = sum $ map sumAmps $ thresFreqs ps1
   ps2Integral = sum $ map sumAmps $ thresFreqs ps2

@@ -11,11 +11,11 @@ type OverFreq = []
 
 -- | (freq, amp, phase)
 --   TODO migrate to data type 
-type Peak = (Int,Double,Double) 
+type Peak = (Int,Double) 
 
 --gets 1st item of triple
-getFreq :: (a,b,c) -> a
-getFreq (a,_,_) = a
+getFreq :: (a,b) -> a
+getFreq (a,_) = a
 --gets 2nd item of triple
 getAmp :: Peak -> Double
-getAmp (_,amp,_) = amp
+getAmp (_,amp) = amp

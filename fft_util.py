@@ -2,6 +2,7 @@
 from scipy.fftpack import fft
 import numpy
 import matplotlib.pyplot as plt
+import math
 
 def timeSliceFFT(sound, samplingFreq):
   
@@ -38,11 +39,13 @@ def timeSliceFFT(sound, samplingFreq):
     exit(1)
 
   for freq, amp in zip(freqArray, fftArray):
-    print freq, amp
+    if not math.isnan(amp):
+      print(str(freq) + ", " + str(amp))
 
+'''
   #Plot the frequency
   plt.plot(freqArray/1000, 10 * numpy.log10 (fftArray), color='B')
   plt.xlabel('Frequency (Khz)')
   plt.ylabel('Power (dB)')
   plt.show()
-
+'''

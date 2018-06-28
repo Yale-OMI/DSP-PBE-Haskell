@@ -19,17 +19,17 @@ import Types.Common
 import qualified Settings as S
 import Utils
 
-auralDistance :: (FilePath, AudioFormat) -> (FilePath, AudioFormat) -> Double
-auralDistance a1 a2 = let
-  ps1 = peakList a1
-  ps2 = peakList a2
+auralDistance :: (FilePath, AudioFormat) -> (FilePath, AudioFormat) -> IO Double
+auralDistance a1 a2 = do
+  ps1 <- peakList a1
+  ps2 <- peakList a2
   -- since I am not looking at time shifting filter for now, I can zipWith over time to remove the time domain
   -- NB this means the times need to line up 'exactly', ie this will not work well for real-world examples
   --    but only for contrsucted examples where I apply the filter to the sample myself (eg in audacity)
-  distances = zipWith (comparePeaks) ps1 ps2
-  average ls = sum ls / genericLength ls
- in
-  average distances 
+  let 
+    distances = zipWith (comparePeaks) ps1 ps2
+    average ls = sum ls / genericLength ls
+  return $ average distances 
 
 comparePeaks ps1 ps2 = 
   sum $ zipWith comparePeak ps1 ps2
@@ -49,18 +49,17 @@ comparePeak peak1 peak2 = let
     then 1000 --penalize zero files
     else -}
     --traceShow ((show freq1)++" "++(show amp1)++", "++(show freq2)++" "++(show amp2) ) 
-    euclidDistance (freq1,amp1) (freq2,amp2) -- + 1/(amp2+0.00001)
+    (euclidDistance (freq1,amp1) (freq2,amp2)) / 1000-- + 1/(amp2+0.00001)
 
 -- | break an audio file into time slices and i
 --   find the freq peaks that are most predominate for each time slice
-peakList :: (FilePath, AudioFormat) -> OverTime (OverFreq Peak)
-peakList (fp,a) = 
-  --getMainPeaks. constellateAll. mkFrames. wavList
-  -- constellateAll. mkFrames. wavList
-  peakListPython fp
+peakList :: (FilePath, AudioFormat) -> IO (OverTime (OverFreq Peak))
+peakList (fp,a) = do
+  peaks <- peakListPython fp
+  return $ getMainPeaks peaks
 
 
-
+{-
 --takes wave file and turns it's values into list of Complex Doubles
 wavList :: AudioFormat -> OverTime Double
 wavList wav = let
@@ -84,7 +83,7 @@ constellateAll timeSlices = let
     ars1 = --sparsifying S.resolution $ 
                --why not length sample here?
                map (\samples -> listArray (0,(S.frameRes - 1)) samples) timeSlices
-    in map (listTriple.(take (S.frameRes `div` 2)).assocs.constellate.rfft) ars1
+    in map ((take (S.frameRes `div` 2)).assocs.constellate.rfft) ars1
 
 -- constellate takes results of FFT and turns it into (amp,phase) at each frequency point
 constellate :: Array Int (Complex Double) -> Array Int (Double,Double)
@@ -92,6 +91,7 @@ constellate arr1 =
   let list1 = assocs arr1
       polar1 = map (polar.snd) list1 --TODO use amap for array
       in listArray (0,((length list1) - 1)) polar1
+-}
 
 -- | with the full set of peaks for a list of frames,
 --   we want to essentially apply a filter to each time slice
@@ -127,4 +127,3 @@ findBiggestPeaks ts = let
 listTriple :: [(a,(b,b))] -> [(a,b,b)]
 listTriple xs = 
    map (\(x,(y,z)) -> (x,y,z)) xs
-

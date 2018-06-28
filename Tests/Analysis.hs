@@ -21,10 +21,10 @@ import PrintAudio
 
 dir = "Sounds/AnalysisBenchmarks/"
 filenames = 
-  [ "PianoC.wav"
-  , "PianoFilter.wav"
-  , "HornCSharp.wav"
-  , "PianoCSharp.wav"]
+  [ "PianoC2.wav"
+  , "PianoFilter2.wav"
+  , "HornCSharp2.wav"
+  , "PianoCSharp2.wav"]
 
 main :: IO ()
 --main' = printAudio $ dir++"PianoC.wav"
@@ -33,23 +33,24 @@ main = do
   comparisonTests
 
 constallationTest = do
-  f <- getFile "PianoC.wav"
+  f <- getFile "PianoC2.wav"
   print $ "First time slice peaks of PianoC.wav: "
-  putStrLn $ listToCSV $ head $ peakList (dir++"PianoC.wav",f)
+  p <- peakList (dir++"PianoC2.wav",f)
+  putStrLn $ listToCSV $ take 10 $ head p
   
 
 comparisonTests = do
   ws' <- parallel $ map getFile filenames
-  let ws = zip filenames ws'
+  let ws = zip (map (dir++) filenames) ws'
   let tuplify [w1,w2,w3,w4] = (w1,w2,w3,w4)
   let (w1,w2,w3,w4) = tuplify ws
-  let t1v1 = auralDistance w1 w1
-  let t1v2 = auralDistance w1 w2
-  let t1v3 = auralDistance w1 w3
-  let t3v1 = auralDistance w3 w1
-  let t1v4 = auralDistance w1 w4
-  let t4v1 = auralDistance w4 w1
-  let t3v4 = auralDistance w3 w4
+  t1v1 <- auralDistance w1 w1
+  t1v2 <- auralDistance w1 w2
+  t1v3 <- auralDistance w1 w3
+  t3v1 <- auralDistance w3 w1
+  t1v4 <- auralDistance w1 w4
+  t4v1 <- auralDistance w4 w1
+  t3v4 <- auralDistance w3 w4
 
   mapM_ print $ zip [1..] filenames
   --identity
@@ -88,5 +89,5 @@ checkTest tName v1 f v2 = do
   putStrLn $ "  result:    "++(show v1)
   putStrLn $ "  threshold: "++(show v2)
   if v1 `f` v2
-    then return ()
-    else print "FAILED" >> exitFailure
+    then putStrLn "PASSED" >> return ()
+    else putStrLn "FAILED" >> exitFailure
