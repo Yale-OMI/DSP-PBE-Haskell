@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Analysis.FFT (auralDistance, peakList) where
 
 -- need to create frequency frames for peaks after the FFT has been applied
@@ -19,6 +20,9 @@ import Types.Common
 import qualified Settings as S
 import Utils
 
+import Shelly (shelly, silently, run)
+import Data.String
+
 auralDistance :: (FilePath, AudioFormat) -> (FilePath, AudioFormat) -> IO Double
 auralDistance a1 a2 = do
   ps1 <- peakList a1
@@ -26,10 +30,21 @@ auralDistance a1 a2 = do
   -- since I am not looking at time shifting filter for now, I can zipWith over time to remove the time domain
   -- NB this means the times need to line up 'exactly', ie this will not work well for real-world examples
   --    but only for contrsucted examples where I apply the filter to the sample myself (eg in audacity)
+  --mapM_ plot $ take 5 $ zip (map sort ps1) (map sort ps2) 
   let 
-    distances = zipWith (comparePeaks) ps1 ps2
+    distances = zipWith (comparePeaks) (map sort ps1) (map sort ps2)
     average ls = sum ls / genericLength ls
   return $ average distances 
+
+plot :: ([Peak], [Peak]) -> IO()
+plot (ps1, ps2) = do
+  writeFile "tmp1.csv" (listToCSV ps1)
+  writeFile "tmp2.csv" (listToCSV ps2)
+  results <- shelly $ silently $ run (fromString "gnuplot") 
+               [ "-p"
+               , "plotter.gnuplot" ]
+  return ()
+  
 
 comparePeaks ps1 ps2 = 
   sum $ zipWith comparePeak ps1 ps2
@@ -56,8 +71,18 @@ comparePeak peak1 peak2 = let
 peakList :: (FilePath, AudioFormat) -> IO (OverTime (OverFreq Peak))
 peakList (fp,a) = do
   peaks <- peakListPython fp
-  return $ getMainPeaks peaks
+  let normPeaks = normalize peaks
+  return $ getMainPeaks normPeaks
 
+-- | Scale so max over all time slices is 1
+--   note that this means some time slices will not have a max of 1
+--   another option is to normlize so that the integral of the fft is 1
+normalize :: [[Peak]] -> [[Peak]]
+normalize ps = let
+  maxPeak = maximum $ concatMap (map getAmp) ps
+  scaleFactor = 1 / maxPeak 
+ in
+  map (map (\(frq,amp) -> (frq, amp* scaleFactor))) ps
 
 {-
 --takes wave file and turns it's values into list of Complex Doubles

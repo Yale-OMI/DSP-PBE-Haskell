@@ -1,4 +1,5 @@
 {-# LANGUAGE PartialTypeSignatures #-}
+{-# LANGUAGE BangPatterns #-}
 
 
 module Synth.SGD where
@@ -18,28 +19,36 @@ import Utils
 
 -- | Use data type Theta for params to be passed to eval fxn
 -- | calc new theta and build map of theta to value to avoid recomputation
-multiVarSGD :: RandomGen g => _ -> g -> Int -> Double -> Double -> Thetas -> Thetas -> ResCache -> (Thetas -> IO Double) -> IO (Thetas, ResCache)
-multiVarSGD thetaSelectors g batchSize goal learnRate t t_best cache f = do
+multiVarSGD :: RandomGen g => _ -> g -> Int -> Double -> Double -> 
+  Thetas -> Thetas -> ResCache -> (Thetas -> IO Double) -> IO (Thetas, ResCache)
+multiVarSGD thetaSelectors g batchSize goal !learnRate !t bestTheta cache costFxn = do
+  debugPrint ("Current cache: " ++ (show cache))
   -- NB use a fixed theta for takeStep, but update a seperate copy of theta in the fold
-  (updatedThetas, newCache) <- foldM (takeStep learnRate t f) (t,cache) (stochasticBatch g batchSize thetaSelectors)
-    -- converge if you try to descend and still do the best
-  let converged = thetaDiff updatedThetas t_best <= goal
+  (updatedThetas, newCache) <- foldM (takeStep learnRate t costFxn) (t,cache) (stochasticBatch g batchSize thetaSelectors)
     -- check if the updated choice is better (since we are working in highly non-convex space)
-  (thisVal, newCache') <- runIO newCache f updatedThetas
-  (oldBest,_)          <- runIO cache f t_best
+  (currentScore, newCache') <- runCostFxnWithCache newCache costFxn updatedThetas
+  (prevBestScore, _)        <- runCostFxnWithCache newCache' costFxn bestTheta
   let 
-    newBest = if thisVal<oldBest then updatedThetas else t_best
-    --every now and then go back to the best we had found
-    t' = if (H.size cache) `mod` (S.restartRound) == 0 then newBest else updatedThetas
-    -- build the call to try again, allowing us to explore worse directions, but every n step returning to best
-    continueGD = multiVarSGD thetaSelectors (snd $ next g) batchSize goal learnRate t' newBest newCache' f
+    newBestTheta = if currentScore < prevBestScore 
+                     then updatedThetas 
+                     else bestTheta
+    -- every now and then go back to the best we had found
+    -- and decrease learn rate
+    (newLearnRate,t') = if ((H.size cache)+1) `mod` (S.restartRound) == 0 
+           then trace "BACKTRACKING SGD TO BEST SO FAR" (learnRate/2,newBestTheta)
+           else (learnRate,updatedThetas)
+    -- build the call to try again using updatedThetas, allowing us to explore worse directions, but every n step returning to best
+    continueGD = multiVarSGD thetaSelectors (snd $ next g) batchSize goal newLearnRate t' newBestTheta newCache' costFxn
+    -- converge if you try to descend and still find the same best thetas (within the goal threshold)
+    converged = thetaDiff updatedThetas bestTheta <= goal
 
-  debugPrint $ "Current best candidate is"++(indent $ show $ thetaToFilter updatedThetas)
-  debugPrint $ "Current score is "++(show thisVal)
+  debugPrint $ "Current best candidate is"++(indent $ show $ thetaToFilter newBestTheta)
+  debugPrint $ "Current score is "++(show currentScore)
   
   if not converged 
   then (trace "\n" continueGD)
-  else return (trace ("\n\n\nFinished SGD with score = "++(show thisVal)) t_best, newCache)
+  else return (trace ("\n\n\nFinished SGD with score = "++(show (min prevBestScore currentScore))
+                      ++"\nUsing Theta: "++ (indent $ show $ thetaToFilter newBestTheta)) newBestTheta, newCache)
 
 -- TODO make sure we always take the thetas that were the most effective in the previous step
 stochasticBatch :: RandomGen g => g -> Int -> [a] -> [a]
@@ -62,18 +71,23 @@ takeStep learnRate t f (updatedTheta,cache) part = do
 partialDerivative :: (Thetas -> IO Double) -> _ -> Thetas -> ResCache -> IO (Double, ResCache)
 partialDerivative f part t cache = do
   let s = 0.001 --derivative step size
-  --lookup in cache
-  (x1, newCache) <- runIO cache f t
+  --lookup/add to cache
+  (score1, newCache) <- runCostFxnWithCache cache f t
   debugPrint $ "Calculating Partial Derivative wrt "++(thetaFieldChange t (over part (\x -> x+s) t))
   -- x2 is not likely to ever be calculated again, so dont bother saving it in the newCache
-  x2 <- f (over part (\x -> x+s) t)
-  debugPrint $ "Derivative in "++(thetaFieldChange t (over part (\x -> x+s) t))++" = "++(show $ (x1-x2)/s)
-  return $ (((x2 - x1) / s),newCache)
+  score2 <- f (over part (\x -> x+s) t)
+  debugPrint $ "Derivative in "++(thetaFieldChange t (over part (\x -> x+s) t))++" = "++(show $ (score1-score2)/s)
+  return $ (((score2 - score1) / s), newCache)
 
-runIO :: ResCache -> (Thetas -> IO Double) -> Thetas -> IO (Double,ResCache)
-runIO cache f t = do 
-  (x, newCache) <- case H.lookup t cache of
-    Just v -> return (v,cache)
-    Nothing -> f t >>= (\v -> return (v, H.insert t v cache))
-  return (x,newCache)
+runCostFxnWithCache :: ResCache -> (Thetas -> IO Double) -> Thetas -> IO (Double,ResCache)
+runCostFxnWithCache cache f t = 
+  case H.lookup t cache of
+    Just v -> do
+      debugPrint "Found theta in cache"
+      return (v,cache)
+    Nothing -> do  
+      debugPrint "Did not find this Theta in cache, calculating score and adding to cache..."
+      score <- f t 
+      debugPrint $ "This Theta scored: " ++ (show score)
+      return (score, H.insert t score cache)
   

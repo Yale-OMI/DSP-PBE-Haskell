@@ -34,8 +34,13 @@ main = do
 
 constallationTest = do
   f <- getFile "PianoC2.wav"
-  print $ "First time slice peaks of PianoC.wav: "
   p <- peakList (dir++"PianoC2.wav",f)
+  putStrLn$ "i# of time slices taken from PianoC.wav: "
+  print $ length p
+  if length p > 1 
+    then return ()
+    else putStrLn "FAILED - too few time slices taken" >> exitFailure
+  putStrLn$ "First time slice peaks of PianoC.wav: "
   putStrLn $ listToCSV $ take 10 $ head p
   
 

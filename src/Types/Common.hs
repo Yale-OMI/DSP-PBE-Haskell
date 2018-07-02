@@ -13,6 +13,7 @@ type OverFreq = []
 --   TODO migrate to data type 
 type Peak = (Int,Double) 
 
+
 --gets 1st item of triple
 getFreq :: (a,b) -> a
 getFreq (a,_) = a

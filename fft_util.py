@@ -41,6 +41,8 @@ def timeSliceFFT(sound, samplingFreq):
   for freq, amp in zip(freqArray, fftArray):
     if not math.isnan(amp):
       print(str(freq) + ", " + str(amp))
+  print ("#")
+
 
 '''
   #Plot the frequency
