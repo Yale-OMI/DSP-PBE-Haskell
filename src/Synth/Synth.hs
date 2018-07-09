@@ -9,6 +9,7 @@ import System.Random
 
 import Synth.SGD
 import Synth.RTypeFilterGuess
+import Synth.RandInitGuess
 
 import Analysis.FilterDistance
 
@@ -26,7 +27,9 @@ synthCode :: (FilePath, AudioFormat) -> (FilePath, AudioFormat) -> IO (Filter)
 synthCode (in_filepath,in_audio) (out_filepath,out_audio) = do
   --First, determine a 'best guess' initFilter
   --TODO this might need to be a in a loop if we can learn a better after SGD
-  myInitFilter <- guessInitFilter (in_filepath,in_audio) (out_filepath,out_audio)
+  --  myInitFilter <- guessInitFilter (in_filepath,in_audio) (out_filepath,out_audio)
+  myInitFilter <- guessRandInitFilter (in_filepath,in_audio) (out_filepath,out_audio)
+  debugPrint "Starting with best filter as:"
   debugPrint $ show myInitFilter
   --Once we have an initFilter, we refine it with SGD
   synthedFilter <- refineFilter in_filepath (out_filepath,out_audio) myInitFilter
@@ -36,7 +39,8 @@ synthCode (in_filepath,in_audio) (out_filepath,out_audio) = do
 -- | selects the thetas should we vary during GD
 --thetaSelectors = [lpfThreshold, hpfThreshold,ringzFreq,ringzDecaySecs,ringzApp,lpfApp,hpfApp,whiteApp,ampApp]
 --thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, whiteApp, ampApp]
-thetaSelectors = [lpfThreshold, lpfApp, ampApp]
+thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, ampApp]
+--thetaSelectors = [lpfThreshold, lpfApp, ampApp]
 
 optimize rGen tester initFilter = multiVarSGD
     thetaSelectors

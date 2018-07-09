@@ -24,6 +24,7 @@ exDir = "Sounds/SynthesisBenchmarks/Constructed/"
 cartoonEx = exDir ++ "cartoon010.wav"
 cartoonEx800 = exDir ++ "cartoon010-lpf800.wav" 
 cartoonEx5000 = exDir ++ "cartoon010-lpf5000.wav" 
+cartoonEx1500 = exDir ++ "cartoon010-hpf1500.wav" 
 btsEx = exDir ++ "BTS-DNA-short.wav" 
 btsEx2000 = exDir ++ "BTS-DNA-short-lpf2000.wav" 
 filenames  =  
@@ -32,6 +33,7 @@ filenames  =
   , cartoonEx5000
   , btsEx
   , btsEx2000
+  , cartoonEx1500
   ]
 
 main = do
@@ -58,9 +60,10 @@ refinementTypeTest audios = do
 -- Plot freq cutoff vs cost for lpf examples
 -- NB seems to be a memory leak in here somewhere - dont try to run all three at the same time
 plotCostFxnTest = do
-  getCostMap cartoonEx cartoonEx800 (take 20 [(0.06),(0.05)..]) >>= printList
-  --getCostMap cartoonEx cartoonEx5000 (take 35 [(invFreqScale 2000),(invFreqScale 2000)+0.01..]) >>= printList
-  --getCostMap btsEx btsEx2000 (take 30 [(invFreqScale 1000),(invFreqScale 1000)+0.01..]) >>= printList
+  --getCostMap cartoonEx cartoonEx800 (take 120 [(invFreqScale 8000),(invFreqScale 8000)+0.01..]) >>= printList
+  --getCostMap cartoonEx cartoonEx5000 (take 60 [(invFreqScale 1000),(invFreqScale 1000)+0.01..]) >>= printList
+  getCostMap cartoonEx cartoonEx1500 (take 60 [(invFreqScale 100),(invFreqScale 100)+0.01..]) >>= printList
+  --getCostMap btsEx btsEx2000 (take 80 [(invFreqScale 1),(invFreqScale 1)+0.01..]) >>= printList
 
 getCostMap :: FilePath -> FilePath -> [Double] -> IO [(Int,Double)]
 getCostMap inEx outEx range = do
@@ -73,8 +76,8 @@ getCostMap inEx outEx range = do
           _ringzFreq=1,
           _ringzDecaySecs=1,
           _ringzApp=(-1),
-          _lpfApp=(1),
-          _hpfApp=(-1),
+          _lpfApp=(-1),
+          _hpfApp=(1),
           _whiteApp=(-1),
           _ampApp=(1)})) range
   case sequence fileActions of

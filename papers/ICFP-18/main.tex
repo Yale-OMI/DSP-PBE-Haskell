@@ -59,7 +59,7 @@
 \begin{document}
 
 %% Title information
-\title{Synthesizing DSP Filters with Programming By Example}
+\title[Programming Music by Example]{Programming Music by Example: Synthesizing Digital Signal Processing Programs}
                                         %% [Short Title] is optional;
                                         %% when present, will be used in
                                         %% header instead of Full Title.
@@ -70,7 +70,6 @@
 %\subtitlenote{with subtitle note}       %% \subtitlenote is optional;
                                         %% can be repeated if necessary;
                                         %% contents suppressed with 'anonymous'
-
 
 %% Author information
 %% Contents and number of authors suppressed with 'anonymous'.
@@ -146,7 +145,7 @@ CCF-1302327 and CCF-1715387.}
 %% similar to a title note or an author note, but not explicitly
 %% associated with a particular element.  It will appear immediately
 %% above the permission/copyright statement.
-%\thanks{with paper note}                %% \thanks is optional
+\thanks{Thanks to Thomas Murphy for his guidance in thinking through this problem.}       %% \thanks is optional
                                         %% can be repeated if necesary
                                         %% contents suppressed with 'anonymous'
 
@@ -156,8 +155,9 @@ CCF-1302327 and CCF-1715387.}
 %% before \maketitle command
 \begin{abstract}
 Programming by example allows users to create programs without coding, by simply specifying input and output pairs.
-We introduce the problem of digital signal processing programming by example, where users specify input and output wave files, and our tool can automatically synthesize a program that transforms the input to the output.
+We introduce the problem of digital signal processing programming by example (DSP-PBE), where users specify input and output wave files, and a tool automatically synthesizes a program that transforms the input to the output.
 This program can then be applied to new wave files, giving users a new way to interact with music and program code.
+We formally define the problem of DSP-PBE, and provide a first implementation of a solution that can handle synthesis over commutative filters.
 \end{abstract}
 
 
@@ -195,6 +195,7 @@ This program can then be applied to new wave files, giving users a new way to in
 
 \input{secs/eval}
 
+\input{secs/rtypes}
 \input{secs/future}
 
 

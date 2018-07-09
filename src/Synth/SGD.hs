@@ -8,6 +8,9 @@ import System.Random.Shuffle
 import System.Random
 
 import qualified Data.HashMap.Strict as H
+import Data.List
+import Data.Ord
+
 import GHC.Generics
 import Control.Lens
 import Control.Monad
@@ -47,8 +50,15 @@ multiVarSGD thetaSelectors g batchSize goal !learnRate !t bestTheta cache costFx
   
   if not converged 
   then (trace "\n" continueGD)
-  else return (trace ("\n\n\nFinished SGD with score = "++(show (min prevBestScore currentScore))
-                      ++"\nUsing Theta: "++ (indent $ show $ thetaToFilter newBestTheta)) newBestTheta, newCache)
+  else do
+    let (minThetaCache, minScoreCache) = getMinScore newCache
+    return (trace ("\n\n\nFinished SGD with score = "++(show minScoreCache)
+                      ++"\nUsing Theta: "++ (indent $ show $ thetaToFilter minThetaCache)) minThetaCache, newCache)
+
+getMinScore :: ResCache -> (Thetas, Double)
+getMinScore cache = 
+  minimumBy (comparing snd) $ H.toList cache 
+
 
 -- TODO make sure we always take the thetas that were the most effective in the previous step
 stochasticBatch :: RandomGen g => g -> Int -> [a] -> [a]

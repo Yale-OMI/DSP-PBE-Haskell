@@ -27,6 +27,7 @@ library
                        Analysis.FilterDistance
                        Synth.Synth
                        Synth.RTypeFilterGuess
+                       Synth.RandInitGuess
                        Types.Filter
                        Types.Common
                        Utils

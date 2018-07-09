@@ -1,0 +1,298 @@
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+start time 0
+nextOSCPacket 0
+nextOSCPacket 1
+nextOSCPacket 1
+Starting with best filter as:
+Thetas {_lpfThreshold = -0.61, _hpfThreshold = -0.31000000000000005, _ringzFreq = 1.0, _ringzDecaySecs = 1.0, _lpfApp = 1.0, _hpfApp = 1.0, _ringzApp = -1.0, _whiteApp = -1.0, _ampApp = 1.0}
+Current cache: fromList []
+Did not find this Theta in cache, calculating score and adding to cache...
+This Theta scored: 4.360755657755165
+Calculating Partial Derivative wrt lpfThreshold
+Derivative in lpfThreshold = -2.8411051289367606e-8
+Adjusting lpfThreshold by 1.4210854715202004e-13
+Scoring program...
+
+   SetVolume: 1.00% 
+   LoPass: freq@4000 amp@0.91 >>> 
+   HiPass: freq@7000 amp@0.91 >>> 
+   WhiteNoise: amp@0.00% 
+
+
+Found theta in cache
+Calculating Partial Derivative wrt hpfThreshold
+Derivative in hpfThreshold = -2.7575275396429788e-8
+Adjusting hpfThreshold by 1.3788969965844444e-13
+Scoring program...
+
+   SetVolume: 1.00% 
+   LoPass: freq@4000 amp@0.91 >>> 
+   HiPass: freq@7000 amp@0.91 >>> 
+   WhiteNoise: amp@0.00% 
+
+
+Found theta in cache
+Calculating Partial Derivative wrt ampApp
+Derivative in ampApp = 1.8884449559664063e-8
+Adjusting ampApp by 0.0
+Scoring program...
+
+   SetVolume: 1.00% 
+   LoPass: freq@4000 amp@0.91 >>> 
+   HiPass: freq@7000 amp@0.91 >>> 
+   WhiteNoise: amp@0.00% 
+
+
+Found theta in cache
+Calculating Partial Derivative wrt hpfApp
+Derivative in hpfApp = 1.674038685450796e-8
+Adjusting hpfApp by 0.0
+Scoring program...
+
+   SetVolume: 1.00% 
+   LoPass: freq@4000 amp@0.91 >>> 
+   HiPass: freq@7000 amp@0.91 >>> 
+   WhiteNoise: amp@0.00% 
+
+
+Did not find this Theta in cache, calculating score and adding to cache...
+This Theta scored: 4.360755657755165
+Did not find this Theta in cache, calculating score and adding to cache...
+This Theta scored: 450.00030112983796
+Current best candidate is
+   SetVolume: 1.00% 
+   LoPass: freq@4000 amp@0.91 >>> 
+   HiPass: freq@7000 amp@0.91 >>> 
+   WhiteNoise: amp@0.00% 
+
+Current score is 4.360755657755165
+Current cache: fromList [(Thetas {_lpfThreshold = -0.61, _hpfThreshold = -0.31000000000000005, _ringzFreq = 1.0, _ringzDecaySecs = 1.0, _lpfApp = 1.0, _hpfApp = 1.0, _ringzApp = -1.0, _whiteApp = -1.0, _ampApp = 1.0},4.360755657755165),(Thetas {_lpfThreshold = -0.6100000000001421, _hpfThreshold = -0.31000000000013794, _ringzFreq = 1.0, _ringzDecaySecs = 1.0, _lpfApp = 1.0, _hpfApp = 1.0, _ringzApp = -1.0, _whiteApp = -1.0, _ampApp = 1.0},4.360755657755165)]
+Found theta in cache
+Calculating Partial Derivative wrt lpfApp
+Derivative in lpfApp = -6.8052230517423595e-9
+Adjusting lpfApp by 3.397282455352979e-14
+Scoring program...
+
+   SetVolume: 1.00% 
+   LoPass: freq@4000 amp@0.91 >>> 
+   HiPass: freq@7000 amp@0.91 >>> 
+   WhiteNoise: amp@0.00% 
+
+
+Found theta in cache
+Calculating Partial Derivative wrt ampApp
+Derivative in ampApp = 1.8884449559664063e-8
+Adjusting ampApp by 0.0
+Scoring program...
+
+   SetVolume: 1.00% 
+   LoPass: freq@4000 amp@0.91 >>> 
+   HiPass: freq@7000 amp@0.91 >>> 
+   WhiteNoise: amp@0.00% 
+
+
+Found theta in cache
+Calculating Partial Derivative wrt hpfThreshold
+Derivative in hpfThreshold = -2.7575275396429788e-8
+Adjusting hpfThreshold by 1.3788969965844444e-13
+Scoring program...
+
+   SetVolume: 1.00% 
+   LoPass: freq@4000 amp@0.91 >>> 
+   HiPass: freq@7000 amp@0.91 >>> 
+   WhiteNoise: amp@0.00% 
+
+
+Found theta in cache
+Calculating Partial Derivative wrt hpfApp
+Derivative in hpfApp = 1.674038685450796e-8
+Adjusting hpfApp by 0.0
+Scoring program...
+
+   SetVolume: 1.00% 
+   LoPass: freq@4000 amp@0.91 >>> 
+   HiPass: freq@7000 amp@0.91 >>> 
+   WhiteNoise: amp@0.00% 
+
+
+Did not find this Theta in cache, calculating score and adding to cache...
+This Theta scored: 4.360755657755165
+Found theta in cache
+Current best candidate is
+   SetVolume: 1.00% 
+   LoPass: freq@4000 amp@0.91 >>> 
+   HiPass: freq@7000 amp@0.91 >>> 
+   WhiteNoise: amp@0.00% 
+
+Current score is 4.360755657755165
+SetVolume: 1.00% 
+LoPass: freq@4000 amp@0.91 >>> 
+HiPass: freq@7000 amp@0.91 >>> 
+WhiteNoise: amp@0.00% 

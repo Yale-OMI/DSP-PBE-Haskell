@@ -4,12 +4,6 @@ The great proliferation of computer music programming languages points to the di
 Programming applications in the domain of computer music, and specifically digital signal processing (DSP), requires that users not only grasp fundamental programming techniques, but also have a large domain specific knowledge on time and signal manipulations.
 The amount of prerequisite skill and effort to overcome these barriers is often higher than many users are able to commit.
 
-Furthermore, the difficult of programming DSP applications is often not commensurate with the creative intentions.
-From a musical perspective, take the following simple use-case: 
-Now the user wishes to apply this same effect to their own sample.
-In order to recreate this effect on a new sample, the user will have to reprogram the filter from the scratch.
-This process will involve writing code, testing the code, listening to the original example, and constantly tweaking parameter values.
-
 Furthermore, the difficulty of programming DSP applications is often not commensurate with the creative intentions. 
 As a motivating example, imagine a user hears a sample in a piece of music, and again hears the same sample later in the piece with some added effects.
 In order to reuse this effect the user's own musical composition, the user must now reconstruct the filter that was used to transform an audio clip. 
@@ -18,9 +12,9 @@ In the standard approach, a user would need to be a domain expert and listen to 
 Once the user has some suspicion as to the appropriate filter types that will be needed, the user must write a program in some language (SuperCollider~\cite{supercollider}, CSound~\cite{csound}, PureData~\cite{puredata} etc) to implement the DSP filter the user has in mind. 
 Further still, the user will then need to spend time tweaking the filter parameters to find the best fit. 
 
-%\subsection{DSP programming by example}
 
-To simplify the user process, we introduce \textit{DSP programming by example} (DSP-PBE). With DSP-PBE, the user simply provides our tool with the original audio (input), and the transformed audio (output), and a DSP-PBE tool will automatically construct a DSP filter that approximates the transformation.
+To simplify this process, we introduce \textit{DSP programming by example} (DSP-PBE). 
+With DSP-PBE, the user simply provides our tool with the original audio (input), and the transformed audio (output), and the tool will automatically construct a DSP filter that approximates the transformation.
 
 We formally define the problem of DSP programming by example as follows:
 Given an input waveform $I$ and an output waveform $O$, construct a DSP filter $\synthFilter$, to minimize the aural distance $dist$ between the $O$ and $\synthFilter(I)$.
