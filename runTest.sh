@@ -8,6 +8,6 @@ rm -rf ./tmp
 mkdir -p ./tmp
 sudo mount -t tmpfs -o size=256m tmpfs ./tmp/
 
-cabal run
+cabal test --show-details=streaming
 
 

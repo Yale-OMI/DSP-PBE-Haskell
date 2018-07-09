@@ -1,5 +1,5 @@
 %% For double-blind review submission
-\documentclass[acmsmall,screen]{acmart}\settopmatter{printfolios=true}
+\documentclass[sigplan,screen]{acmart}\settopmatter{printfolios=true}
 
 \usepackage{etex}
 %% For single-blind review submission
@@ -24,7 +24,7 @@
 \input{preamble}
 
 
-\makeatletter\if@ACM@journal\makeatother
+%\makeatletter\if@ACM@journal\makeatother
 %% Journal information (used by PACMPL format)
 %% Supplied to authors by publisher for camera-ready submission
 
@@ -96,6 +96,32 @@
 }
 \email{mark.santolucito@yale.edu}          %% \email is recommended
 
+\author{Kate Rogers}
+\affiliation{
+  \department{Computer Science}              %% \department is recommended
+  \institution{Yale University}            %% \institution is required
+  \streetaddress{51 Prospect St.}
+  \city{New Haven}
+  \state{CT}
+  \postcode{06511}
+  \country{USA}
+}
+\email{kate.rogers@yale.edu}          %% \email is recommended
+
+
+\author{Aedan Lombardo}
+\affiliation{
+  \department{Computer Science}              %% \department is recommended
+  \institution{Yale University}            %% \institution is required
+  \streetaddress{51 Prospect St.}
+  \city{New Haven}
+  \state{CT}
+  \postcode{06511}
+  \country{USA}
+}
+\email{aedan.lombardo@yale.edu}          %% \email is recommended
+
+
 \author{Ruzica Piskac}
 \affiliation{
   \department{Computer Science}              %% \department is recommended
@@ -159,10 +185,11 @@ This program can then be applied to new wave files, giving users a new way to in
 
 
 
+
 \input{secs/intro}
 \input{secs/motiv}
 
-\input{secs/problemStatement}
+\input{secs/background}
 \input{secs/distance}
 \input{secs/search}
 

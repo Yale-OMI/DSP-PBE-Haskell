@@ -4,34 +4,86 @@ import Synth.Synth
 import Analysis.FilterDistance
 import Types.Common
 import Types.Filter
+import Synth.RTypeFilterGuess
 
 import System.Directory
+import System.FilePath
 import System.Environment
 import GHC.IO.Encoding
 import System.FilePath
 import Codec.Wav
 
+import Data.List
+import Data.Ord
+
 import Control.Monad
+
+import TestUtils
+
+exDir = "Sounds/SynthesisBenchmarks/Constructed/"
+cartoonEx = exDir ++ "cartoon010.wav"
+cartoonEx800 = exDir ++ "cartoon010-lpf800.wav" 
+cartoonEx5000 = exDir ++ "cartoon010-lpf5000.wav" 
+btsEx = exDir ++ "BTS-DNA-short.wav" 
+btsEx2000 = exDir ++ "BTS-DNA-short-lpf2000.wav" 
+filenames  =  
+  [ cartoonEx
+  , cartoonEx800
+  , cartoonEx5000
+  , btsEx
+  , btsEx2000
+  ]
 
 main = do
   setLocaleEncoding utf8
   setFileSystemEncoding utf8
   setForeignEncoding utf8  
 
-  let 
-      inEx = "Sounds/SynthesisBenchmarks/Constructed/cartoon010.wav"
-      outEx = "Sounds/SynthesisBenchmarks/Constructed/cartoon010-lpf800.wav" 
-  fileActions <- mapM importFile [inEx,outEx] :: IO [Either String (AudioFormat)]
-  let testFilters = take 30 $ map (\x-> (Thetas {_lpfThreshold=(x),_hpfThreshold=(-1),_ringzFreq=1,_ringzDecaySecs=1,_ringzApp=(-1),_lpfApp=(1),_hpfApp=(-1),_whiteApp=(-1),_ampApp=(1)})) [-(0.99),(-0.98)..]
-  case sequence fileActions of
-    Right fs -> do
-      rs <- mapM (\t -> testFilter inEx (outEx, head$ tail fs) $ thetaToFilter t) testFilters
-      printList $ zip (map (floor. freqScale) [(-0.99),(-0.98)..]) rs
-      --synthCode (inEx, head fs) (outEx, head $ tail fs) >>= print
-    Left e -> error e
+  audios' <- mapM getFile filenames
+  let audios = zip filenames audios'
+  let audioExPairs = [
+          (audios!!0,audios!!1)
+        , (audios!!0,audios!!2)
+        , (audios!!3,audios!!4)
+        ]
+
+  refinementTypeTest audioExPairs
+  plotCostFxnTest
+
+-- Plot rtype costs over lpf examples
+refinementTypeTest audios = do
+  mapM (uncurry guessInitFilter) audios >>= (mapM print)
   return ()
 
-printList :: (Show a,Show b) => [(a,b)] -> IO()
-printList ([]) = return ()
-printList (l:ls) = do
-  putStrLn ((show $ fst l)++","++(show $ snd l)) >> printList ls
+-- Plot freq cutoff vs cost for lpf examples
+-- NB seems to be a memory leak in here somewhere - dont try to run all three at the same time
+plotCostFxnTest = do
+  getCostMap cartoonEx cartoonEx800 (take 20 [(0.06),(0.05)..]) >>= printList
+  --getCostMap cartoonEx cartoonEx5000 (take 35 [(invFreqScale 2000),(invFreqScale 2000)+0.01..]) >>= printList
+  --getCostMap btsEx btsEx2000 (take 30 [(invFreqScale 1000),(invFreqScale 1000)+0.01..]) >>= printList
+
+getCostMap :: FilePath -> FilePath -> [Double] -> IO [(Int,Double)]
+getCostMap inEx outEx range = do
+  print ("Distances for :" ++ inEx ++ " & " ++ outEx)
+  fileActions <- mapM importFile [inEx,outEx] :: IO [Either String (AudioFormat)]
+  let testFilters = 
+        map (\x-> (Thetas {
+          _lpfThreshold=(1),
+          _hpfThreshold=(x), 
+          _ringzFreq=1,
+          _ringzDecaySecs=1,
+          _ringzApp=(-1),
+          _lpfApp=(1),
+          _hpfApp=(-1),
+          _whiteApp=(-1),
+          _ampApp=(1)})) range
+  case sequence fileActions of
+    Right fs -> do
+      rs <- mapM (\t -> (testFilter inEx (outEx, head$ tail fs) $ thetaToFilter t)) testFilters
+      return $ zip (map (floor. freqScale) range) rs
+    Left e -> error e
+
+printList :: (Ord a, Ord b, Show a,Show b) => [(a,b)] -> IO()
+printList xs = do
+  putStrLn $ "Minimum cost found :" ++ (show $ minimumBy (comparing snd) xs)
+  mapM_ (\x -> putStrLn ((show $ fst x)++", "++(show $ snd x))) xs

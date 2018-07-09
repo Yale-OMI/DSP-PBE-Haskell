@@ -5,42 +5,35 @@ Programming applications in the domain of computer music, and specifically digit
 The amount of prerequisite skill and effort to overcome these barriers is often higher than many users are able to commit.
 
 Furthermore, the difficult of programming DSP applications is often not commensurate with the creative intentions.
-From a musical perspective, take the following simple use-case: a user hears a sample in a piece of music, and later in that piece hears the same sample with some added effects.
+From a musical perspective, take the following simple use-case: 
 Now the user wishes to apply this same effect to their own sample.
 In order to recreate this effect on a new sample, the user will have to reprogram the filter from the scratch.
 This process will involve writing code, testing the code, listening to the original example, and constantly tweaking parameter values.
 
-To simplify this process, we introduce \textit{DSP programming by example} (DSP-PBE).
+Furthermore, the difficulty of programming DSP applications is often not commensurate with the creative intentions. 
+As a motivating example, imagine a user hears a sample in a piece of music, and again hears the same sample later in the piece with some added effects.
+In order to reuse this effect the user's own musical composition, the user must now reconstruct the filter that was used to transform an audio clip. 
+In this case the user has the original audio file, and the transformed audio file, but does not know exactly how this transformation happened.
+In the standard approach, a user would need to be a domain expert and listen to the two files, and aurally estimate which kinds of filters were used to achieve the transformation. 
+Once the user has some suspicion as to the appropriate filter types that will be needed, the user must write a program in some language (SuperCollider~\cite{supercollider}, CSound~\cite{csound}, PureData~\cite{puredata} etc) to implement the DSP filter the user has in mind. 
+Further still, the user will then need to spend time tweaking the filter parameters to find the best fit. 
 
-We first explain the concept of programming by example~\cite{cypher93,lieberman01,synasc12}.
-Programming by example (PBE) is a synthesis technique that automatically generates programs that coincide with given examples. An example is specified as a tuple of input and output values. Given a set $S= \{(i_1, o_1),\ldots, (i_n, o_n)\}$ of input/output examples, the goal is to automatically derive a program $P$ such that for every $j$, $P(i_j) = o_i$. 
-Instead of writing code, the user provides a list of relevant examples and the synthesis tool automatically generates a program. In this way, the examples can be seen as an easily readable and understandable specification. However, even if the synthesized program satisfies all the provided examples, it still might not correspond to the user's intentions. Examples are, by nature, an incomplete specification.
+%\subsection{DSP programming by example}
 
+To simplify the user process, we introduce \textit{DSP programming by example} (DSP-PBE). With DSP-PBE, the user simply provides our tool with the original audio (input), and the transformed audio (output), and a DSP-PBE tool will automatically construct a DSP filter that approximates the transformation.
 
-PBE is a promising research direction that enables easy manipulation of data even for non-programmers~\cite{GulwaniHS12}. Recent work in this area has focused on manipulating fundamental data types such as strings~\cite{vldb12,icml13}, lists~\cite{FeserCD15,poseraZ15} and numbers~\cite{cav12}. The success and impact of this line of work can be estimated from the fact that some of this technology~\cite{flashFillPOPL} ships as part of the popular Flash Fill feature in Excel 2013~\cite{flashfill}.
-
-
-In DSP programming by example, a user directly provides an input sound sample and an output sound sample, and a DSP-PBE tool will automatically construct the required program that represents a DSP filter that can transform the input sound into the output sound.
-
-\iffalse
-
-\subsection{Program Synthesis}
-Programming by example, and program synthesis more generally, has experienced an explosion of research and progress in the last 15 years within the formal logic research community.
-This has led to real world applications, such as FlashFill, a programming by example plugin for Microsoft Excel~\cite{Gulwani2011}.
-
-\fi
-
-\subsection{DSP Programming Languages}
-
-DSP programming languages provide users with an interface to build signal processing programs in domain specific languages.
-The core feature of DSP languages we are interested in this work is the construction of DSP filters.
-A DSP filter is, broadly speaking, any program that transforms a waveform from one form to another.
-Examples of filters include a low-pass fitler, which allows frequencies below some frequency threshold; or a ring file
+We formally define the problem of DSP programming by example as follows:
+Given an input waveform $I$ and an output waveform $O$, construct a DSP filter $\synthFilter$, to minimize the aural distance $dist$ between the $O$ and $\synthFilter(I)$.
+In a single line:
+%
+\begin{align*}
+\text{Find } \synthFilter, \text{ such that } dist(O,\synthFilter(I))=0
+\end{align*}
 
 
-\subsection{Related Work}
-\cmark{I think this should go first for this paper}
+In the sequel we describe our approach to the two key components of this statement; the definition of distance, and a search technique to find $\synthFilter$.
+A distance metric that is faithful to the psycho-acoustics of the human ear is critical for a useful DSP-PBE tool.
+As an example, taking a trivial distance function that returns the difference in length of the two audio samples will allow a delay filter to satisfy any example pair of samples.
+Additionally, an efficient search algorithm is critical, as the space of possible DSP filters is very large.
+Not only do we need to consider a wide variety of filters, we need to consider the space of parameters for each filter, as well as the different ways of combining multiple filters.
 
-Spectral analysis and resynthesis is a powerful combination of tools that allows users to decompose a sound into its spectrograph, and build a synthesizer to create a similar sound~\cite{?}.
-The limitation here is that resynthesis builds a generative synthesizer, which does not take into account any information about the components used to create the original sound.
-While this technique is great for creating new instruments, we instead focus specifically on creating new filters.
