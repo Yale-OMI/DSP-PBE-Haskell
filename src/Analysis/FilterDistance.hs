@@ -35,6 +35,7 @@ runFilter out_filepath srcFile vCode = do
 
 vAction :: FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> _
 vAction srcFile vCode = do
+   -- TODO how to remove a buffer?
    b <- newBufferFromFile srcFile
 
    play $ do
@@ -45,5 +46,5 @@ vAction srcFile vCode = do
 
    -- This is janky and there's a solution:
    wait 1.0 -- length in secs of the sample
-
+   closeBuffer b
 

@@ -23,7 +23,7 @@ guessInitFilter in_audio out_audio = do
              _lpfThreshold = maybe 0 (invFreqScale . snd) lpf_init } 
 
  
-lpf_thresholds = [350,400..15000]
+lpf_thresholds = [350,400..6000]
 
 
 -- TODO maybe returns a probabilty/score?
@@ -44,10 +44,10 @@ lpf_refinement_template ps1 ps2 thres = let
   ps2Integral = sum $ map sumAmps $ thresFreqs ps2
  in 
   (trace (
-    (show thres) ++ "," ++ (printf "%.6f" (ps1Integral - ps2Integral))
-    ++ "," ++ (printf "%.6f" (ps1Integral / ps2Integral))
-    ++ "," ++ (show $ length $ concat $ thresFreqs ps1)
-    ++ "," ++ (show $ length $ concat $ thresFreqs ps2))
+    (show thres) ++ ", " ++ (printf "%.6f" (ps1Integral - ps2Integral))
+    ++ ", " ++ (printf "%.6f" (ps1Integral / ps2Integral))
+    ++ ", " ++ (show $ length $ concat $ thresFreqs ps1)
+    ++ ", " ++ (show $ length $ concat $ thresFreqs ps2))
           -- ++ (show $ head ps1) ++ " \n ---- \n " ++ (show $ head ps2))
     ps1Integral > ps2Integral, thres)
 
