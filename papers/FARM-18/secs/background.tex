@@ -1,0 +1,23 @@
+\section{Background}
+
+To give context for DSP-PBE, we first explain the traditional concept of programming by example~\cite{cypher93,lieberman01,synasc12}.
+Programming by example (PBE) is a synthesis technique that automatically generates programs that coincide with given examples. An example is specified as a tuple of input and output values. Given a set $S= \{(i_1, o_1),\ldots, (i_n, o_n)\}$ of input/output examples, the goal is to automatically derive a program $P$ such that for every $j$, $P(i_j) = o_i$. 
+Instead of writing code, the user provides a list of relevant examples and the synthesis tool automatically generates a program. In this way, the examples can be seen as an easily readable and understandable specification. However, even if the synthesized program satisfies all the provided examples, it still might not correspond to the user's intentions. Examples are, by nature, an incomplete specification.
+
+PBE is a promising research direction that enables easy manipulation of data even for non-programmers~\cite{GulwaniHS12}. Recent work in this area has focused on manipulating fundamental data types such as strings~\cite{vldb12,icml13}, lists~\cite{FeserCD15,poseraZ15} and numbers~\cite{cav12}. The success and impact of this line of work can be estimated from the fact that some of this technology~\cite{flashFillPOPL} ships as part of the popular Flash Fill feature in Excel 2013~\cite{flashfill}.
+
+
+The core difference between traditional PBEP and DSP-PBE is in the application domain of Digital Signal Processing.
+Digital Signal Processing (DSP) programming languages provide users with an interface to build signal processing programs in domain specific languages.
+Some of these languages provide their own implementations of signal processing primatives, such as SuperCollider~\cite{supercollider}, CSound~\cite{csound}, PureData~\cite{puredata}.
+Other DSP languages provide alternative front-ends to these languages, such as Vivid~\cite{vivid}, which provides Haskell bindings to Supercollider.
+
+The core feature of DSP we are interested in this work is the construction of DSP filters.
+A DSP filter is, broadly speaking, any program that transforms a digital signal from one form to another.
+An example of a DSP filter is a low-pass filter, which takes an input signal and generates an output signal that keeps frequencies below some frequency threshold, but removes frequencies above that threshold.
+
+The most closely related work in audio signal processing is a technique called resynthesis~\cite{masri1996improved}.
+Resynthesis is the process of decomposing a sound into its spectrograph, and then building a synthesizer to recreate a similar sound.
+The limitation here is that resynthesis builds a generative synthesizer, which does not take into account any information about the components used to create the original sound.
+This limitation means that resynthesis cannot be applied in a new context, where as DSP-PBE allows us to construct a DSP program that can be used with various new input samples to create novel sounds. 
+For example, DSP-PBE could be given a sample of a trumpet and a trombone, and the generated DSP program could be applied to a violin to hear what a violin sounds like if it was a trumpet that had been turned into a trombone.
