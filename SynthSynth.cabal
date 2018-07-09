@@ -26,11 +26,11 @@ library
   exposed-modules:     Analysis.FFT 
                        Analysis.FilterDistance
                        Synth.Synth
+                       Synth.RTypeFilterGuess
                        Types.Filter
                        Types.Common
                        Utils
   other-modules:       Synth.SGD
-                       Synth.RTypeFilterGuess
                        Settings 
                        Analysis.FFT_Py
   build-depends:       

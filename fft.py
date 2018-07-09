@@ -13,7 +13,7 @@ windowSize = int (sys.argv[2])
 windowOverlap = int (sys.argv[3])
 
 #Read file and get sampling freq [ usually 44100 Hz ]  and sound object
-samplingFreq, mySound = wavfile.read(myAudio)
+samplingFreq, mySound = wavfile.read(myAudio, True)
 
 #Check if wave file is 16bit or 32 bit. 24bit is not supported
 mySoundDataType = mySound.dtype
