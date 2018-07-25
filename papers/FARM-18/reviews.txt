@@ -1,0 +1,196 @@
+
+----------------------- REVIEW 1 ---------------------
+PAPER: 19
+TITLE: Programming Music by Example: Synthesizing Digital Signal Processing Programs
+AUTHORS: Mark Santolucito, Kate Rogers, Aedan Lombardo and Ruzica Piskac
+
+Overall evaluation: 2 (accept)
+
+----------- Overall evaluation -----------
+This paper proposes a DSP-PBE system and shows preliminary results by conducting experiments on example sound files and filters. The application could be very useful once fully developed. The structure and formulation of the paper are very clear. 
+
+However, some changes might help readers better understand the paper:
+1) The link to the .wav files could be added to section 2 "Motivating Example" for demonstrating the problem clearer
+2) In section 3, "examples are, by nature, an incomplete specification" is insightful, and this very much relates to supervised machine learning research. It would be great to see such a comparison: what are the advantages of this system over machine learning, for example?
+3) Is the word "spectrograph" (not spectrogram?) correctly used in section 3, last paragraph?
+4) At the end of section 3, the trumpet -> trombone, violin -> ? example is very nice. Perhaps cello will immediately comes to mind. And it would be great if the paper could come back to this point after implementing the system. 
+5) The statement "Acoustic fingerprints represent how the file will sound to the human ear regardless of how it is represented in a digital format" needs references. 
+6) In choosing the parameters for FFT, would it make it a stronger argument if 44100 is a widely used number? Or if not commonly used, why this paper only has the leakage problem with <44100?
+7) Dynamic Time Warping could solve the alignment problem of audio clips. 
+8) Section 5 only has one subsection
+-- added a subsection header to indicate where we specifically address non-convexity of the aural distance function.
+9) In gradient descent, why n=4 was chosen? 
+-- added a few sentences to further explain the trade-off for the randomized restart parameter (n) in order to explain our choice.
+10) Column headings are missing in Table 1
+-- Table has been remade to be more clear overall
+11) In section 7, "we given the function map"
+-- thank you
+12) In section 7, paragraph 4 is almost the same as paragraph 7 with one-word difference. 
+-- removed the second half of paragraph 7 since the notation should be clear without it.
+13) In table 2, caption, "may still be psycho-acoustically equivalent depending on the expertise of the listener", the argument could be stronger with references and listening experiments
+14) Section 7 only has one subsection. 
+-- added a subsection header to indicate where we introduce refinement types for FRP
+15) The combination of filters was mentioned in the introduction but was not mentioned thereafter.
+-- TODO add the pitch shift filter and few more experiments that have multiple effects 
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 19
+TITLE: Programming Music by Example: Synthesizing Digital Signal Processing Programs
+AUTHORS: Mark Santolucito, Kate Rogers, Aedan Lombardo and Ruzica Piskac
+
+Overall evaluation: 2 (accept)
+
+----------- Overall evaluation -----------
+The authors present a system for DSP-PDE, or a way to program digital signal processing tools by example.  The work is interesting, but it's really too bad that audio clips cannot be printed out on paper!  That said, the graphs are helpful, and it seems that their work shows promise.
+
+The techniques they use are not particularly novel (their distance metric is admittedly based off of ideas from Shazam, and neither FFT nor gradient descent are new ideas), but I believe there is novelty in using them together as they do.  The blending of a functional system to do musical operations makes this a great fit for FARM.
+
+There is a brief section at the end on refinement types, which is very interesting to me but seems underdeveloped.  The authors do admit that this is a theoretical exploration, so I look forward to their future work where this idea is more fleshed out.
+
+Although the layout of the paper is clear, there are a number of errors that prevent me from claiming that it is "well written".  For instance, there is a lot of "tense mismatch": one sentence present, the next future, and then the following back to present.  The paper will read more smoothly if these are made uniform.  I have provided a number of specific suggestions below, but I encourage the authors to do a few thorough proof-reads.
+
+I also have a few questions/comments:
+
+page 3:
+"first performing a real Fast Fourier Transform on the audio file" -- what is meant by "real" here?
+-- TODO mention the difference between real FFT vs complex FFT
+
+Section 4:
+You use "Fast Fourier Transform" everywhere, but I think you're conflating the algorithm with the operation.  An FFT is an algorithm that performs a discrete Fourier transform (and does it fast).  Please be clear about when you mean FFT and when you mean DFT.
+-- TODO check the literature, im not sure about this...
+
+Section 7:
+I'm not sure if you have space to do so, but you throw a lot at a reader who may not have seen refinement types before.  At least provide a reference about refinement types (and possible a reference to a primer on them), but space permitting, you should describe how to read these types and what they mean.
+-- TODO Add references to Ranjit Jhala's work and all the other refinement type stuff
+
+Section 7.1
+"One hypothesis as to how we would combine both algorithms would be through a feedback loop."  This sentence comes out of the blue, and I'm not sure what it's talking about.
+-- Rewrote section 7.1 entirely so that is (hopefully) more clear and specific.
+
+Proofing comments:
+page 1:
+"domain specific knowledge on time and signal": "on" should perhaps be "of"
+-- fixed
+"In order to reuse this effect the user’s own musical composition": missing "in"
+-- fixed
+"PureData [Puckette et al . 1997] etc": missing comma
+-- fixed
+page 2:
+"between the O and F(I)": remove "the"
+-- fixed
+"Digital Signal Processing (DSP) programming languages provide users with an interface to build signal processing programs in domain specific languages.": this sentence seems rather content-less
+-- this is included for readers who may have no background in music or DSP.
+"such as SuperCollider [McCartney 2002], CSound [Boulanger et al . 2000], PureData [Puckette et al. 1997]": missing "and"
+-- fixed
+"we are interested in this work is the": missing "in" between "in" and "this", but the double "in" may encourage you to simply rewrite the sentence.
+-- rewritten
+"in a new context, where as DSP-PBE": should be "whereas" (one word, not two)
+-- fixed
+page 3:
+"which plots how the frequencies over time": missing "change"
+-- fixed
+"fingerprint to uniquely identifies the audio": should be "identify"
+-- fixed
+"are to the synthesizing the correct DSP filter": remove "the"
+-- fixed
+"the size of this bins varies": change "this" to "these"
+-- fixed
+"a dist function that we measures the aural distance and be faithful": subject-verb agreement?
+-- fixed
+page 4:
+"procedure is find a DSP filter": missing "to"
+-- fixed
+"are quasi-commutative - when the thresholds": that dash is wrong.  You probably want to write "--" or "---" in latex to get a better one.  This is true in other places as well.
+-- fixed in numerous spots
+Figure 3: the words and numbers need to be bigger
+-- TODO change font size in gnuplot
+"we only explore a two DSP filters and": remove "a"
+-- fixed with rewording
+page 5:
+formatting: having 2 lone lines of text between figures 4 and 5 makes your prose literally hard to follow.
+-- fixed
+"there are many local minimum and": should be "minima"
+-- fixed
+"we iterate at large intervals (1000 Hz) possible threshold values": missing "of"?
+-- fixed
+page 6
+"samples were transform in Audacity": should be "transformed"
+-- fixed
+"and a Intel Sunrise": should be "an"
+-- fixed
+"On average this, process takes 40": extraneous comma
+-- fixed
+"For example, we given the function": should be "when", I think, but the whole sentence has subject-verb problems
+-- fixed
+refinement type sig: you might want to put spaces on either side of the double colon.
+-- fixed
+"f1 > t AND f2 > t AND f1 == f2": this is a little redundant.  If f1 must equal f2, and one of them is greater than t, then clearly the other is too.
+-- left this in for clarity - we dont want to put any particular stress on f1 or f2
+"applying them, and the calculating": "the" should be "then"
+-- removed in sec 7.1 rewrite
+page 7:
+"return it to the user. If it is not,": should be "If it does not,"
+-- removed in sec 7.1 rewrite
+"in the 2014 competition the LinExpr_eq1.sl benchmark was only solved by one tool, and took 1128 seconds in 2014": you say 2014 twice.
+-- fixed
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 19
+TITLE: Programming Music by Example: Synthesizing Digital Signal Processing Programs
+AUTHORS: Mark Santolucito, Kate Rogers, Aedan Lombardo and Ruzica Piskac
+
+Overall evaluation: 1 (weak accept)
+
+----------- Overall evaluation -----------
+In this paper, the authors introduce the problem of synthesizing a digital signal processing program from waveform examples. To state the problem, they define a distance function that approximately measures how close two waveforms are, at least when perceived by a human ear. In order to make progress on a solution, they focus on very simple programs, namely the combination of a low-pass and a high-pass filter. Then, the problem becomes one of finding two filter parameters such that an input waveform is mapped close to an output waveform. They apply the method of gradient descent to this problem, not without difficulty. Finally, they present the results of a prototype implementation.
+
+It is my opinion that the paper introduces a problem that is both intriguing and relevant to making art. (I sure have spent hours watching YouTube videos trying to figure out how a particular sound effect is made…) Unfortunately, the paper struggles with the problem and has trouble connecting with functional programming principles, see below. Nonetheless, I find the idea sufficiently intriguing to recommend this paper for presentation at FARM.
+
+
+The paper struggles. My guess is that it was originally conceived as a project in program synthesis, where interesting DSP programs would be assembled and techniques from programming language design and functional programming could be used. Unfortunately, it then turned out that fitting the parameter for a single high-pass filter is already a challenging problem. The authors do their best to climb the high slopes of gradient descent and implement a program that, at least, works. Section 7 tries to bring back some language design, but I am unconvinced of its effectiveness or generality.
+
+I am nonetheless intrigued, and would like to give two separate suggestions for this direction of research:
+
+1. If the science doesn’t work, make art.
+
+This is especially relevant for a submission to FARM. In the introduction, the authors mention that “the generated DSP program could be applied to a violin to hear what a violin sounds like if it was a trumpet that had been turned into a trombone.” I would still love to hear a program that attempts this, even if the result is “wrong” by any scientific measure. Perhaps randomly generate DSP programs, perform some not-so-successful gradient descent, and let a human decide whatever s/he likes? The result doesn’t have to be correct to qualify as art, it only has to be funny, weird or interesting.
+
+-- TODO add a pitch shift filter and just see how close we get
+
+The advantage of this approach would be that the focus would still be on programming languages and program generation, and much less on parameter fitting.
+
+2. Acquire more expertise in digital signal processing to solve the science.
+
+The authors make solid steps to address the problem of fitting a parameter to audio data, defining a distance measure and arguing about convexity of the cost function.
+
+The details, however, give me the impression that more DSP expertise is needed:
+        * The description of the FFT on page 3 is confused. The FFT bin size sets a lower limit to the frequency resolution. This seems relevant for distinguishing peak positions in frequency space, but the exact relation to the distance function remains unclear. More generally, spectrograms over time can be captured by the Wigner-Ville distribution, see e.g. [Cohen 1989](http://people.ee.duke.edu/~lcarin/cohen.pdf).
+        * In the discussion of the gradient descent, it is argued that the cost function is convex, but in practice, it turns out not to be. I would recommend more investigation into this issue, possibly even redefining the cost function. Convexity of the cost function doesn’t help when the subspace that can be reached by the parameters is not convex anymore, I think that’s what’s happening here.
+        -- I think I need some clarification on what the reviewer means here
+        * Table 1 seems to contain several typos. Why is the third row called “associativity” when it compares different pitches? Why do `PianoC` and `PianoCSharp` have a distance of `0` in this row?? There seem to be equal signs missing in the last three rows of the third column.
+        -- Table 1 indeed was a mess. It has been reworked to fix typos and hopefully be more clear.
+        * The legend in Figures 3,4,5 currently records the filename. I recommend to make it more descriptive.
+        -- TODO gnuplotting
+For this direction of research, I would actually recommend to forgo hand-developed tools and instead use established toolboxes like MATLAB for FFT, fitting and data analysis. This eliminates the need to spend time on reimplementing established numerical methods. The drawback is, of course, that the relation to programming language design is diminished. But there is always the first suggestion…
+
+Last but not least, it just occurred to me that there is always a filter/amplifier that maps one waveform to the other. It can be calculated by calculating the FFT of the whole waveform (not spectrograms), and then dividing the output amplitudes by the input amplitudes (with phase). That's it. (This is related to the idea at the end of section 7.)  Then, the task of a synthezising program would be to simplify this filter, for instance by decomposing it into band-passes, or by going into the time domain and varying parameters (Wigner-Ville distribution). A focus on filters and their parameters seems like a well-defined starting point to the whole problem, actually.
+
+  -- hmm this is a very interesting point. We were so focused on the original problem of general DSP that we didn't realize once you restrict yourself to filters/amplifiers there are stronger strategies. This would be a good point for future work.
+
+---
+Further remarks:
+
+The link in reference [REW 2018] is missing a `http://` prefix.
+-- fixed
+
+----------------------- REVIEW 4 ---------------------
+PAPER: 19
+TITLE: Programming Music by Example: Synthesizing Digital Signal Processing Programs
+AUTHORS: Mark Santolucito, Kate Rogers, Aedan Lombardo and Ruzica Piskac
+
+Overall evaluation: 2 (accept)
+
+----------- Overall evaluation -----------
+The paper presents an approach to programming "without programming", which is potentially interesting. It is unclear how this can be scaled up to real music programming problems, but it is certainly a good  avenue for future research. The paper lacks more details/discussion on how this approach fits the functional programming remit of the conference. This should be made more explicit.
+-- TODO connect programming by example to functional programming (as the extreme of "describe what, not how")
