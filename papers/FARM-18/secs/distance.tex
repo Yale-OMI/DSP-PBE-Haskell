@@ -16,19 +16,19 @@ For this work, we used the work of Shazam~\cite{wang2003industrial} as an inspir
 
 
 As an intuition, the psycho-acoustic identity of a sound file (how humans distinguish between one sound and the next) can be captured by taking every ``moment'' of audio, and listing the predominate frequencies for that slice of time.
-This intuition can be represented with a waterfall plot, as shown in Figure~\ref{fig:waterfall}, which plots how the frequencies over time.
+This intuition can be represented with a waterfall plot, as shown in Figure~\ref{fig:waterfall}, which plots how the frequencies change over time.
 A waterfall plot uses the Fast Fourier Transform (FFT) to convert an audio file into a list of spectrograms plotted over time.
 In the Shazam method, the peaks are selected from each time slice of audio and used to create a ``constellation'' of peaks over time. 
-This constellation is then used to build a hash that acts as a fingerprint to uniquely identifies the audio sample.
+This constellation is then used to build a hash that acts as a fingerprint to uniquely identify the audio sample.
 We use a similar strategy by first performing a real Fast Fourier Transform on the audio file and then picking out the frequency peaks in each time frame.
-However, the key difference in DSP-PBE is that we do not use the constellation as a hash for lookup in a database (as Shazam and SoundHound do), but instead, we need a distance metric between two constellations to provide a measure of how close we are to the synthesizing the correct DSP filter.
+However, the key difference in DSP-PBE is that we do not use the constellation as a hash for lookup in a database (as Shazam and SoundHound do), but instead, we need a distance metric between two constellations to provide a measure of how close we are to synthesizing the correct DSP filter.
 Distance metrics are common in music synthesis tasks, for example, in the generation of jazz improvisations, where the improvisation should stay close by some measure to the original melody~\cite{donze2014machine}.
 
 Fast Fourier Transforms (FFT) are the key to a good acoustic fingerprint.
 The FFT, however, cannot be taken as a blackbox in our application.
 The two factors we need to consider are 1) the window-size for how many samples will be used to calculate the FFT, and 2) the bin size which roughly speaking, defines the resolution of the FFT.
 
-Each return element is a frequency \textit{bin}, and depending on the scale of your return array the size of this bins varies.
+Each return element is a frequency \textit{bin}, and depending on the scale of your return array the size of these bins varies.
 In order for each bin to correspond to 1 Hz the size of the return vector must be equal to the sampling frequency (44,100 Hz).
 If each bin is not 1 Hz, the effects of spectral leakage will be seen.
 This occurs when the bins do not correspond to the exact frequency peaks of the sound.
@@ -36,7 +36,7 @@ The amplitude from the peaks that fall in between bins will \textit{leak} over i
 For this reason we had to adjust the size of the FFT return arrays to be 44,100.
 Although this slows down the process of FFT, it provides the most accurate representation of the sound and for our purposes frequency accuracy is paramount.
 
-With our constellations created from the waterfall plot, we chose a \texttt{dist} function that we measures the aural distance and be faithful to the psycho-acoustics of the human ear.
+With our constellations created from the waterfall plot, we constructed a \texttt{dist} function in measuring the aural distance and is faithful to the psycho-acoustics of the human ear.
 Our implementation takes the Euclidean distance of the peaks in a time slice on the frequency-amplitude axis.
 In order to define this distance more formally, we introduce the notation $c@t$ to indicate selecting time slice $t$ from constellation $c$.
 We also use the function $peak:: Int \to Constellation \to Peak$ to select a peak from a constellation, where the peaks are in sorted order based on frequency.
@@ -52,14 +52,28 @@ As a sanity check that this distance metric matches the psycho-acoustic definiti
 
 \begin{table*}[!h]
 \centering
-\begin{tabular}{|c || c | c|} 
+\begin{tabular}{|l | c | c|} 
  \hline
- Identity & dist(PianoC, PianoC) = 0 & \\ 
- Associativity & dist(PianoC, PianoCSharp) = 0 & dist(PianoCSharp, PianoC) = 0 \\
- Associativity & dist(PianoC, HornCSharp) = 0 & dist(HornCSharp, PianoC) = 0 \\
- Filter less than pitch & dist(PianoC, PianoFilterC) = 3.749 & dist(PianoC, PianoCSharp) 5.635 \\
- Filter less than pitch+instrument & dist(PianoC, PianoFilterC) = 3.749 & dist(PianoC, HornCSharp)  20.500 \\
- Pitch less than pitch+instrument & dist(PianoC, PianoCSharp) = 5.635 & dist(PianoC, HornCSharp)  20.500 \\
+ Test Name \& Expected Result & Value 1 & Value 2 \\
+ \hline
+ \hline
+ Identity & \multirow{2}{*}{(PianoC, PianoC) = 0} & \multirow{2}{*}{NA}\\ 
+   \quad Value 1 = 0 &  & \\
+ \hline
+ Associativity & \multirow{2}{*}{(PianoC, PianoCSharp) = 5.635} & \multirow{2}{*}{(PianoCSharp, PianoC) = 5.635} \\
+   \quad Value 1 = Value 2  & & \\
+ \hline
+ Associativity & \multirow{2}{*}{(PianoC, HornCSharp) = 20.500} & \multirow{2}{*}{(HornCSharp, PianoC) = 20.500} \\
+   \quad  Value 1 = Value 2 & & \\
+ \hline
+ Filter less than pitch & \multirow{2}{*}{(PianoC, PianoFilterC) = 3.749} & \multirow{2}{*}{(PianoC, PianoCSharp) 5.635} \\ 
+   \quad Value 1 $<$ Value 2 & & \\
+ \hline
+ Filter less than pitch+instrument & \multirow{2}{*}{(PianoC, PianoFilterC) = 3.749} & \multirow{2}{*}{(PianoC, HornCSharp) 20.500} \\
+   \quad Value 1 $<$ Value 2 & & \\
+ \hline
+ Pitch less than pitch+instrument & \multirow{2}{*}{(PianoC, PianoCSharp) = 5.635} & \multirow{2}{*}{(PianoC, HornCSharp) 20.500} \\
+   \quad Value 1 $>$ Value 2 & & \\
  \hline
 \end{tabular}
 \caption{Test cases to evaluate distance metric. The exact values are only important in relationship to the others.}
@@ -67,7 +81,7 @@ As a sanity check that this distance metric matches the psycho-acoustic definiti
 \end{table*}
 
 
-The goal in the synthesis procedure is find a DSP filter program, $F$, such that \texttt{dist$(O, F(I))$ = 0}.
+The goal in the synthesis procedure is to find a DSP filter program, $F$, such that \texttt{dist$(O, F(I))$ = 0}.
 However, in practice the DSP-PBE Synthesizer can only get us so close to this metric and we instead just minimize this distance.
 To do this, the user specifies a default threshold distance for the aural distance.
 The threshold distance defines how close is acceptably close, and can be changed by the user depending on their needs or requirements.

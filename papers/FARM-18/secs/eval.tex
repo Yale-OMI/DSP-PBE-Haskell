@@ -1,4 +1,5 @@
 \section{Evaluation}
+\label{sec:eval}
 \begin{table*}[!ht]
 \centering
 \setlength\tabcolsep{2em}
@@ -28,12 +29,12 @@ Gradient descent works best when all parameters are in the same scale, so we map
 Likewise, we map the application levels for each filter (how much of the filtered output should be included in the final mix) on a [-1,1] scale.
 
 In Table~\ref{table:eval}, we show the results of running our tool on a set of benchmarks of input/output example audio samples.
-The audio samples were transform in Audacity, using the Low Pass Filter and High Pass Filter effects.
+The audio samples were transformed in Audacity, using the Low Pass Filter and High Pass Filter effects.
 Since we use SuperCollider's filter implementations on the backend, there may be very slight variation, but this is to be expected in real-world application as well.
-All experiments were run on an Intel Core i7-6820HQ CPU @ 2.70GHz with 16 GB of RAM and a Intel Sunrise Point-H HD Audio sound card.
+All experiments were run on an Intel Core i7-6820HQ CPU @ 2.70GHz with 16 GB of RAM and an Intel Sunrise Point-H HD Audio sound card.
 
 
 We can also breakdown the runtime cost of synthesis into the two different stages - 1) initial program selection, and 2) gradient descent.
 The initial program selection phase is a mostly fixed cost, as we always evaluate the same distribution of initial value.
-On average this, process takes 40 seconds.
+On average this process takes roughly 40 seconds.
 We outline future directions of research that may be able to reduce this cost in Section~\ref{sec:rtypes}.

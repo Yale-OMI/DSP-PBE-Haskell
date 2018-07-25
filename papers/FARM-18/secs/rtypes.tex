@@ -5,23 +5,27 @@ In order to find an initial value for gradient descent, we could use refinement 
 In this section we explore a possible optimization for selecting an initial DSP program for gradient descent.
 This has not yet been implemented, but we present the theory behind the approach.
 
+\subsection{Refinement Types for DSP}
+\label{sec:retypeSearch}
 Refinement types are a way of giving an abstract description of the behavior of a function. 
-For example, we given the function 
+For example, given the function 
 %
-\texttt{map::[a]} $\to$ \texttt{[b]}
+\texttt{map :: [a]} $\to$ \texttt{[b]}
 %
 we can further provide a refinement types that captures some properties of the behavior of this function over values:
-
-\texttt{f::xs:[a]} $\,\to\,$ \texttt{ys:[b]} \textbar \texttt{ length xs == length ys}
+%
+\begin{align*}
+\texttt{f :: xs:[a]} \to\ \texttt{ys:[b]}\ \mid \texttt{ length xs == length ys}
+\end{align*}
 
 \noindent In this case, the refinement type describes that the length of the lists are still equal after applying the \texttt{map} function.
 
 In a similar style for DSP, we can write predicates about the filters available to us during synthesis. 
 For example, a low-pass filter could be described as the refinement type that says the amplitude of the frequencies greater than the threshold frequency have decreased in the output Audio.
 For brevity in notation, we will only treat a single time slice from the waterfall plot here, but the concept generalizes when quantified over all time slices as well.
-
+%
 \begin{align*}
-  &\texttt{lpf::t:Float} \to  \texttt{xs:Audio} \to\ \texttt{ys:Audio}\ \mid \\
+  &\texttt{lpf :: t:Float} \to  \texttt{xs:Audio} \to\ \texttt{ys:Audio}\ \mid \\
   &\forall f_1 \in  \texttt{spectrogram(xs)}.\ \forall f_2 \in \texttt{spectrogram(ys)}. \\
   &(f_1 > \texttt{t}  \land  f_2 > \texttt{t}  \land f_1 == f_2) \implies \texttt{amp}(f_1) > \texttt{amp}(f_2)
 \end{align*}
@@ -29,27 +33,37 @@ For brevity in notation, we will only treat a single time slice from the waterfa
 Where \texttt{t} represents the level at which the lowpass filter is applied, \texttt{spectrogram} represents the spectrogram of the sound sample, $f_i$ represents a frequency, and \texttt{amp()} represents the amplitude of the frequency. 
 
 Additionally, a high-pass filter could be described as the refinement type that says the amplitude of the frequencies less than the threshold frequency have decreased in the output Audio.
-
-\centerline{ \texttt{hpf::t:Float} $\,\to\,$  \texttt{xs:Audio} $\,\to\,$ \texttt{ys:Audio} \textbar }
-\centerline{\texttt{ ($\forall$$f_1$ $\in$ spectrogram(xs)}, \texttt{ $\forall$$f_2$ $\in$ spectrogram(ys))}: } \centerline{($f_1$ $\textless$ \texttt{t}  $\land$  $f_2$ $\textless$ \texttt{t}  $\land$  $f_1$ == $f_2$ $\implies$ \texttt{(amp($f_1$) $\textgreater$ amp($f_2$))}} ~\\
-Where \texttt{t} represents the level at which the highpass filter is applied, \texttt{spectrogram} represents the spectrogram of the sound sample, $f_i$ represents a frequency, and \texttt{amp()} represents the amplitude of the frequency. 
+%
+\begin{align*}
+  &\texttt{hpf :: t:Float} \to\ \texttt{xs:Audio} \to\ \texttt{ys:Audio}\ \mid \\
+  &(\forall f_1 \in \texttt{spectrogram(xs)}. \forall f_2 \in \texttt{spectrogram(ys)}). \\
+  &(f_1 < \texttt{t} \land f_2 < \texttt{t} \land f_1 == f_2) \implies \texttt{amp(}f_1\texttt{)} > \texttt{amp(} f_2 \texttt{)} 
+\end{align*}
 
 Notice that in these refinement types, we only need to calculate the spectrogram for the input and output statically.
 As opposed to the current technique of generating filters, applying them, and the calculating the aural distance, this approach is relatively static.
-We could quickly check many threshold values over the input and output examples. 
+We could quickly check many threshold values over the input and output examples.
 This will only yield a rough boolean estimation of whether this threshold should even be considered, but this is enough information for us to select an initial program to pass to our gradient descent algorithm.
+As the search for an initial filter takes roughly 40 seconds out of our current benchmarks, this could dramatical increase the speed of synthesis.
 
 \subsection{Combination of Search Algorithms}
 
-Beyond just using the refinement types to select an initial program for gradient descent, we can use refinement types in other ways.
-One hypothesis as to how we would combine both algorithms would be through a feedback loop.
-We will use the refinement types to select a filter with a parameter.
-We then send that information into gradient descent to find a more precise filter representation (more accurate parameter measure).
-We will then apply this filter with the new parameter value from gradient descent to the input sound sample.
-Next, we will send this new sound sample $(\synthFilter(I))$ and the original output sound sample $(O)$ to the aural distance function \texttt{dist}.
-If the \texttt{dist} function returns a value lower than the threshold distance given by us or the user, then we will accept that filter and return it to the user.
-If it is not, we will attempt to refine our parameter for the filter.
-This loop could become more complicated as multiple filters could be applied to one sound sample once the parameter has been tuned to the best value.
+Beyond just using the refinement types to select an initial program for gradient descent, we can use refinement types in as part of the main search strategy as well.
+We briefly describe here a way to use refinement types in combination with gradient descent to handle more complex combinations of DSP filters.
+So far in our work (\textit{c.f.} Sec.~\ref{sec:eval}) we have synthesized filters with a fixed form - all our solutions use a single low-pass filter, and a single high-pass filter.
+Ideally, we would be able to synthesize solutions that use any arbitrary combination of filters.
+In order to do this, we would need an iterative solution that can find one filter at a time.
 
-
+In this approach, given input example \texttt{x:Audio} and output example \texttt{y:Audio}, we would first find a filter \synthFilter' using the approach described in Sec.~\ref{sec:search} and Sec.~\ref{sec:rtypeSearch}.
+We will say that this \synthFilter' has the refinement type $r_1$.
+However, this filter might not return a satisfactory result.
+We could then continue the search using the output of \synthFilter'\texttt{(x)} as the new input example, \texttt{z:Audio}.
+Now the synthesis task is to find a filter \synthFilter'' (with refinement type $r_2$) using input example \texttt{z:Audio} and output example \texttt{y:Audio}.
+Essentially, \synthFilter' has gotten us the first half of the way, and \synthFilter'' will get us the second half of the way.
+With this, we can start to use more information rich refinement types, such as below:
+%
+\begin{align*}
+\synthFilter \texttt{:: } & \texttt{x:Audio} \to\ \texttt{y:Audio}\ \mid \\
+   & \exists \ \texttt{z:Audio}.\ r_1\texttt{(x,z)} \land r_2\texttt{(z,y)}
+\end{align*}
 

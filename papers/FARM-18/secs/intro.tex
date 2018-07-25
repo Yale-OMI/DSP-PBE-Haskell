@@ -1,15 +1,15 @@
 \section{Introduction}
 
 The great proliferation of computer music programming languages points to the difficulty of building a natural interface for users that want to computationally interact with musical data.
-Programming applications in the domain of computer music, and specifically digital signal processing (DSP), requires that users not only grasp fundamental programming techniques, but also have a large domain specific knowledge on time and signal manipulations.
+Programming applications in the domain of computer music, and specifically digital signal processing (DSP), requires that users not only grasp fundamental programming techniques, but also have a large domain specific knowledge of time and signal manipulations.
 The amount of prerequisite skill and effort to overcome these barriers is often higher than many users are able to commit.
 
 Furthermore, the difficulty of programming DSP applications is often not commensurate with the creative intentions. 
 As a motivating example, imagine a user hears a sample in a piece of music, and again hears the same sample later in the piece with some added effects.
-In order to reuse this effect the user's own musical composition, the user must now reconstruct the filter that was used to transform an audio clip. 
+In order to reuse this effect in the user's own musical composition, the user must now reconstruct the filter that was used to transform an audio clip. 
 In this case the user has the original audio file, and the transformed audio file, but does not know exactly how this transformation happened.
 In the standard approach, a user would need to be a domain expert and listen to the two files, and aurally estimate which kinds of filters were used to achieve the transformation. 
-Once the user has some suspicion as to the appropriate filter types that will be needed, the user must write a program in some language (SuperCollider~\cite{supercollider}, CSound~\cite{csound}, PureData~\cite{puredata} etc) to implement the DSP filter the user has in mind. 
+Once the user has some suspicion as to the appropriate filter types that will be needed, the user must write a program in some language (SuperCollider~\cite{supercollider}, CSound~\cite{csound}, PureData~\cite{puredata}, etc) to implement the DSP filter the user has in mind. 
 Further still, the user will then need to spend time tweaking the filter parameters to find the best fit. 
 
 
@@ -17,7 +17,7 @@ To simplify this process, we introduce \textit{DSP programming by example} (DSP-
 With DSP-PBE, the user simply provides our tool with the original audio (input), and the transformed audio (output), and the tool will automatically construct a DSP filter that approximates the transformation.
 
 We formally define the problem of DSP programming by example as follows:
-Given an input waveform $I$ and an output waveform $O$, construct a DSP filter $\synthFilter$, to minimize the aural distance $dist$ between the $O$ and $\synthFilter(I)$.
+Given an input waveform $I$ and an output waveform $O$, construct a DSP filter $\synthFilter$, to minimize the aural distance $dist$ between $O$ and $\synthFilter(I)$.
 In a single line:
 %
 \begin{align*}

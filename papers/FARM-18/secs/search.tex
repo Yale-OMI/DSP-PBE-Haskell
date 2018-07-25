@@ -3,14 +3,14 @@
 
 As the search space of possible DSP program is extremely large, our search procedures must be exceptionally efficient. 
 As a first foray into DSP-PBE, we restrict ourselves to only synthesizing low-pass and high-pass filters, and global volume adjustment.
-These two filters have the key property that they are quasi-commutative - when the thresholds of these filters do not overlap, applying a low-pass and then a high-pass is the same as applying a high-pass and then a low-pass.
+These two filters have the key property that they are quasi-commutative -- when the thresholds of these filters do not overlap, applying a low-pass and then a high-pass is the same as applying a high-pass and then a low-pass.
 We leave the exploration of non-commutative filters (for example, delay lines or ring filters) to future work.
 
 \subsection{Gradient Descent}
 
 Gradient descent is a technique commonly used in modelling and machine learning.
 Given a cost function, which represents the disagreement between a proposed model and the actual data, gradient descent can be used efficiently to minimize the cost and generate the model of best fit.
-One key restriction on the cost function is that it must be convex - this is because gradient descent will ``descend'' along the surface of the cost function, in each step following the steepest gradient.
+One key restriction on the cost function is that it must be convex -- this is because gradient descent will ``descend'' along the surface of the cost function, in each step following the steepest gradient.
 We have carefully designed our aural distance function from Section~\ref{sec:distance} to be as close to convex as possible.
 
 \begin{figure}[!h]
@@ -23,39 +23,44 @@ In order to visualize the convexity of our distance metric, we plot the distance
 Here we only visualize the distance curves in the dimension of the low-pass filter.
 Notice that the curves exhibit a clear ``saddle'', which represents the minimum cost.
 In the ideal case, gradient descent will find these points.
-Note that we do not have these graphs available during synthesis - producing the entire graph as in Figure~\ref{fig:distCurves} is prohibitively expensive.
+Note that we do not have these graphs available during synthesis -- producing the entire graph as in Figure~\ref{fig:distCurves} is prohibitively expensive.
 
 In Figure~\ref{fig:distCurves}, the last curve we plot is the distance between \texttt{cartoon-spring.wav} and \texttt{cartoon-spring-hpf1500.wav}, the same file with a high pass filter applied with a threshold of 1500 Hz.
 Notice that as the threshold of the low-pass filter applied to the input example (\texttt{cartoon-spring.wav} increases, the distance to the output example decreases. 
-This is because as a low-pass filter's threshold increases, it allows more and more frequencies to pass into the output - thereby having less of an effect.
+This is because as a low-pass filter's threshold increases, it allows more and more frequencies to pass into the output -- thereby having less of an effect.
 Whereas in the case of the \texttt{cartoon-spring-hpf1500.wav}, the true filter is a high-pass filter, so the less we apply a low-pass filter, the closer we get to the correct filter.
 
-\begin{figure}[!h]
+\begin{figure}
 \includegraphics[width=\columnwidth]{figs/distCurveZoom} 
 \caption{Zooming in (1000 to 1500 Hz) on a portion of a curve from Figure~\ref{fig:distCurves}, we see the aural distance function is not perfectly convex on the micro scale.}
 \label{fig:microDist}
 \end{figure}
 
-There are a number challenges with working with gradient descent in the aural DSP domain.
-The first is that the domain can have a high number of dimensions to search.
-In our implementation, we only explore a two DSP filters and volume adjustment, but this results in 5 dimensional space (each filter requires both a threshold value and an amplitude value for how much of the filter to apply).
+Although Fig.~\ref{fig:distCurves} depicts on one dimension of the search space (low-pass filter threshold), the actual space we need to search has many more dimensions.
+In our implementation, we only explore a space of two DSP filters and volume adjustment, but this already results in 5 dimensional space (each filter requires both a threshold value and an amplitude value for how much of the filter to apply).
+In general, this space becomes even larger for DSP-PBE as more DSP primitives (ring filter, white noise, delay etc) are added.
 To speed up gradient descent, we use stochastic gradient descent, so that in each step, we only move in $d<5$ number of dimensions.
 
-Additionally, on the micro scale, the distance function is susceptible to noise and not entirely smooth, as shown in Figure~\ref{fig:microDist}.
+\subsection{Non-convex spaces}
+There are a number challenges with working with gradient descent in the aural DSP domain.
+On the micro scale, the distance function is susceptible to noise and not entirely smooth, as shown in Figure~\ref{fig:microDist}.
 In order to handle the micro scale variations, we use a periodic restart of the gradient descent.
-This means that every $n$ rounds, as defined by the user (we use 4), the gradient descent will backtrack to the best solution it has found so far.
+This means that every $n$ rounds, as defined by the user, the gradient descent will backtrack to the best solution it has found so far.
+Intuitively, the choice of $n$ represents how far gradient descent is allowed to explore a path of optimization before it is forced to give-up on that direction if it has not found any benefit to this direction.
+The best value for $n$ then must be determined based on the trade-off of potential time wasted on poor choices, and the potential benefit of these choices.
+In our implementation we use $n=4$ after a holistic evaluation of the convexity of the aural distance function.
 The stochastic gradient descent will then continue, selecting dimensions to explore in each round using a new random seed.
 
-\begin{figure}[!h]
+\begin{figure}
 \includegraphics[width=\columnwidth]{figs/distCurveMacro} 
 \caption{Looking at the portion of a curve from Figure~\ref{fig:distCurves} between 8k Hz and 20k Hz, we see the aural distance function is not perfectly convex on the macro scale. In this case, that is because the sample has very few frequencies above the 8k Hz range.}
 \label{fig:macroDist}
 \end{figure}
 
-On the macro scale, we face the challenge that the distance function is only quasi-convex - there are many local minimum and long plateaus, as shown in Figure~\ref{fig:macroDist}.
+On the macro scale, we face the challenge that the distance function is only quasi-convex -- there are many local minima and long plateaus, as shown in Figure~\ref{fig:macroDist}.
 In order to overcome this, we must carefully pick the initial value for gradient descent.
 If we pick a value in the middle of a plateau, the gradient descent algorithm will not find any significant gradient, and conclude we have reached the convergence condition.
-In our current implementation, we iterate at large intervals (1000 Hz) possible threshold values for both low and high pass filters.
+In our current implementation, we iterate at large intervals (1000 Hz) of possible threshold values for both low and high pass filters.
 We choose possible DSP programs that use only low pass, only high pass, and both low and high pass filters.
 After evaluating these, we take the lowest cost initial DSP program, and start gradient descent from that point.
 
