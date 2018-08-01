@@ -13,10 +13,14 @@ However, some changes might help readers better understand the paper:
 1) The link to the .wav files could be added to section 2 "Motivating Example" for demonstrating the problem clearer
 2) In section 3, "examples are, by nature, an incomplete specification" is insightful, and this very much relates to supervised machine learning research. It would be great to see such a comparison: what are the advantages of this system over machine learning, for example?
 3) Is the word "spectrograph" (not spectrogram?) correctly used in section 3, last paragraph?
+-- should be spectrogram, fixed
 4) At the end of section 3, the trumpet -> trombone, violin -> ? example is very nice. Perhaps cello will immediately comes to mind. And it would be great if the paper could come back to this point after implementing the system. 
+-- TODO coding
 5) The statement "Acoustic fingerprints represent how the file will sound to the human ear regardless of how it is represented in a digital format" needs references. 
+-- added a citation, also reworded to be less strong of a statement
 6) In choosing the parameters for FFT, would it make it a stronger argument if 44100 is a widely used number? Or if not commonly used, why this paper only has the leakage problem with <44100?
-7) Dynamic Time Warping could solve the alignment problem of audio clips. 
+7) Dynamic Time Warping could solve the alignment problem of audio clips.
+-- This is a good idea to explore in future work, thank you!
 8) Section 5 only has one subsection
 -- added a subsection header to indicate where we specifically address non-convexity of the aural distance function.
 9) In gradient descent, why n=4 was chosen? 

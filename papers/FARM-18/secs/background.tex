@@ -17,7 +17,7 @@ A DSP filter is, broadly speaking, any program that transforms a digital signal 
 An example of a DSP filter is a low-pass filter, which takes an input signal and generates an output signal that keeps frequencies below some frequency threshold, but removes frequencies above that threshold.
 
 The most closely related work in audio signal processing is a technique called resynthesis~\cite{masri1996improved}.
-Resynthesis is the process of decomposing a sound into its spectrograph, and then building a synthesizer to recreate a similar sound.
+Resynthesis is the process of decomposing a sound into its spectrogram, and then building a synthesizer to recreate a similar sound.
 The limitation here is that resynthesis builds a generative synthesizer, which does not take into account any information about the components used to create the original sound.
 This limitation means that resynthesis cannot be applied in a new context, whereas DSP-PBE allows us to construct a DSP program that can be used with various new input samples to create novel sounds. 
 For example, DSP-PBE could be given a sample of a trumpet and a trombone, and the generated DSP program could be applied to a violin to hear what a violin sounds like if it was a trumpet that had been turned into a trombone.
