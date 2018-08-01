@@ -33,13 +33,14 @@ synthCode (in_filepath,in_audio) (out_filepath,out_audio) = do
   debugPrint $ show myInitFilter
   --Once we have an initFilter, we refine it with SGD
   synthedFilter <- refineFilter in_filepath (out_filepath,out_audio) myInitFilter
-  runFilter (S.tmpDir++S.finalWav) in_filepath $ toVivid synthedFilter
+  runFilter (S.tmpDir++S.finalWav) in_filepath (toVivid synthedFilter) 1.0
   return synthedFilter
 
 -- | selects the thetas should we vary during GD
---thetaSelectors = [lpfThreshold, hpfThreshold,ringzFreq,ringzDecaySecs,ringzApp,lpfApp,hpfApp,whiteApp,ampApp]
+thetaSelectors = [lpfThreshold, hpfThreshold,ringzFreq,ringzDecaySecs,ringzApp,lpfApp,hpfApp,whiteApp,ampApp,pitchShiftFreq,pitchShiftApp]
 --thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, whiteApp, ampApp]
-thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, ampApp]
+--thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, ampApp]
+--thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, ampApp, pitchShiftFreq, pitchShiftApp]
 --thetaSelectors = [lpfThreshold, lpfApp, ampApp]
 
 optimize rGen tester initFilter = multiVarSGD
@@ -47,9 +48,10 @@ optimize rGen tester initFilter = multiVarSGD
     rGen
     4 --batch size (how many directions to test)
     0.01 --convergance goal
-    0.000005 --learn rate
+    1 --learn rate
+    --0.0005 --learn rate
     initFilter
-    (Thetas {_lpfThreshold=2,_hpfThreshold=2,_ringzFreq=2,_ringzDecaySecs=2,_ringzApp=2,_lpfApp=2,_hpfApp=2,_whiteApp=1,_ampApp=1})
+    (Thetas {_lpfThreshold=2,_hpfThreshold=2,_pitchShiftFreq=2,_ringzFreq=2,_ringzDecaySecs=2,_ringzApp=2,_lpfApp=2,_hpfApp=2,_whiteApp=1,_ampApp=1,_pitchShiftApp=1})
     H.empty
     tester
 

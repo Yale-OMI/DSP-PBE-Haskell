@@ -43,7 +43,7 @@ multiVarSGD thetaSelectors g batchSize goal !learnRate !t bestTheta cache costFx
     -- build the call to try again using updatedThetas, allowing us to explore worse directions, but every n step returning to best
     continueGD = multiVarSGD thetaSelectors (snd $ next g) batchSize goal newLearnRate t' newBestTheta newCache' costFxn
     -- converge if you try to descend and still find the same best thetas (within the goal threshold)
-    converged = thetaDiff updatedThetas bestTheta <= goal
+    converged = (thetaDiff updatedThetas bestTheta <= goal && (H.size cache >10)) || (H.size cache > 60)
 
   debugPrint $ "Current best candidate is"++(indent $ show $ thetaToFilter newBestTheta)
   debugPrint $ "Current score is "++(show currentScore)
@@ -67,27 +67,28 @@ stochasticBatch g batchSize xs =
 
 takeStep :: Double -> Thetas -> (Thetas -> IO Double) -> (Thetas,ResCache) -> _ -> IO (Thetas,ResCache)
 takeStep learnRate t f (updatedTheta,cache) part = do 
-  (deriveCalc, newCache) <- partialDerivative f part t cache
-  let newTheta = over part (\x -> x - (min 0.2 (learnRate * deriveCalc))) updatedTheta --not allowed to move more than 0.2 in a single step
-  let boundedNewTheta = over part (\x -> max (-1) $ min 1 $ x) newTheta
-  debugPrint ("Adjusting "++(thetaFieldChange newTheta updatedTheta)++" by "++(show (thetaDiff updatedTheta boundedNewTheta)))
-  debugPrint ("Scoring program...\n"++(indent $ show $ thetaToFilter boundedNewTheta))
+  (slope, newCache) <- partialDerivative f part t cache
+  let newTheta = over part (\prevVal -> boundUpdate learnRate prevVal slope) updatedTheta --not allowed to move more than 0.2 in a single step
+  debugPrint ("Adjusting "++(thetaFieldChange newTheta updatedTheta)++" by "++(show (thetaDiff updatedTheta newTheta)))
+  debugPrint ("Scoring program...\n"++(indent $ show $ thetaToFilter newTheta))
   debugPrint ""
-  return (boundedNewTheta, newCache)
+  return (newTheta, newCache)
 
+boundUpdate learnRate prevVal slope =
+  max (-1) $ min 1 $ (prevVal - (min 0.2 (learnRate * slope)))
 
 -- TODO there must be a better way
 -- but for now just move in one direction and interpolate 
 partialDerivative :: (Thetas -> IO Double) -> _ -> Thetas -> ResCache -> IO (Double, ResCache)
 partialDerivative f part t cache = do
-  let s = 0.001 --derivative step size
+  let s = 0.0001 --derivative step size
   --lookup/add to cache
-  (score1, newCache) <- runCostFxnWithCache cache f t
+  (score1, newCache') <- runCostFxnWithCache cache f t
   debugPrint $ "Calculating Partial Derivative wrt "++(thetaFieldChange t (over part (\x -> x+s) t))
-  -- x2 is not likely to ever be calculated again, so dont bother saving it in the newCache
-  score2 <- f (over part (\x -> x+s) t)
-  debugPrint $ "Derivative in "++(thetaFieldChange t (over part (\x -> x+s) t))++" = "++(show $ (score1-score2)/s)
-  return $ (((score2 - score1) / s), newCache)
+  (score2, newCache) <- runCostFxnWithCache newCache' f (over part (\x -> x+s) t)
+  let adjustment = ((score1-score2)/s)
+  debugPrint $ "Derivative in "++(thetaFieldChange t (over part (\x -> x+s) t))++" = "++(show adjustment)
+  return $ (adjustment, newCache)
 
 runCostFxnWithCache :: ResCache -> (Thetas -> IO Double) -> Thetas -> IO (Double,ResCache)
 runCostFxnWithCache cache f t = 

@@ -19,7 +19,7 @@ import Vivid
 testFilter :: FilePath -> (FilePath, AudioFormat) -> Filter -> IO AuralDistance
 testFilter in_fp (out_fp,outAudio) f= do
   let vividCode = toVivid f
-  newOutFilepath <- runFilter "tmp2/out.wav" in_fp vividCode
+  newOutFilepath <- runFilter "tmp2/out.wav" in_fp vividCode 1.0
   newAudio <- importFile newOutFilepath :: IO(Either String AudioFormat)
   case newAudio of
     Left e -> error e
@@ -27,15 +27,14 @@ testFilter in_fp (out_fp,outAudio) f= do
     Right a -> auralDistance (out_fp,outAudio) (newOutFilepath,a)
 
 
-runFilter :: FilePath -> FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> IO(String)
-runFilter out_filepath srcFile vCode = do
-   writeNRT out_filepath $ vAction srcFile vCode
+runFilter :: FilePath -> FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> Float -> IO(String)
+runFilter out_filepath srcFile vCode secsToGenerate = do
+   writeNRT out_filepath $ vAction secsToGenerate srcFile vCode 
    return out_filepath
 
 
-vAction :: FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> _
-vAction srcFile vCode = do
-   -- TODO how to remove a buffer?
+vAction :: Float -> FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> _
+vAction secsToGenerate srcFile vCode = do
    b <- newBufferFromFile srcFile
 
    play $ do
@@ -45,6 +44,6 @@ vAction srcFile vCode = do
      vCode $ toSig s0
 
    -- This is janky and there's a solution:
-   wait 1.0 -- length in secs of the sample
+   wait secsToGenerate -- length in secs of the sample
    closeBuffer b
 

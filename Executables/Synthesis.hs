@@ -18,16 +18,20 @@ main = do
   setFileSystemEncoding utf8
   setForeignEncoding utf8  
   args <- getArgs
-  when (length args /= 2) $ error "Usage: musicSynth <in file> <out file>"
+  -- a workaround now to transform new audio, pass the target file in on the command line
+  -- TODO have synthesis export a runnable filter
+  when (length args /= 3) $ error "Usage: musicSynth <in file> <out file> <audio to transform>"
 
   let 
       inEx = head args
       outEx = head $ tail args 
+      audioToTransform = head $ tail $ tail args
   fileActions <- mapM importFile [inEx,outEx] :: IO [Either String (AudioFormat)]
-  let testFilters = take 20 $map (\x-> (Thetas {_lpfThreshold=(x),_hpfThreshold=(-1),_ringzFreq=1,_ringzDecaySecs=1,_ringzApp=(-1),_lpfApp=(1),_hpfApp=(-1),_whiteApp=(-1),_ampApp=(1)})) [-(0.99),(-0.98)..]
   case sequence fileActions of
     Right fs -> do
-      synthCode (inEx, head fs) (outEx, head $ tail fs) >>= print --TODO indent here
+      solution <- synthCode (inEx, head fs) (outEx, head $ tail fs)
+      print solution --TODO indent here
+      runFilter "tmp2/transformed.wav" audioToTransform (toVivid solution) 10
     Left e -> error e
   return ()
 
