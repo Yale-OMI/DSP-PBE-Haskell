@@ -12,12 +12,13 @@ As a distance metric, we used as a starting point the literature on acoustic fin
 Acoustic fingerprinting is the concept of creating a condensed, distinct summary of an audio file that can be used later to identify that audio file or to look it up in a database.
 Acoustic fingerprints turn an audio file into a represent how the file will sound to the human ear regardless of how it is represented in a digital format~\cite{fingerprinting}.
 There are numerous ways to develop acoustic fingerprints and companies like Shazam and Sound-Hound have developed complex algorithms to create accurate fingerprints even from low quality files recorded on a cellphone mic.
-For this work, we used the work of Shazam~\cite{wang2003industrial} as an inspiration for our checker. \ruzica{where is this checker coming from?}
+For this work, we used the work of Shazam~\cite{wang2003industrial} as an inspiration for our distance metric calculation.
 
 
 As an intuition, the psycho-acoustic identity of a sound file (how humans distinguish between one sound and the next) can be captured by taking every ``moment'' of audio, and listing the predominate frequencies for that slice of time.
 This intuition can be represented with a waterfall plot, as shown in Figure~\ref{fig:waterfall}, which plots how the frequencies change over time.
-A waterfall plot uses the Fast Fourier Transform (FFT) to convert an audio file into a list of spectrograms plotted over time.
+A waterfall plot uses the Fast Fourier Transform (FFT) to calculate many discrete Fourier transforms over small times slices.
+In this way, a waterfall plot is a representation of an audio file as a list of spectrograms plotted over time.
 In the Shazam method, the peaks are selected from each time slice of audio and used to create a ``constellation'' of peaks over time. 
 This constellation is then used to build a hash that acts as a fingerprint to uniquely identify the audio sample.
 We use a similar strategy by first performing a real Fast Fourier Transform on the audio file and then picking out the frequency peaks in each time frame.
@@ -33,7 +34,7 @@ In order for each bin to correspond to 1 Hz the size of the return vector must b
 If each bin is not 1 Hz, the effects of spectral leakage will be seen.
 This occurs when the bins do not correspond to the exact frequency peaks of the sound.
 The amplitude from the peaks that fall in between bins will \textit{leak} over into the closest bin and create a distorted spectrogram.
-For this reason we had to adjust the size of the FFT return arrays to be 44,100.
+For this reason we had to adjust the size of the FFT return arrays to be 44,100, as 44,100 Hz is a common format for audio.
 Although this slows down the process of FFT, it provides the most accurate representation of the sound and for our purposes frequency accuracy is paramount.
 
 With our constellations created from the waterfall plot, we constructed a \texttt{dist} function in measuring the aural distance and is faithful to the psycho-acoustics of the human ear.

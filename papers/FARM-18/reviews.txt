@@ -19,6 +19,7 @@ However, some changes might help readers better understand the paper:
 5) The statement "Acoustic fingerprints represent how the file will sound to the human ear regardless of how it is represented in a digital format" needs references. 
 -- added a citation, also reworded to be less strong of a statement
 6) In choosing the parameters for FFT, would it make it a stronger argument if 44100 is a widely used number? Or if not commonly used, why this paper only has the leakage problem with <44100?
+-- added a note that 44,100 Hz is a common audio format
 7) Dynamic Time Warping could solve the alignment problem of audio clips.
 -- This is a good idea to explore in future work, thank you!
 8) Section 5 only has one subsection
@@ -32,6 +33,7 @@ However, some changes might help readers better understand the paper:
 12) In section 7, paragraph 4 is almost the same as paragraph 7 with one-word difference. 
 -- removed the second half of paragraph 7 since the notation should be clear without it.
 13) In table 2, caption, "may still be psycho-acoustically equivalent depending on the expertise of the listener", the argument could be stronger with references and listening experiments
+-- Determining the threshold for similarity in our distance metric for real listeners is an important component, but we still have a lot of work to do before we have a distance metric that we are completely happy with.
 14) Section 7 only has one subsection. 
 -- added a subsection header to indicate where we introduce refinement types for FRP
 15) The combination of filters was mentioned in the introduction but was not mentioned thereafter.
@@ -57,11 +59,11 @@ I also have a few questions/comments:
 
 page 3:
 "first performing a real Fast Fourier Transform on the audio file" -- what is meant by "real" here?
--- TODO mention the difference between real FFT vs complex FFT
+-- We mention this to distinguish between real FFT vs complex FFT. We do not need the imaginary/phase part of the DFT, so we can simplify the results we need to parse by using the real FFT.
 
 Section 4:
 You use "Fast Fourier Transform" everywhere, but I think you're conflating the algorithm with the operation.  An FFT is an algorithm that performs a discrete Fourier transform (and does it fast).  Please be clear about when you mean FFT and when you mean DFT.
--- TODO check the literature, im not sure about this...
+-- added a note to clarify this
 
 Section 7:
 I'm not sure if you have space to do so, but you throw a lot at a reader who may not have seen refinement types before.  At least provide a reference about refinement types (and possible a reference to a primer on them), but space permitting, you should describe how to read these types and what they mean.
@@ -153,6 +155,7 @@ It is my opinion that the paper introduces a problem that is both intriguing and
 
 
 The paper struggles. My guess is that it was originally conceived as a project in program synthesis, where interesting DSP programs would be assembled and techniques from programming language design and functional programming could be used. Unfortunately, it then turned out that fitting the parameter for a single high-pass filter is already a challenging problem. The authors do their best to climb the high slopes of gradient descent and implement a program that, at least, works. Section 7 tries to bring back some language design, but I am unconvinced of its effectiveness or generality.
+-- this was very much the case, well spotted.
 
 I am nonetheless intrigued, and would like to give two separate suggestions for this direction of research:
 
@@ -170,17 +173,25 @@ The authors make solid steps to address the problem of fitting a parameter to au
 
 The details, however, give me the impression that more DSP expertise is needed:
         * The description of the FFT on page 3 is confused. The FFT bin size sets a lower limit to the frequency resolution. This seems relevant for distinguishing peak positions in frequency space, but the exact relation to the distance function remains unclear. More generally, spectrograms over time can be captured by the Wigner-Ville distribution, see e.g. [Cohen 1989](http://people.ee.duke.edu/~lcarin/cohen.pdf).
+
+-- We had not seen the Wigner-Ville distribution before - we will have to look into this for future work. Thank you.
+
         * In the discussion of the gradient descent, it is argued that the cost function is convex, but in practice, it turns out not to be. I would recommend more investigation into this issue, possibly even redefining the cost function. Convexity of the cost function doesn’t help when the subspace that can be reached by the parameters is not convex anymore, I think that’s what’s happening here.
-        -- I think I need some clarification on what the reviewer means here
+
+-- a more refined cost function would indeed be a good way to address this problem. In order to add non-commutative filters (such as time delays) we will certainly need to change the cost function as well.
+
         * Table 1 seems to contain several typos. Why is the third row called “associativity” when it compares different pitches? Why do `PianoC` and `PianoCSharp` have a distance of `0` in this row?? There seem to be equal signs missing in the last three rows of the third column.
-        -- Table 1 indeed was a mess. It has been reworked to fix typos and hopefully be more clear.
+        -- Table 1 indeed was a mess, apologies. It has been reworked to fix typos and hopefully be more clear.
         * The legend in Figures 3,4,5 currently records the filename. I recommend to make it more descriptive.
         -- TODO gnuplotting
+
 For this direction of research, I would actually recommend to forgo hand-developed tools and instead use established toolboxes like MATLAB for FFT, fitting and data analysis. This eliminates the need to spend time on reimplementing established numerical methods. The drawback is, of course, that the relation to programming language design is diminished. But there is always the first suggestion…
+
+-- For our present scope (basically parameter fitting) MATLAB would be a much better choice rather than reimplementing gradient descent. In the long term, ideally synthesis will not be fixed to a single code structure/application order of filter, which would then require the ability to more finely tune the implementation of gradient descent.
 
 Last but not least, it just occurred to me that there is always a filter/amplifier that maps one waveform to the other. It can be calculated by calculating the FFT of the whole waveform (not spectrograms), and then dividing the output amplitudes by the input amplitudes (with phase). That's it. (This is related to the idea at the end of section 7.)  Then, the task of a synthezising program would be to simplify this filter, for instance by decomposing it into band-passes, or by going into the time domain and varying parameters (Wigner-Ville distribution). A focus on filters and their parameters seems like a well-defined starting point to the whole problem, actually.
 
-  -- hmm this is a very interesting point. We were so focused on the original problem of general DSP that we didn't realize once you restrict yourself to filters/amplifiers there are stronger strategies. This would be a good point for future work.
+-- hmm this is a very interesting point. We were so focused on the original problem of general DSP that we didn't realize once you restrict yourself to filters/amplifiers there are more effective strategies. This would be a good point for future work.
 
 ---
 Further remarks:
@@ -197,4 +208,4 @@ Overall evaluation: 2 (accept)
 
 ----------- Overall evaluation -----------
 The paper presents an approach to programming "without programming", which is potentially interesting. It is unclear how this can be scaled up to real music programming problems, but it is certainly a good  avenue for future research. The paper lacks more details/discussion on how this approach fits the functional programming remit of the conference. This should be made more explicit.
--- TODO connect programming by example to functional programming (as the extreme of "describe what, not how")
+-- added a note about how PBE and FP connect

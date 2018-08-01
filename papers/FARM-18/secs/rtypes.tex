@@ -1,14 +1,14 @@
 \section{Refinement Type Driven Synthesis}
 \label{sec:rtypes}
 
-In order to find an initial value for gradient descent, we could use refinement types.
+In order to find an initial value for gradient descent, we could use refinement types~\cite{freeman1991refinement}.
 In this section we explore a possible optimization for selecting an initial DSP program for gradient descent.
 This has not yet been implemented, but we present the theory behind the approach.
 
 \subsection{Refinement Types for DSP}
-\label{sec:retypeSearch}
+\label{sec:rtypeSearch}
 Refinement types are a way of giving an abstract description of the behavior of a function. 
-For example, given the function 
+For example, using a similar syntax to the refinement type system for Haskell, LiquidHaskell~\cite{vazou2014refinement}, given the function 
 %
 \texttt{map :: [a]} $\to$ \texttt{[b]}
 %
