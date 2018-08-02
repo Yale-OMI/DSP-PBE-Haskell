@@ -1,4 +1,5 @@
 \section{Background}
+\label{sec:background}
 
 To give context for DSP-PBE, we first explain the traditional concept of programming by example~\cite{cypher93,lieberman01,synasc12}.
 Programming by example (PBE) is a synthesis technique that automatically generates programs that coincide with given examples.
@@ -30,3 +31,13 @@ Resynthesis is the process of decomposing a sound into its spectrogram, and then
 The limitation here is that resynthesis builds a generative synthesizer, which does not take into account any information about the components used to create the original sound.
 This limitation means that resynthesis cannot be applied in a new context, whereas DSP-PBE allows us to construct a DSP program that can be used with various new input samples to create novel sounds. 
 For example, DSP-PBE could be given a sample of a trumpet and a trombone, and the generated DSP program could be applied to a violin to hear what a violin sounds like if it was a trumpet that had been turned into a trombone.
+In this case we can discover the analogy \textit{trumpet:trombone :: violin:?}.
+
+From a machine learning perspective, the above example use case is closely related to work on learning analogies~\cite{mikolov2013distributed}, where the goal is to discover relations such as \textit{man:king :: woman:queen}.
+To do this, words are embedded in a vector space, so that the transformation from \textit{man} to \textit{king}, can be directly applied to \textit{woman}.
+There are two keys differences between this approach and DSP-PBE.
+The first is that DSP-PBE should produce a human readable transformation.
+We would like to generate DSP programs that can be used verbatim, but also inspected and modified by the user.
+While program code provides this readability, vector transformations are not comprehensible in the same way. 
+Second, word embeddings require that the semantics of an object can be embedded into a vector space. 
+As we will see in Sec~\ref{sec:distance}, a semantic representation of an audio file (what a human perceives) is not immediately recoverable from its direct representation.

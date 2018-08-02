@@ -19,7 +19,7 @@
 \end{table*}
 
 We implemented a DSP-PBE tool based on the approach described in Section~\ref{sec:distance} and Section~\ref{sec:search}.
-Our tool is available open-source at~\url{www.github.com/santolucito/DSP-PBE}.
+Our tool is available open-source at~\url{www.github.com/santolucito/DSP-PBE}\footnote{The exact version of the code used for this evaluation is available at commit \url{https://github.com/santolucito/DSP-PBE/tree/d022954164b830395bddb21cdc94046ed6882083}.}.
 Our tool is mostly written in Haskell and uses the Vivid library~\cite{vivid} for bindings to SuperCollider~\cite{supercollider}.
 Haskell allows easy access to type information and metaprogram construction tools that are useful for program synthesis, however the programs themselves are easily translated back to SuperCollider ``synth defs'', which are DSP filter programs.
 We use the scipy python module for calling the FFT since the library is quite mature and provides a simplified interface specifically for calling FFT on audio.

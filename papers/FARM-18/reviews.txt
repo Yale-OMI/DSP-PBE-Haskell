@@ -15,7 +15,7 @@ However, some changes might help readers better understand the paper:
 3) Is the word "spectrograph" (not spectrogram?) correctly used in section 3, last paragraph?
 -- should be spectrogram, fixed
 4) At the end of section 3, the trumpet -> trombone, violin -> ? example is very nice. Perhaps cello will immediately comes to mind. And it would be great if the paper could come back to this point after implementing the system. 
--- TODO coding
+-- great suggestion, added this!
 5) The statement "Acoustic fingerprints represent how the file will sound to the human ear regardless of how it is represented in a digital format" needs references. 
 -- added a citation, also reworded to be less strong of a statement
 6) In choosing the parameters for FFT, would it make it a stronger argument if 44100 is a widely used number? Or if not commonly used, why this paper only has the leakage problem with <44100?
@@ -37,7 +37,7 @@ However, some changes might help readers better understand the paper:
 14) Section 7 only has one subsection. 
 -- added a subsection header to indicate where we introduce refinement types for FRP
 15) The combination of filters was mentioned in the introduction but was not mentioned thereafter.
--- TODO add the pitch shift filter and few more experiments that have multiple effects 
+-- the only combination we were able to handle with the work so far is a static code structure
 
 ----------------------- REVIEW 2 ---------------------
 PAPER: 19
@@ -67,7 +67,7 @@ You use "Fast Fourier Transform" everywhere, but I think you're conflating the a
 
 Section 7:
 I'm not sure if you have space to do so, but you throw a lot at a reader who may not have seen refinement types before.  At least provide a reference about refinement types (and possible a reference to a primer on them), but space permitting, you should describe how to read these types and what they mean.
--- TODO Add references to Ranjit Jhala's work and all the other refinement type stuff
+-- Added some references that should have been there before
 
 Section 7.1
 "One hypothesis as to how we would combine both algorithms would be through a feedback loop."  This sentence comes out of the blue, and I'm not sure what it's talking about.
@@ -163,7 +163,7 @@ I am nonetheless intrigued, and would like to give two separate suggestions for 
 
 This is especially relevant for a submission to FARM. In the introduction, the authors mention that “the generated DSP program could be applied to a violin to hear what a violin sounds like if it was a trumpet that had been turned into a trombone.” I would still love to hear a program that attempts this, even if the result is “wrong” by any scientific measure. Perhaps randomly generate DSP programs, perform some not-so-successful gradient descent, and let a human decide whatever s/he likes? The result doesn’t have to be correct to qualify as art, it only has to be funny, weird or interesting.
 
--- TODO add a pitch shift filter and just see how close we get
+-- Great suggestion! Added this at the end of paper. Thank you for this idea.
 
 The advantage of this approach would be that the focus would still be on programming languages and program generation, and much less on parameter fitting.
 
@@ -183,7 +183,7 @@ The details, however, give me the impression that more DSP expertise is needed:
         * Table 1 seems to contain several typos. Why is the third row called “associativity” when it compares different pitches? Why do `PianoC` and `PianoCSharp` have a distance of `0` in this row?? There seem to be equal signs missing in the last three rows of the third column.
         -- Table 1 indeed was a mess, apologies. It has been reworked to fix typos and hopefully be more clear.
         * The legend in Figures 3,4,5 currently records the filename. I recommend to make it more descriptive.
-        -- TODO gnuplotting
+        -- TODO update font in gnuplot
 
 For this direction of research, I would actually recommend to forgo hand-developed tools and instead use established toolboxes like MATLAB for FFT, fitting and data analysis. This eliminates the need to spend time on reimplementing established numerical methods. The drawback is, of course, that the relation to programming language design is diminished. But there is always the first suggestion…
 
