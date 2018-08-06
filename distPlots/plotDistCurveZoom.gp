@@ -2,6 +2,6 @@ set xlabel "low-pass filter threshold (Hz)"
 set ylabel "Aural Distance"
 set key bottom left
 plot "lpf800-zoom.csv" with lp
-set term png size 1024,768
-set output "distCurveZoom.png" 
+set term tikz color size 3.5in,3.5in 
+set output "distCurveZoom.tex" 
 replot

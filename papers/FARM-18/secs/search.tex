@@ -4,22 +4,25 @@
 As the search space of possible DSP program is extremely large, our search procedures must be exceptionally efficient. 
 As a first foray into DSP-PBE, we restrict ourselves to only synthesizing low-pass and high-pass filters, and global volume adjustment.
 These two filters have the key property that they are quasi-commutative -- when the thresholds of these filters do not overlap, applying a low-pass and then a high-pass is the same as applying a high-pass and then a low-pass.
-We leave the exploration of non-commutative filters (for example, delay lines or ring filters) to future work.
+Although our approach has no theoretical basis for being applicable to non-commutative filters (for example, delay lines or ring filters), we do attempt to use our approach on such filters in Sec~\ref{sec:future}.
+We leave a more thorough exploration of non-commutative filters to future work.
 
 \subsection{Gradient Descent}
 
 Gradient descent is a technique commonly used in modelling and machine learning.
 Given a cost function, which represents the disagreement between a proposed model and the actual data, gradient descent can be used efficiently to minimize the cost and generate the model of best fit.
-One key restriction on the cost function is that it must be convex -- this is because gradient descent will ``descend'' along the surface of the cost function, in each step following the steepest gradient.
-We have carefully designed our aural distance function from Section~\ref{sec:distance} to be as close to convex as possible.
+Gradient descent is only guaranteed to terminate with the globally minimal cost if the cost function being optimized is convex -- this is because gradient descent will ``descend'' along the surface of the cost function, in each step following the steepest gradient.
+While we were not able to design our aural distance function from Section~\ref{sec:distance} to be convex, our cost function does demonstrate some properties of convexity that allow gradient descent to produce useful results, even if the result is not guaranteed to be the global minimum.
+We will describe here some properties of our distance metric that were helpful in minimizing the cost of the synthesized filter, as well as the shortcomings of our design, and how we try to overcome them by adjusting our implementation of gradient descent.
 
 \begin{figure}[!h]
-\includegraphics[width=\columnwidth]{figs/distCurves} 
-\caption{The distance curves showing the convex-like shape of the aural distance function. Each curve is the $dist(\synthFilter(I),O)$, with $\synthFilter = lpf(x)$ where the value of $x$ is taken from the x-axis.}
+%\includegraphics[width=\columnwidth]{figs/distCurves} 
+\include{figs/distCurves}
+\caption{The distance curves showing the convex-like shape of the aural distance function. Each curve is the distance between an input file, and a filter applied to that file - $dist(I, \synthFilter(I))$.}
 \label{fig:distCurves}
 \end{figure}
 
-In order to visualize the convexity of our distance metric, we plot the distance between pairs of examples, and various possible DSP filters in Figure~\ref{fig:distCurves}.
+In order to visualize the rough shape of our distance metric, we plot the distance between pairs of examples, and various possible DSP filters in Figure~\ref{fig:distCurves}.
 Here we only visualize the distance curves in the dimension of the low-pass filter.
 Notice that the curves exhibit a clear ``saddle'', which represents the minimum cost.
 In the ideal case, gradient descent will find these points.
@@ -31,7 +34,8 @@ This is because as a low-pass filter's threshold increases, it allows more and m
 Whereas in the case of the \texttt{cartoon-spring-hpf1500.wav}, the true filter is a high-pass filter, so the less we apply a low-pass filter, the closer we get to the correct filter.
 
 \begin{figure}
-\includegraphics[width=\columnwidth]{figs/distCurveZoom} 
+%\includegraphics[width=\columnwidth]{figs/distCurveZoom} 
+\include{figs/distCurveZoom}
 \caption{Zooming in (1000 to 1500 Hz) on a portion of a curve from Figure~\ref{fig:distCurves}, we see the aural distance function is not perfectly convex on the micro scale.}
 \label{fig:microDist}
 \end{figure}
@@ -41,8 +45,8 @@ In our implementation, we only explore a space of two DSP filters and volume adj
 In general, this space becomes even larger for DSP-PBE as more DSP primitives (ring filter, white noise, delay etc) are added.
 To speed up gradient descent, we use stochastic gradient descent, so that in each step, we only move in $d<5$ number of dimensions.
 
-\subsection{Non-convex spaces}
-There are a number challenges with working with gradient descent in the aural DSP domain.
+\subsection{Dealing with non-convexity}
+There are a number challenges with working with gradient descent in the aural DSP domain because our distance metric is not convex.
 On the micro scale, the distance function is susceptible to noise and not entirely smooth, as shown in Figure~\ref{fig:microDist}.
 In order to handle the micro scale variations, we use a periodic restart of the gradient descent.
 This means that every $n$ rounds, as defined by the user, the gradient descent will backtrack to the best solution it has found so far.
@@ -57,7 +61,7 @@ The stochastic gradient descent will then continue, selecting dimensions to expl
 \label{fig:macroDist}
 \end{figure}
 
-On the macro scale, we face the challenge that the distance function is only quasi-convex -- there are many local minima and long plateaus, as shown in Figure~\ref{fig:macroDist}.
+On the macro scale, we face the challenge that the distance function is again not convex -- there are many local minima and long plateaus, as shown in Figure~\ref{fig:macroDist}.
 In order to overcome this, we must carefully pick the initial value for gradient descent.
 If we pick a value in the middle of a plateau, the gradient descent algorithm will not find any significant gradient, and conclude we have reached the convergence condition.
 In our current implementation, we iterate at large intervals (1000 Hz) of possible threshold values for both low and high pass filters.

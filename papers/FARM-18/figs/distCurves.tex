@@ -1,10 +1,9 @@
 \begin{tikzpicture}[gnuplot]
 %% generated with GNUPLOT 5.0p3 (Lua 5.1; terminal rev. 99, script rev. 100)
-%% Sun 05 Aug 2018 11:09:09 PM EDT
+%% Sun 05 Aug 2018 11:09:39 PM EDT
 \path (0.000,0.000) rectangle (8.890,8.890);
 \gpcolor{color=gp lt color border}
 \gpsetlinetype{gp lt border}
-\gpsetdashtype{gp dt solid}
 \gpsetlinewidth{1.00}
 \draw[gp path] (1.136,0.985)--(1.316,0.985);
 \draw[gp path] (8.337,0.985)--(8.157,0.985);
@@ -45,9 +44,9 @@
 \draw[gp path] (1.136,8.521)--(1.136,0.985)--(8.337,0.985)--(8.337,8.521)--cycle;
 \node[gp node center,rotate=-270] at (0.246,4.753) {Aural Distance};
 \node[gp node center] at (4.736,0.215) {low-pass filter threshold (Hz)};
-\node[gp node right] at (4.632,2.243) {"plot-lpf800.csv"};
+\node[gp node right] at (7.232,1.627) {$\synthFilter = lpf(800)$};
 \gpcolor{rgb color={0.580,0.000,0.827}}
-\draw[gp path] (4.816,2.243)--(5.732,2.243);
+\draw[gp path] (7.4,1.627)--(8.2,1.627);
 \draw[gp path] (1.766,8.521)--(1.856,7.533)--(1.976,6.610)--(2.096,5.998)--(2.216,5.219)%
   --(2.336,4.443)--(2.456,3.966)--(2.576,3.427)--(2.696,2.946)--(2.816,2.724)--(2.936,2.672)%
   --(3.056,2.528)--(3.176,2.595)--(3.296,2.770)--(3.416,2.897)--(3.536,2.996)--(3.656,3.325)%
@@ -114,11 +113,11 @@
 \gppoint{gp mark 1}{(8.097,7.619)}
 \gppoint{gp mark 1}{(8.217,7.698)}
 \gppoint{gp mark 1}{(8.337,7.742)}
-\gppoint{gp mark 1}{(5.274,2.243)}
+\gppoint{gp mark 1}{(7.8,1.62)}
 \gpcolor{color=gp lt color border}
-\node[gp node right] at (4.632,1.935) {"plot-lpf5000.csv"};
+\node[gp node right] at (7.232,1.319) {$\synthFilter = lpf(5000)$};
 \gpcolor{rgb color={0.000,0.620,0.451}}
-\draw[gp path] (4.816,1.935)--(5.732,1.935);
+\draw[gp path] (7.4,1.319)--(8.2,1.319);
 \draw[gp path] (2.485,8.521)--(2.575,8.071)--(2.696,7.440)--(2.816,7.024)--(2.936,6.541)%
   --(3.056,5.883)--(3.176,5.510)--(3.296,5.173)--(3.416,4.893)--(3.536,4.656)--(3.656,4.208)%
   --(3.776,3.926)--(3.896,3.619)--(4.016,3.458)--(4.136,3.239)--(4.256,3.100)--(4.376,2.964)%
@@ -177,11 +176,11 @@
 \gppoint{gp mark 2}{(8.097,3.119)}
 \gppoint{gp mark 2}{(8.217,3.180)}
 \gppoint{gp mark 2}{(8.337,3.224)}
-\gppoint{gp mark 2}{(5.274,1.935)}
+\gppoint{gp mark 2}{(7.8,1.309)}
 \gpcolor{color=gp lt color border}
-\node[gp node right] at (4.632,1.627) {"plot-lpf2000.csv"};
+\node[gp node right] at (3.832,1.627) {$\synthFilter = lpf(2000)$};
 \gpcolor{rgb color={0.337,0.706,0.914}}
-\draw[gp path] (4.816,1.627)--(5.732,1.627);
+\draw[gp path] (4.016,1.627)--(4.732,1.627);
 \draw[gp path] (1.136,4.779)--(1.256,5.242)--(1.376,5.125)--(1.497,4.985)--(1.617,4.777)%
   --(1.737,4.589)--(1.857,4.409)--(1.977,4.185)--(2.097,3.932)--(2.217,3.691)--(2.337,3.424)%
   --(2.457,3.131)--(2.577,2.901)--(2.697,2.730)--(2.817,2.513)--(2.937,2.359)--(3.057,2.354)%
@@ -253,11 +252,11 @@
 \gppoint{gp mark 3}{(7.978,7.688)}
 \gppoint{gp mark 3}{(8.098,7.811)}
 \gppoint{gp mark 3}{(8.218,7.889)}
-\gppoint{gp mark 3}{(5.274,1.627)}
+\gppoint{gp mark 3}{(4.374,1.627)}
 \gpcolor{color=gp lt color border}
-\node[gp node right] at (4.632,1.319) {"plot-hpf1500.csv"};
+\node[gp node right] at (3.832,1.319) {$\synthFilter = hpf(1500)$};
 \gpcolor{rgb color={0.902,0.624,0.000}}
-\draw[gp path] (4.816,1.319)--(5.732,1.319);
+\draw[gp path] (4.016,1.319)--(4.732,1.319);
 \draw[gp path] (3.721,8.521)--(3.776,8.373)--(3.896,8.034)--(4.016,7.788)--(4.136,7.425)%
   --(4.256,7.265)--(4.376,6.956)--(4.496,6.652)--(4.616,6.435)--(4.737,6.199)--(4.857,6.144)%
   --(4.977,5.971)--(5.097,5.778)--(5.217,5.739)--(5.337,5.653)--(5.457,5.538)--(5.577,5.320)%
@@ -304,7 +303,7 @@
 \gppoint{gp mark 4}{(8.097,4.202)}
 \gppoint{gp mark 4}{(8.217,4.127)}
 \gppoint{gp mark 4}{(8.337,4.084)}
-\gppoint{gp mark 4}{(5.274,1.319)}
+\gppoint{gp mark 4}{(4.374,1.319)}
 \gpcolor{color=gp lt color border}
 \draw[gp path] (1.136,8.521)--(1.136,0.985)--(8.337,0.985)--(8.337,8.521)--cycle;
 %% coordinates of the plot area
