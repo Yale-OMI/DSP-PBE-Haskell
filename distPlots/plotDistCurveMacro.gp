@@ -3,6 +3,6 @@ set ylabel "Aural Distance"
 set xrange [8000:21000]
 set key bottom left
 plot "lpf800-macro.csv" with lp
-set term png size 1024,768
-set output "distCurveMacro.png" 
+set term tikz color size 3.5in,3.5in 
+set output "distCurveMacro.tex" 
 replot

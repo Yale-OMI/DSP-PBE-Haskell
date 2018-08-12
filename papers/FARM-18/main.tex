@@ -1,16 +1,16 @@
 %% For double-blind review submission
-\documentclass[sigplan,screen]{acmart}\settopmatter{printfolios=true}
+%\documentclass[sigplan,screen]{acmart}\settopmatter{printfolios=true}
 
-\usepackage{etex}
 %% For single-blind review submission
 %\documentclass[acmlarge,review]{acmart}\settopmatter{printfolios=true}
 %% For final camera-ready submission
-%\documentclass[acmlarge]{acmart}\settopmatter{}
+\documentclass[sigplan]{acmart}\settopmatter{}
 
 %% Note: Authors migrating a paper from PACMPL format to traditional
 %% SIGPLAN proceedings format should change 'acmlarge' to
 %% 'sigplan,10pt'.
 
+\usepackage{etex}
 
 %% Some recommended packages.
                         %% http://ctan.org/pkg/booktabs
@@ -37,6 +37,16 @@
 %\setcopyright{rightsretained}
 %\copyrightyear{2017}           %% If different from \acmYear
 
+\copyrightyear{2018} 
+\acmYear{2018} 
+\setcopyright{acmlicensed}
+\acmConference[FARM '18]{Proceedings of the 6th ACM SIGPLAN International Workshop on Functional Art, Music, Modeling, and Design}{September 29, 2018}{St. Louis, MO, USA}
+\acmBooktitle{Proceedings of the 6th ACM SIGPLAN International Workshop on Functional Art, Music, Modeling, and Design (FARM '18), September 29, 2018, St. Louis, MO, USA}
+\acmPrice{15.00}
+\acmDOI{10.1145/3242903.3242906}
+\acmISBN{978-1-4503-5856-9/18/09}
+
+
 
 %% Bibliography style
 \bibliographystyle{ACM-Reference-Format}
@@ -45,16 +55,6 @@
 %% issue of PACMPL.
 \citestyle{acmauthoryear}   %% For author/year citations
 
-\setcopyright{acmcopyright}
-\acmPrice{}
-\acmDOI{}
-\acmYear{2018}
-\copyrightyear{2018}
-\acmJournal{PACMPL}
-\acmVolume{1}
-\acmNumber{FARM}
-\acmArticle{64}
-\acmMonth{10}
 
 
 \begin{document}
@@ -135,7 +135,7 @@
 \email{ruzica.piskac@yale.edu}          %% \email is recommended
 
 
-\titlenote{This research was sponsored by the NSF under grants
+\titlenote{This research sponsored by NSF grants
 CCF-1302327 and CCF-1715387.}
 
 
@@ -146,7 +146,7 @@ CCF-1302327 and CCF-1715387.}
 %% similar to a title note or an author note, but not explicitly
 %% associated with a particular element.  It will appear immediately
 %% above the permission/copyright statement.
-\thanks{Thanks to Thomas Murphy for his guidance in thinking through this problem.}       %% \thanks is optional
+\thanks{Many thanks to Thomas Murphy for his guidance in thinking through this problem and many solution attempts. Thanks to the anonymous reviewers whose comments helped raise the bar on this paper.}       %% \thanks is optional
                                         %% can be repeated if necesary
                                         %% contents suppressed with 'anonymous'
 
@@ -165,23 +165,17 @@ We formally define the problem of DSP-PBE, and provide a first implementation of
 %% 2012 ACM Computing Classification System (CSS) concepts
 %% Generate at 'http://dl.acm.org/ccs/ccs.cfm'.
 \begin{CCSXML}
-%<ccs2012>
-%<concept>
-%<concept_id>10011007.10011006.10011008</concept_id>
-%<concept_desc>Software and its engineering~General programming languages</concept_desc>
-%<concept_significance>500</concept_significance>
-%</concept>
-%<concept>
-%<concept_id>10003456.10003457.10003521.10003525</concept_id>
-%<concept_desc>Social and professional topics~History of programming languages</concept_desc>
-%<concept_significance>300</concept_significance>
-%</concept>
-%</ccs2012>
+  <ccs2012>
+  <concept>
+  <concept_id>10010405.10010469.10010475</concept_id>
+  <concept_desc>Applied computing~Sound and music computing</concept_desc>
+  <concept_significance>500</concept_significance>
+  </concept>
+  </ccs2012>
 \end{CCSXML}
 
-%\ccsdesc[500]{Software and its engineering~General programming languages}
-%\ccsdesc[300]{Social and professional topics~History of programming languages}
-%% End of generated code
+\ccsdesc[500]{Applied computing~Sound and music computing}
+
 \maketitle
 
 

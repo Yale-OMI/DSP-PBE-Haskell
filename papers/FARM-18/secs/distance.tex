@@ -42,17 +42,18 @@ Our implementation takes the Euclidean distance of the peaks in a time slice on 
 In order to define this distance more formally, we introduce the notation $c@t$ to indicate selecting time slice $t$ from constellation $c$.
 We also use the function $peak:: Int \to Constellation \to Peak$ to select a peak from a constellation, where the peaks are in sorted order based on frequency.
 Then, for an audio clip $x$ and an audio clip $y$, and a function $toC :: Audio \to Constellation$ to transform the audio clip into a constellation with $ts$ time slices and $p$ peaks in each time slice:
-
+%
 \begin{align*}
 \sum_{t=0}^{ts}\ \sum_{i=0}^{p} euclid\Big(\ &peak(i,toC(x)@t), \\ &peak(i,toC(y)@t)\ \Big)
 \end{align*}
-
+%
 Note that this definition requires the audio clips to be temporally aligned, which is not always a fair assumption in the real world. We leave the exploration of a temporal offset between two example audio samples to future work.
 
 As a sanity check that this distance metric matches the psycho-acoustic definition of distance, we used the test cases listed in Table~\ref{table:dist}.
 
 \begin{table*}[!h]
 \centering
+\caption{Test cases to evaluate distance metric. The exact values are only important in relationship to the others.}
 \begin{tabular}{|l | c | c|} 
  \hline
  Test Name \& Expected Result & Value 1 & Value 2 \\
@@ -77,7 +78,6 @@ As a sanity check that this distance metric matches the psycho-acoustic definiti
    \quad Value 1 $<$ Value 2 & & \\
  \hline
 \end{tabular}
-\caption{Test cases to evaluate distance metric. The exact values are only important in relationship to the others.}
 \label{table:dist}
 \end{table*}
 
