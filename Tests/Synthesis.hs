@@ -58,7 +58,7 @@ refinementTypeTest audios = do
   return ()
 
 -- Plot freq cutoff vs cost for lpf examples
--- NB seems to be a memory leak in here somewhere - dont try to run all three at the same time
+-- seems to be a memory leak in here somewhere - dont try to run all three at the same time
 plotCostFxnTest = do
   --getCostMap cartoonEx cartoonEx800 (take 120 [(invFreqScale 8000),(invFreqScale 8000)+0.01..]) >>= printList
   --getCostMap cartoonEx cartoonEx5000 (take 60 [(invFreqScale 1000),(invFreqScale 1000)+0.01..]) >>= printList
@@ -72,7 +72,9 @@ getCostMap inEx outEx range = do
   let testFilters = 
         map (\x-> (Thetas {
           _lpfThreshold=(1),
-          _hpfThreshold=(x), 
+          _hpfThreshold=(x),
+          _pitchShiftFreq=0,
+          _pitchShiftApp=0,
           _ringzFreq=1,
           _ringzDecaySecs=1,
           _ringzApp=(-1),

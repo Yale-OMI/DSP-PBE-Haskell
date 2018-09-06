@@ -15,7 +15,9 @@ The goal of this project is to build filter by providing example sound files
 
 To install 
 
-   pip install scipy numpy matplotlib 
+   pip install scipy numpy matplotlib
+   apt-get install python-tk supercollider
+   scide (supercollider needs to be opened and closed once in order to initialize some folders that are used by the vivid api)
    make
 
 To test

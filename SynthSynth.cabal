@@ -35,7 +35,7 @@ library
                        Settings 
                        Analysis.FFT_Py
   build-depends:       
-       base >=4.10 && <4.11
+       base >=4.10
      , extra >=1.5 && <1.6
      , array >=0.5 && <0.6
      , HCodecs >=0.5
@@ -71,7 +71,7 @@ executable musicSynth
      -threaded
      "-with-rtsopts=-N4"
    build-depends:       
-       base >=4.10 && <4.11
+       base >=4.10 
      , SynthSynth
      , HCodecs >=0.5
      , directory
@@ -81,13 +81,15 @@ Test-Suite Analysis
    type: exitcode-stdio-1.0
    default-language: Haskell2010
    hs-source-dirs: Tests
+   other-modules:   PrintAudio
+                    TestUtils 
    main-is: Analysis.hs
    ghc-options:
      -O2
      -threaded
      "-with-rtsopts=-N4"
    build-depends:       
-       base >=4.10 && <4.11
+       base >=4.10
      , SynthSynth
      , extra >=1.5 && <1.6
      , array >=0.5 && <0.6
@@ -103,13 +105,14 @@ Test-Suite Synthesis
    type: exitcode-stdio-1.0
    default-language: Haskell2010
    hs-source-dirs: Tests
+   other-modules:  TestUtils 
    main-is: Synthesis.hs
    ghc-options:
      -O2
      -threaded
      "-with-rtsopts=-N4"
    build-depends:       
-       base >=4.10 && <4.11
+       base >=4.10
      , SynthSynth
      , extra >=1.5 && <1.6
      , array >=0.5 && <0.6

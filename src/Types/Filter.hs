@@ -30,6 +30,7 @@ data Filter =
   | WhiteNoise Float
   | Compose Filter Filter
   | AmpApp Float Filter
+  deriving (Eq)
 
 -- | initial points for thetas in GD
 --   this can have a large impact on the effectivness of learning
@@ -81,7 +82,7 @@ data Thetas = Thetas{
    _ringzApp       :: Double,
    _whiteApp       :: Double,
    _ampApp         :: Double
-   } deriving (Eq,Show,Generic,Hashable)
+   } deriving (Show,Generic,Hashable)
 
 makeLenses ''Thetas
 
@@ -90,17 +91,17 @@ thetaDiff t t' = let
   d sel = abs((sel t) - (sel t'))
  in
   sum $ map d [
-	    _lpfThreshold
-	  , _hpfThreshold
-	  , _pitchShiftFreq
-	  , _ringzFreq
-	  , _ringzDecaySecs
-	  , _lpfApp
-	  , _hpfApp
-	  , _pitchShiftApp
-	  , _whiteApp
-	  , _ampApp
-	  , _ringzApp]
+           _lpfThreshold
+         , _hpfThreshold
+         , _pitchShiftFreq
+         , _ringzFreq
+         , _ringzDecaySecs
+         , _lpfApp
+         , _hpfApp
+         , _pitchShiftApp
+         , _whiteApp
+         , _ampApp
+         , _ringzApp]
 
 type ResCache = H.HashMap Thetas Double
 
@@ -135,6 +136,13 @@ thetaToFilter t = AmpApp (realToFrac $ _ampApp t) $
          (WhiteNoise (realToFrac $ _whiteApp t))
        )
      ))
+
+
+-- | we only care about equality of theta up to equality on filters
+--   if two thetas are different in a way that cannot be expressed in vivid, 
+--   it doesnt matter that they are different
+instance Eq Thetas where
+  (==) a b = thetaToFilter a == thetaToFilter b
 
 --implements feature scaling so during GD our thetas are -1<t<1
 --we onyl scale them back to the appropriate values when we need to apply theatas in a filter

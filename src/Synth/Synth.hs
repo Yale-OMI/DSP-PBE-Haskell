@@ -37,21 +37,25 @@ synthCode (in_filepath,in_audio) (out_filepath,out_audio) = do
   return synthedFilter
 
 -- | selects the thetas should we vary during GD
-thetaSelectors = [lpfThreshold, hpfThreshold,ringzFreq,ringzDecaySecs,ringzApp,lpfApp,hpfApp,whiteApp,ampApp,pitchShiftFreq,pitchShiftApp]
+--thetaSelectors = [lpfThreshold, hpfThreshold,ringzFreq,ringzDecaySecs,ringzApp,lpfApp,hpfApp,whiteApp,ampApp,pitchShiftFreq,pitchShiftApp]
 --thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, whiteApp, ampApp]
 --thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, ampApp]
 --thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, ampApp, pitchShiftFreq, pitchShiftApp]
 --thetaSelectors = [lpfThreshold, lpfApp, ampApp]
+thetaSelectors = [hpfThreshold]
 
+
+-- | This uses stochastic gradient descent to find a minimal theta
+--   SGD is problematic since we cannot calculate a derivative of the cost function
+--   TODO Another option might be to use http://www.jhuapl.edu/SPSA/ which does not require the derivative
+--   TODO many options here https://www.reddit.com/r/MachineLearning/comments/2e8797/gradient_descent_without_a_derivative/
 optimize rGen tester initFilter = multiVarSGD
     thetaSelectors
     rGen
     4 --batch size (how many directions to test)
     0.01 --convergance goal
     1 --learn rate
-    --0.0005 --learn rate
     initFilter
-    (Thetas {_lpfThreshold=2,_hpfThreshold=2,_pitchShiftFreq=2,_ringzFreq=2,_ringzDecaySecs=2,_ringzApp=2,_lpfApp=2,_hpfApp=2,_whiteApp=1,_ampApp=1,_pitchShiftApp=1})
     H.empty
     tester
 

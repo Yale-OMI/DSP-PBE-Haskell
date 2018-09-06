@@ -32,8 +32,8 @@ filenames = map (dir++)
 main :: IO ()
 --main' = printAudio $ dir++"PianoC.wav"
 main = do
-  --constallationTest
-  --comparisonTests
+  constallationTest
+  comparisonTests
   return ()
 
 constallationTest = do

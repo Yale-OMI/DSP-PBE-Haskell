@@ -21,7 +21,7 @@ binSize = 2
 
 --How often to we go back to the best Theta we found so far
 restartRound :: Int
-restartRound = 50
+restartRound = 15
 
 -- a higher value reduces the resolution of the fft
 -- but can significantly improve running time
