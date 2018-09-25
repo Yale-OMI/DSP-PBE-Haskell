@@ -1,0 +1,35 @@
+\section{sketches}
+
+Approximate programming-by-example combines reasoning-based program search with numerical search methods from machine learning.
+The high-level idea is to get shrink the search space as much as possible with formal methods, then switch over to machine learning.
+
+
+\subsection{preliminaries}
+A \textit{Metric Space} is a pair $(M,d)$, where S is a set and $d:M \times M \to \reals$ is a distance metric between all points in the set. The metric $d$ must obey some properties that are listed on wikipedia...
+
+\iffalse
+I think I dont need this actually
+A product metric $(X^{*},d_p)$ is a metric space over the Cartesian product of finitely many metric spaces $(X_0,d_0),...,(X_n,d_n)$,
+  where $d_p:X^n \times X^n \to \reals$ also obey those properties.
+If $d_p$ is a norm ``which is non-decreasing as the coordinates of a positive n-tuple increase``\footnote{took this from \url{https://en.wikipedia.org/wiki/Metric_space#Product_metric_spaces}, not sure how to formalize it yet}, then then topology of the X^* is equivelant
+\fi
+
+\subsection{new stuff}
+\samepage{
+Given:
+\begin{itemize}
+  \item A metric space $(M^{*},C)$ 
+  \item A set of input,output examples $\{(i_0,o_0),...,(i_n,o_n)\}$ where $i_j,o_j \in M^{*}$
+  \item A grammar $G$ where elements of the grammar are functions $M^{*} \to M^{*}$
+\end{itemize}
+Find $p \in G$ that minimizes $\sum_{j=0}^{n} \ C(o_j,p(i_j))$.
+}
+
+This is a problem well-suited for machine learning, unless $C$ is prohibitively expensive to repeatedly recompute.
+Machine learning approaches (like gradient descent) requires generating and testing many possible $p \in G$.
+In this case, we want to use formal methods to shrink $G$ to a new, smaller grammar $G' \subset G$.
+
+To do this we also want the metric space $(M^{*},C)$ to be topologically equivalent~\cite{bishop1980tensor} to the product metric space $(M_0,d_0),...,(M_m,d_m)$.
+The sets $M_0,..,M_n$ are projections of $M{*}$ into lower dimensional spaces.
+
+The user then provides 

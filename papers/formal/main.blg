@@ -1,0 +1,51 @@
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: main.aux
+The style file: ACM-Reference-Format.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Database file #1: biblio.bib
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--empty address in bishop1980tensor
+You've used 1 entry,
+            5551 wiz_defined-function locations,
+            1294 strings with 15303 characters,
+and the built_in function-call counts, 1463 in all, are:
+= -- 163
+> -- 38
+< -- 0
++ -- 12
+- -- 62
+* -- 109
+:= -- 159
+add.period$ -- 6
+call.type$ -- 1
+change.case$ -- 6
+chr.to.int$ -- 1
+cite$ -- 2
+duplicate$ -- 61
+empty$ -- 46
+format.name$ -- 20
+if$ -- 252
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 2
+newline$ -- 52
+num.names$ -- 8
+pop$ -- 29
+preamble$ -- 1
+purify$ -- 11
+quote$ -- 0
+skip$ -- 20
+stack$ -- 0
+substring$ -- 226
+swap$ -- 4
+text.length$ -- 93
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 8
+warning$ -- 1
+while$ -- 9
+width$ -- 0
+write$ -- 60
+(There was 1 warning)

@@ -3,10 +3,10 @@ MAIN=src/Main.hs
 BLDDIR=bld
 
 default: 
-	cabal build
+	cabal new-build
 
 test: default
-	cabal test --show-details=streaming
+	cabal new-test --show-details=streaming
 
 haddock:
 	@cabal --executable --hyperlink-source haddock

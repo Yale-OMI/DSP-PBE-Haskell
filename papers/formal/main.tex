@@ -1,0 +1,161 @@
+%% For double-blind review submission
+%\documentclass[sigplan,screen]{acmart}\settopmatter{printfolios=true}
+
+%% For single-blind review submission
+%\documentclass[acmlarge,review]{acmart}\settopmatter{printfolios=true}
+%% For final camera-ready submission
+\documentclass[sigplan,screen]{acmart}\settopmatter{}
+
+%% Note: Authors migrating a paper from PACMPL format to traditional
+%% SIGPLAN proceedings format should change 'acmlarge' to
+%% 'sigplan,10pt'.
+
+\usepackage{etex}
+
+%% Some recommended packages.
+                        %% http://ctan.org/pkg/booktabs
+\usepackage{subcaption} %% For complex figures with subfigures/subcaptions
+                        %% http://ctan.org/pkg/subcaption
+
+
+\newcommand{\cL}{{\cal L}}
+\let\terms\undefined
+
+\usepackage{balance}
+\input{preamble}
+
+
+%\makeatletter\if@ACM@journal\makeatother
+%% Journal information (used by PACMPL format)
+%% Supplied to authors by publisher for camera-ready submission
+
+%% Copyright information
+%% Supplied to authors (based on authors' rights management selection;
+%% see authors.acm.org) by publisher for camera-ready submission
+%\setcopyright{acmcopyright}
+%\setcopyright{acmlicensed}
+%\setcopyright{rightsretained}
+%\copyrightyear{2017}           %% If different from \acmYear
+
+\copyrightyear{2018} 
+\acmYear{2018} 
+\setcopyright{acmlicensed}
+\acmConference[FARM '18]{Proceedings of the 6th ACM SIGPLAN International Workshop on Functional Art, Music, Modeling, and Design}{September 29, 2018}{St. Louis, MO, USA}
+\acmBooktitle{Proceedings of the 6th ACM SIGPLAN International Workshop on Functional Art, Music, Modeling, and Design (FARM '18), September 29, 2018, St. Louis, MO, USA}
+\acmPrice{15.00}
+\acmDOI{10.1145/3242903.3242906}
+\acmISBN{978-1-4503-5856-9/18/09}
+
+
+
+%% Bibliography style
+\bibliographystyle{ACM-Reference-Format}
+%% Citation style
+%% Note: author/year citations are required for papers published as an
+%% issue of PACMPL.
+\citestyle{acmauthoryear}   %% For author/year citations
+
+
+
+\begin{document}
+
+%% Title information
+\title{Approximate Programming-by-example}
+                                        %% [Short Title] is optional;
+                                        %% when present, will be used in
+                                        %% header instead of Full Title.
+%\titlenote{with title note}             %% \titlenote is optional;
+                                        %% can be repeated if necessary;
+                                        %% contents suppressed with 'anonymous'
+%\subtitle{Subtitle}                     %% \subtitle is optional
+%\subtitlenote{with subtitle note}       %% \subtitlenote is optional;
+                                        %% can be repeated if necessary;
+                                        %% contents suppressed with 'anonymous'
+
+%% Author information
+%% Contents and number of authors suppressed with 'anonymous'.
+%% Each author should be introduced by \author, followed by
+%% \authornote (optional), \orcid (optional), \affiliation, and
+%% \email.
+%% An author may have multiple affiliations and/or emails; repeat the
+%% appropriate command.
+%% Many elements are not rendered, but should be provided for metadata
+%% extraction tools.
+
+%% Author with single affiliation.
+\author{Mark Santolucito}
+\orcid{0000-0001-8646-4364}             %% \orcid is optional
+\affiliation{
+  \department{Computer Science}              %% \department is recommended
+  \institution{Yale University}            %% \institution is required
+  \streetaddress{51 Prospect St.}
+  \city{New Haven}
+  \state{CT}
+  \postcode{06511}
+  \country{USA}
+}
+\email{mark.santolucito@yale.edu}          %% \email is recommended
+
+\author{Ruzica Piskac}
+\affiliation{
+  \department{Computer Science}              %% \department is recommended
+  \institution{Yale University}            %% \institution is required
+  \streetaddress{51 Prospect St.}
+  \city{New Haven}
+  \state{CT}
+  \postcode{06511}
+  \country{USA}
+}
+\email{ruzica.piskac@yale.edu}          %% \email is recommended
+
+
+\titlenote{This research sponsored by NSF grants
+CCF-1302327 and CCF-1715387.}
+
+
+
+
+%% Paper note
+%% The \thanks command may be used to create a "paper note" ---
+%% similar to a title note or an author note, but not explicitly
+%% associated with a particular element.  It will appear immediately
+%% above the permission/copyright statement.
+%\thanks{Many thanks to Thomas Murphy for his guidance in thinking through this problem and many solution attempts. Thanks to the anonymous reviewers whose comments helped raise the bar on this paper.}       %% \thanks is optional
+                                        %% can be repeated if necesary
+                                        %% contents suppressed with 'anonymous'
+
+
+%% Abstract
+%% Note: \begin{abstract}...\end{abstract} environment must come
+%% before \maketitle command
+\begin{abstract}
+\end{abstract}
+
+
+%% 2012 ACM Computing Classification System (CSS) concepts
+%% Generate at 'http://dl.acm.org/ccs/ccs.cfm'.
+\begin{CCSXML}
+  <ccs2012>
+  <concept>
+  <concept_id>10010405.10010469.10010475</concept_id>
+  <concept_desc>Applied computing~Sound and music computing</concept_desc>
+  <concept_significance>500</concept_significance>
+  </concept>
+  </ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Applied computing~Sound and music computing}
+
+\maketitle
+
+
+\input{secs/ideas}
+
+%\balance
+\bibliography{biblio}  
+
+%%% Place this command where you want to balance the columns on the last page. 
+%\balancecolumns 
+
+% That's all folks!
+\end{document}
