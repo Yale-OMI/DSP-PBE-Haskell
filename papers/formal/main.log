@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.8.26)  25 SEP 2018 17:55
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.8.26)  25 SEP 2018 18:26
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1376,18 +1376,21 @@ Overfull \hbox (8.24446pt too wide) in paragraph at lines 149--149
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
 (Font)              scaled to size 10.0pt on input line 8.
 
-Overfull \hbox (9.59467pt too wide) in paragraph at lines 10--12
-\T1/LinuxLibertineT-TLF/m/n/10 (-20) sian prod-uct of finitely many met-ric spa
-ces $\U/ntxmia/m/it/10 {\OML/nxlmi/m/it/10 X[]; d[]\U/ntxmia/m/it/10 |\OML/nxlm
-i/m/it/10 ; :::; \U/ntxmia/m/it/10 {\OML/nxlmi/m/it/10 X[]; d[]\U/ntxmia/m/it/1
-0 |$\T1/LinuxLibertineT-TLF/m/n/10 (-20) ,
+Overfull \hbox (32.43983pt too wide) in paragraph at lines 32--33
+[]\T1/LinuxLibertineT-TLF/m/n/10 (-20) To do this we also need a set of met-ric
+ spaces $\U/ntxmia/m/it/10 {\OML/nxlmi/m/it/10 M[]; d[]\U/ntxmia/m/it/10 |\OML/
+nxlmi/m/it/10 ; :::; \U/ntxmia/m/it/10 {\OML/nxlmi/m/it/10 M[]; d[]\U/ntxmia/m/
+it/10 |$\T1/LinuxLibertineT-TLF/m/n/10 (-20) ,
  []
 
 
-Underfull \vbox (badness 1205) has occurred while \output is active []
+Overfull \hbox (1.94304pt too wide) in paragraph at lines 32--33
+\T1/LinuxLibertineT-TLF/m/n/10 (-20) where the sets $\OML/nxlmi/m/it/10 M[]; ::
+; M[]$ \T1/LinuxLibertineT-TLF/m/n/10 (-20) are built from the pro-jec-tions ($
+\OML/nxlmi/m/it/10 proj[] \OT1/LinuxLibertineT-TLF/m/n/10 (-20) :
+ []
 
-)
-(./main.bbl)
+) (./main.bbl)
 
 Package caption Warning: Unused \captionsetup[sub] on input line 6.
 See the caption package documentation for explanation.
@@ -1404,13 +1407,13 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 2210DA89677FF390BADB2BBD2FFB3E57;547.
  ) 
 Here is how much of TeX's memory you used:
- 29694 strings out of 493029
- 522655 string characters out of 6136234
+ 29700 strings out of 493029
+ 522774 string characters out of 6136234
  605748 words of memory out of 5000000
  32246 multiletter control sequences out of 15000+600000
- 187702 words of font info for 296 fonts, out of 8000000 for 9000
+ 189403 words of font info for 301 fonts, out of 8000000 for 9000
  1302 hyphenation exceptions out of 8191
- 60i,11n,94p,848b,429s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 60i,12n,94p,848b,429s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_c7kyj5.enc}{/us
 r/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/share/texlive/texm
 f-dist/fonts/enc/dvips/libertine/lbtn_7grukw.enc}{/usr/share/texlive/texmf-dist
@@ -1431,10 +1434,10 @@ ive/texmf-dist/fonts/type1/public/txfonts/txex.pfb></usr/share/texlive/texmf-di
 st/fonts/type1/public/txfonts/txsy.pfb></usr/share/texlive/texmf-dist/fonts/typ
 e1/public/newtx/zxlr.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/newt
 x/zxlri.pfb>
-Output written on main.pdf (1 page, 438349 bytes).
+Output written on main.pdf (1 page, 440153 bytes).
 PDF statistics:
- 131 PDF objects out of 1000 (max. 8388607)
- 96 compressed objects within 1 object stream
+ 129 PDF objects out of 1000 (max. 8388607)
+ 94 compressed objects within 1 object stream
  11 named destinations out of 1000 (max. 500000)
  58949 words of extra memory for PDF output out of 61914 (max. 10000000)
 
