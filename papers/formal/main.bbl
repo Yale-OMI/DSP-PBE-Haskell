@@ -38,18 +38,4 @@
 \providecommand\natexlab[1]{#1}
 \providecommand\showeprint[2][]{arXiv:#2}
 
-\bibitem[\protect\citeauthoryear{Bishop and Goldberg}{Bishop and
-  Goldberg}{1980}]%
-        {bishop1980tensor}
-\bibfield{author}{\bibinfo{person}{R.L. Bishop} {and} \bibinfo{person}{S.I.
-  Goldberg}.} \bibinfo{year}{1980}\natexlab{}.
-\newblock \bibinfo{booktitle}{{\em Tensor Analysis on Manifolds}}.
-\newblock \bibinfo{publisher}{Dover Publications}.
-\newblock
-\showISBNx{9780486640396}
-\showLCCN{80066959}
-\showURL{%
-\url{https://books.google.com/books?id=LAuN5-og4jwC}}
-
-
 \end{thebibliography}
