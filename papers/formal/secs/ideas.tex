@@ -16,26 +16,29 @@ The language of a grammar $\languageOf{G} = \{ \}$ is the set of all words that 
 At a high level, \textit{Approximate Programming by Example} (APBE) can be seen as a generalization of classic Programming by Example (PBE).
 Specifically, APBE relaxes the correctness criteria of PBE.
 Whereas PBE searches for a program that correctly maps every given input-output examples, APBE searches for a program that closely maps every given input-output example.
-We then formally state APBE as the following problem.
-\samepage{
-Given:
-\begin{itemize}
-  \item A domain of input-output examples $\exampleDomain$, and a distance function $d:\exampleDomain \to \exampleDomain \to \reals$ such that $(\exampleDomain,\costFxn)$ is a metric space
-  \item A set of input,output examples $\{(i_0,o_0),...,(i_n,o_n)\}$ where $\forall 0 \leq j \leq n.\ i_j,o_j \in \exampleDomain$
-  \item A grammar $G$ where words of the grammar can be interpreted as functions over the input-output example domain, $\forall w \in \languageOf{G}.\ w : \exampleDomain \to \exampleDomain$ \markk{should I introduce a special notation to interpret words of the grammar as functions? Something like $[w]$?}
-\end{itemize}
-Find a program $p \in \languageOf{G}$ such that $\sum_{j=0}^{n} \ \costFxn(o_j,p(i_j))$ is minimized. \markk{if i add the interpretation function $[]$, then it is $p \in [\languageOf{G}]$}
-\markk{Should I generalize the sum here? Just using sum might allow for some strange solutions}.
-}
+We then formally state APBE as the following optimization problem.
 
-As an optimization problem, machine learning techniques such as gradient descent are an attractive option.
-However, such methods operate by repeatedly computing the derivate of the distance function $\costFxn$.
-If $\costFxn$ is not easily differentiable, for instance when $\costFxn$ uses blackbox I/O, exploring the complete space of $\languageOf{G}$ will be prohibitively expensive.
-To overcome this challenge, we refine the search space using formal methods generate a $G'$ such that $\languageOf{G'} \subset \languageOf{G}$.
+\noindent\textbf{Given:}
+\begin{itemize}[topsep=0pt]
+  \item A domain of input-output examples $\exampleDomain$, and a distance function $d:\exampleDomain \to \exampleDomain \to \reals$ such that $(\exampleDomain,\distFxn)$ is a metric space.
+  \item A set of input,output examples $\{(i_0,o_0),...,(i_n,o_n)\}$ where $\forall 0 \leq j \leq n.\ i_j,o_j \in \exampleDomain$
+  \item A grammar $G$ of functions over the input-output example domain, $\forall f \in \languageOf{G}.\ f: \exampleDomain \to \exampleDomain$
+  \item A cost function $\costFxn : \languageOf{G} \to \reals$ that calculates how well a particular $p \in \languageOf{G}$ maps the input examples to the output examples. This is user-defined, but will generally utilize the distance function, $\distFxn$, for example in $\costFxn(p) = \sum_{j=0}^{n} (\distFxn(o_j,p(i_j)))$.
+\end{itemize}
+\textbf{Minimize:}
+
+Find a program $p \in \languageOf{G}$ to minimize $\costFxn(p)$.
+\vspace{\baselineskip}
+
+There are a number of existing tools and techniques to solve such minimization/optimization problems~\cite{optmizationTextbook}.
+However, one of the core components of such optimizations is the need for repeated computation of the cost function $\costFxn$ with candidate solutions, $p \in \languageOf{G}$.
+When $c$ is particularly slow to compute, for instance when $\distFxn$ uses blackbox I/O, exploring the complete space of $\languageOf{G}$ is prohibitively expensive.
+To overcome this challenge, we can proactively prune the search space before applying optimization techniques.
+Since the optimization problem of APBE is over a space of programs, we can leverage techniques from formal methods to first refine the search space by generating a $G'$ such that $\languageOf{G'} \subset \languageOf{G}$.
 
 \section{Grammar Refinement}
 In order to generate a reduced grammar $G', \languageOf{G'} \subset \languageOf{G}$, we require domain-specific knowledge from the user.
-Specifically, the user provides a grammar transformation $t:G \to G$ where $\languageOf{t(G)} \subset \languageOf{G}$ \markk{overloading G as the grammar and some kind of type, need to fix this - how to I write the 'type' of $G$}
+Specifically, the user provides a grammar transformation $t:G \to G$ where $\languageOf{t(G)} \subset \languageOf{G}$ \markk{overloading G as the grammar and some kind of type, need to fix this - how do I write the 'type' of $G$}
   and a refinement predicate $r: \exampleDomain \to \exampleDomain \to Boolean$ that describes when the transformation $t$ can be applied. 
 
 If the input/output examples have some relation $r$, then we can transform the search space in a way that removes potential programs that are not good.
@@ -45,13 +48,13 @@ Put formally:
    r(i,o) &\implies \\
    & \forall p \in \languageOf{G} \setminus \languageOf{t(G)}. \\
    & \exists p' \in \languageOf{t(G)}. \\
-   & \costFxn(o,p(i)) > \costFxn(o,p'(i)) 
+   & \distFxn(o,p(i)) > \distFxn(o,p'(i)) 
 \end{align*}
 
 
 \section{Gradient Descent-like optimization}
 
-While gradient descent is an option, APBE is applied when $\costFxn$ is slow, so we should instead consider alternatives to gradient descent.
+While gradient descent is an option, APBE is applied when $\distFxn$ is slow, so we should instead consider alternatives to gradient descent.
 
 
 \section{Related}
