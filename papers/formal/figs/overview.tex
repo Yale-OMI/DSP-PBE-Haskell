@@ -1,0 +1,35 @@
+
+\begin{figure}[t]
+  \centering
+  \tikzstyle{b} = [rectangle, draw, fill=none, text centered, sharp corners, minimum height=3em, text width=2cm, node distance=5em]
+  \tikzstyle{data} = [rectangle, draw, fill=lightgray, text centered, sharp corners, minimum height=3em, text width=2cm, node distance=5em]
+  \tikzstyle{decision} = [ellipse, draw, fill=lightgray, text centered, sharp corners, minimum height=2em, text width=1.75cm, node distance=5em]
+  \tikzstyle{l} = [draw, thick, ->]
+
+\begin{tikzpicture}[node distance = 8em, auto]
+    % Place nodes
+    \node [data] (examples) {User \\ Examples};
+    \node [b, below of=examples] (struct) {Structural Synthesis Sec.~\ref{sec:struct}};
+    \node [b, left of=struct, node distance=8em] (refs) {User provided Grammar Refinements Sec.~\ref{sec:struct}};
+    \node [b, below of=struct] (params) {Parameter Tuning \\ Sec.~\ref{sec:opt}};
+    \node [decision, below of=params] (thres) {Below Cost Threshold?};
+    \node [data, below of=thres] (synth) {Synthesized Filter};
+
+%Online Flow
+
+    % Draw edges
+    \path [l] (refs) -- (struct);
+    \path [l] (examples) -- (struct);
+    \path [l] (struct) -- (params);
+    \draw [l] (params.south) -- (thres.north);
+    \draw [l] (thres.east) -- ([xshift=4em,yshift=0.5em]struct.north) -- ([yshift=0.5em]struct.north) -- (struct.north);
+    \path [l] (thres) -- (synth);
+
+\end{tikzpicture}
+  \caption{Synthesis first assigns prunes the search space with grammar refinements, then uses a feedback loop to choose a program structure and tunes the parameters of the structure based on user-provided examples.}
+  \label{fig:overview}
+\end{figure}
+
+
+
+

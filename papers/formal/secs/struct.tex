@@ -1,0 +1,16 @@
+\section{Structural Synthesis}
+\label{sec:struct}
+In order to generate a reduced grammar $G', \languageOf{G'} \subset \languageOf{G}$, we require domain-specific knowledge from the user.
+Specifically, the user provides a grammar transformation $t:G \to G$ where $\languageOf{t(G)} \subset \languageOf{G}$ \markk{overloading G as the grammar and some kind of type, need to fix this - how do I write the 'type' of $G$}
+  and a refinement predicate $r: \exampleDomain \to \exampleDomain \to Boolean$ that describes when the transformation $t$ can be applied. 
+
+If the input/output examples have some relation $r$, then we can transform the search space in a way that removes potential programs that are not good.
+Put formally:
+
+\begin{align*}
+   r(i,o) &\implies \\
+   & \forall p \in \languageOf{G} \setminus \languageOf{t(G)}. \\
+   & \exists p' \in \languageOf{t(G)}. \\
+   & \distFxn(o,p(i)) > \distFxn(o,p'(i)) 
+\end{align*}
+
