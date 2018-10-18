@@ -2,6 +2,8 @@
 
 The goal of this project is to build filter by providing example sound files
 
+to read more on this project, see http://marksantolucito.com/dsp-pbe.pdf
+
 ## Milestones
 
 - [x] Compare aural 'distance' of two sound files
