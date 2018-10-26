@@ -1,25 +1,27 @@
 
 \subsection{Problem Statement}
-At a high level, \textit{Approximate Programming by Example} (APBE) can be seen as a generalization of classic Programming by Example (PBE).
-Specifically, APBE relaxes the correctness criteria of PBE.
-Whereas PBE searches for a program that correctly maps every given input-output examples, APBE searches for a program that closely maps every given input-output example.
-We then formally state APBE as the following optimization problem.
+At a high level, \textit{Approximate Programming by Example} (\approximatePBE) can be seen as a generalization of classic Programming by Example (PBE).
+Specifically, \approximatePBE relaxes the correctness criteria of PBE.
+Whereas PBE searches for a program that correctly maps every given input-output examples, \approximatePBE searches for a program that closely maps every given input-output example.
+We then formally state \approximatePBE as the following optimization problem.
 
 \noindent\textbf{Given:}
 \begin{itemize}[topsep=0pt]
   \item A domain of input-output examples $\exampleDomain$, and a distance function $d:\exampleDomain \to \exampleDomain \to \reals$ such that $(\exampleDomain,\distFxn)$ is a metric space.
-  \item A set of input,output examples $\{(i_0,o_0),...,(i_n,o_n)\}$ where $\forall 0 \leq j \leq n.\ i_j,o_j \in \exampleDomain$
+  \item A user specified threshold $\epsilon \in \reals$ for minimal distance with respect to the metric space.
+  \item A set of input,output examples $\{(i_0,o_0),...,(i_n,o_n)\}$ where $\forall 0 \leq j \leq n.\ i_j,o_j \in \exampleDomain$.
   \item A grammar $G$ of programs over the input-output example domain, $\forall p \in \languageOf{G}.\ f: \constants \to \exampleDomain \to \exampleDomain$. 
-    The program structure can be made into an executable function by fixing the constants, $\constants$, with partial application on the program, $p(\constants): \exampleDomain \to \exampleDomain$. We notate the space of programs with fixed constants that can be generated from a grammar $G$ as $\interp{\languageOf{G}}$.
+    The program structure can be made into an executable function by fixing the constants, $\constants$, with partial application on the program, $p(\constants): \exampleDomain \to \exampleDomain$. We leave the type of $k$ open for now. We notate the space of programs with fixed constants that can be generated from a grammar $G$ as $\interp{\languageOf{G}}$.
   \item A cost function $\costFxn : \exampleDomain \to \exampleDomain \to \interp{\languageOf{G}} \to \reals$ that calculates how well a particular $p(\constants) \in \interp{\languageOf{G}}$ maps the input examples to the output examples. This is user-defined, but will generally utilize the distance function, $\distFxn$, for example in $\costFxn(o,i,p(\constants)) = \sum_{j=0}^{n} (\distFxn(o_j,p(\constants,i_j)))$.
 \end{itemize}
 \textbf{Minimize:}
 
-Find a program $p \in \languageOf{G}$ and constants $\constants$ to minimize $\costFxn(o,i,p(\constants))$.
+Find a program $p \in \languageOf{G}$ and constants $\constants$ to minimize $\costFxn(o,i,p(\constants))$. 
+With respect to practical synthesis, find $p$ and $k$ such that $\costFxn(o,i,p(\constants)) \leq \epsilon$.
 \vspace{\baselineskip}
 
 There are a number of existing tools and techniques to solve general minimization/optimization problems over metric spaces~\cite{optmizationTextbook}.
 However, one of the core components of such optimizations is the need for repeated computation of the cost function $\costFxn$ with candidate solutions, $p \in \languageOf{G}$.
 When $c$ is particularly slow to compute, for instance when $\distFxn$ uses blackbox I/O, exploring the complete space of $\languageOf{G}$ is prohibitively expensive.
 To overcome this challenge, we can proactively prune the search space before applying optimization techniques.
-Since the optimization problem of APBE is over a space of programs, we can leverage techniques from formal methods to first refine the search space by generating a $G'$ such that $\languageOf{G'} \subset \languageOf{G}$.
+Since the optimization problem of \approximatePBE is over a space of programs, we can leverage techniques from formal methods to first refine the search space by generating a $G'$ such that $\languageOf{G'} \subset \languageOf{G}$.
