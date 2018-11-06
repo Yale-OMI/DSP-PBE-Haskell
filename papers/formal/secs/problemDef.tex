@@ -1,8 +1,14 @@
 
-\subsection{Problem Statement}
-At a high level, \textit{Approximate Programming by Example} (\approximatePBE) can be seen as a generalization of classic Programming by Example (PBE).
+\section{Problem Statement}
+From one perspective, \textit{Approximate Programming by Example} (\approximatePBE) can be seen as a generalization of classic Programming by Example (PBE).
 Specifically, \approximatePBE relaxes the correctness criteria of PBE.
-Whereas PBE searches for a program that correctly maps every given input-output examples, \approximatePBE searches for a program that closely maps every given input-output example.
+The problem statement of PBE is roughly to find a program that correctly maps every given input-output examples, and generalizes this mapping in a reasonable way across the input space, for a definition of reasonable that varies across application domains and search algorithms.
+In contrast, \approximatePBE searches for a program that only \textit{closely} maps every given input-output example, and again generalizes the mapping across the input space.
+The key difference is that in \approximatePBE, we do not require the examples must be mapped exactly.
+
+Note that this is distinct from a PBE setting with noisy examples - we cannot throw away examples that are anomalous and learn over the remaining examples~\cite{raychev2016learning}.
+In \approximatePBE we want to find a program that fits as closely as possible to \textit{all} provided examples.
+We additionally distinguish this problem from a general supervised learning problem, since in \approximatePBE, we have an additional constraint that the generated model must be a readable program.
 We then formally state \approximatePBE as the following optimization problem.
 
 \noindent\textbf{Given:}
@@ -10,9 +16,12 @@ We then formally state \approximatePBE as the following optimization problem.
   \item A domain of input-output examples $\exampleDomain$, and a distance function $d:\exampleDomain \to \exampleDomain \to \reals$ such that $(\exampleDomain,\distFxn)$ is a metric space.
   \item A user specified threshold $\epsilon \in \reals$ for minimal distance with respect to the metric space.
   \item A set of input,output examples $\{(i_0,o_0),...,(i_n,o_n)\}$ where $\forall 0 \leq j \leq n.\ i_j,o_j \in \exampleDomain$.
-  \item A grammar $G$ of programs over the input-output example domain, $\forall p \in \languageOf{G}.\ f: \constants \to \exampleDomain \to \exampleDomain$. 
-    The program structure can be made into an executable function by fixing the constants, $\constants$, with partial application on the program, $p(\constants): \exampleDomain \to \exampleDomain$. We leave the type of $k$ open for now. We notate the space of programs with fixed constants that can be generated from a grammar $G$ as $\interp{\languageOf{G}}$.
-  \item A cost function $\costFxn : \exampleDomain \to \exampleDomain \to \interp{\languageOf{G}} \to \reals$ that calculates how well a particular $p(\constants) \in \interp{\languageOf{G}}$ maps the input examples to the output examples. This is user-defined, but will generally utilize the distance function, $\distFxn$, for example in $\costFxn(o,i,p(\constants)) = \sum_{j=0}^{n} (\distFxn(o_j,p(\constants,i_j)))$.
+  \item A grammar $G$ of programs over the input-output example domain. 
+        We notate the space of programs that can be generated from a grammar $G$ as $\languageOf{G}$.
+        The grammar $G$ generates programs structures, that must be completed with constants $\constants$ - $\forall p \in \languageOf{G}.\ f: \constants \to \exampleDomain \to \exampleDomain$. 
+        The program structure can be made into an function over the example space by fixing the constants, $\constants$, so that partial application of the program yields, $p(\constants): \exampleDomain \to \exampleDomain$. 
+        The type of $\constants$ should be over a continuous space, for example $\reals^n$. 
+  \item A cost function $\costFxn : \constants \to \languageOf{G} \to (\exampleDomain,\exampleDomain)^n \to \reals$ that calculates how well a particular $p(\constants) \in \languageOf{G}$ maps the $n$ input examples to the corresponding $n$ output examples. This is a user-defined error aggregation function of distance function, $\distFxn$, for example in $\costFxn(o,i,p(\constants)) = \sum_{j=0}^{n} (\distFxn(o_j,p(\constants,i_j)))$.
 \end{itemize}
 \textbf{Minimize:}
 
@@ -25,3 +34,21 @@ However, one of the core components of such optimizations is the need for repeat
 When $c$ is particularly slow to compute, for instance when $\distFxn$ uses blackbox I/O, exploring the complete space of $\languageOf{G}$ is prohibitively expensive.
 To overcome this challenge, we can proactively prune the search space before applying optimization techniques.
 Since the optimization problem of \approximatePBE is over a space of programs, we can leverage techniques from formal methods to first refine the search space by generating a $G'$ such that $\languageOf{G'} \subset \languageOf{G}$.
+
+\begin{exmp}
+Applying \approximatePBE to Audio DSP.
+
+In the domain of Audio Digital Signal Processing, the \exampleDomain is audio waveforms of type \texttt{[Double]}.
+We will use as the distance function $\distFxn$ an audio fingerprinting technique~\cite{SantolucitoFARM} that measures how different two audio clips sound.
+
+We define our grammar $G$ for a DSP program as follows:
+
+\begin{align*}
+DSP &= P \arrComp P\ |\ P \\
+P   & = LPF \ [0,1]^2 \ |\ HPF \ [0,1]^2 \ |\ WN \ [0,1]
+\end{align*}
+
+For a program $p \in \languageOf{G}$ generated from this grammar, we must fix constants for each parameterized node of the AST.
+In this case, we must then choose $\constants :: \reals^{5}$ to generate an executable $p:\exampleDomain \to \exampleDomain$. 
+
+\end{exmp}

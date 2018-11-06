@@ -4,9 +4,16 @@ In order to generate a reduced grammar $G', \languageOf{G'} \subset \languageOf{
 Specifically, the user provides our synthesis system with a set of grammar transformations \mbox{$t: \typeOfGrammar \to \typeOfGrammar$}, where the transformations strictly reduce the size of the set terminals that the grammar can generate, \mbox{$\forall G \in \typeOfGrammar. \ \languageOf{t(G)} \subseteq \languageOf{G}$}.
 The user then also provides a refinement predicate $r: \exampleDomain \to \exampleDomain \to Boolean$ that describes when each transformation $t$ can be applied. 
 
+The language containment problem ($\languageOf{G_{1}} \subset \languageOf{G_{2}}$) is important for us here since we want to be sure that we are strictly decreasing the space of candidate programs to ensure that our search terminates.
 The problem of checking language containment ($\languageOf{G_{1}} \subset \languageOf{G_{2}}$) for arbitrary context-free grammars $G_1$ and $G_2$ is undecidable in general~\cite{hopcroft1969equivalence}.
-We will limit the transformation to be one that only modifies production rules $\productionRules$.
-In this way, the transformation $t: \productionRules \to \productionRules$ 
+Ensuring that arbitrary transformations of the grammar indeed shrinks the search space is then not feasible.
+However, our structural refinements do not require this power.
+We instead limit the transformation to be one that only reduces production rules $\productionRules$.
+
+A singel prodcution rule $p = (l,r)$ has size $|p| = |r|$. 
+For refinements, it must hold that $\forall p \in P,P', |p|<|p'|$
+
+In this way, the transformation $t: \typeOfGrammar \to \typeOfGrammar$ is actually limited to transformations on i$\productionRules \to \productionRules$ 
 
 
 If the input/output examples have some relation $r$, then we can transform the search space in a way that removes potential programs that are not good.
@@ -19,3 +26,6 @@ Put formally:
    & \distFxn(o,p(i)) > \distFxn(o,p'(i)) 
 \end{align*}
 
+\begin{exmp} Limiting the DSP Grammar
+
+\end{exmp}

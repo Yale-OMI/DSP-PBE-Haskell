@@ -13,10 +13,20 @@
 \usepackage{multirow}
 
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{bm}
 
 \usepackage{makecell}
 \usepackage{enumitem}
+
+\lstset{
+  basicstyle=\ttfamily,
+  mathescape
+}
+
+
+\theoremstyle{definition}
+\newtheorem{exmp}{Example}
 
 \newcommand{\ourTool}{our tool}
 
@@ -26,14 +36,13 @@
 
 \newcommand{\arrComp}{\ensuremath{>\mkern-9mu>\mkern-9mu>} }
 
-\newcommand{\approximatePBE}{APBE}
+\newcommand{\approximatePBE}{APBE\xspace}
 
 \newcommand{\reals}{\ensuremath{{\rm I\!R}}}
 \newcommand{\distFxn}{\ensuremath{{d}}}
 \newcommand{\costFxn}{\ensuremath{{c}}}
 \newcommand{\constants}{\ensuremath{{k}}}
-\newcommand{\exampleDomain}{\ensuremath{M}}
-\newcommand{\interp}[1]{\ensuremath{[\![#1]\!]}}
+\newcommand{\exampleDomain}{\ensuremath{M}\xspace}
 
 %Grammar Definitions
 \newcommand{\languageOf}[1]{\ensuremath{\mathbf{L}(#1)}}

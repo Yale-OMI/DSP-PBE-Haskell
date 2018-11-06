@@ -1,9 +1,35 @@
 \section{Learning from failed attempts}
 \label{sec:feedback}
 
-On key feature of our synthesis is the feedback loop structure that allows us to learn from incorrect program structures.
+
+\subsection{Deriving Structural Constraints}
+One key feature of our synthesis is the feedback loop structure that allows us to learn from incorrect program structures.
 Each time that the parameter tuning phase fails to produce a program $p(c)$ that meets the cost threshold, we can extract information from that search which allows us to improve our choice of program structure from within the language of the current grammar, $\languageOf{G}$.
 
+
+\begin{exmp}
+Take as an example a synthesis attempt that produced the following log of candidate programs and associated costs.
+
+\begin{lstlisting}
+(LPF 800 $\arrComp$ HPF 200, 80)
+(LPF 200 $\arrComp$ HPF 800, 83)
+(HPF 800 $\arrComp$ LPF 200, 20)
+(HPF 200 $\arrComp$ LPF 800, 23)
+\end{lstlisting}
+
+From this we want to learn something about the discrete space of program structure. 
+This is where we are working in a semantics-driven programming-by-example style
+We can see that the form \texttt{LPF \_ >> HPF \_} is way worse than \texttt{HPF \_ >> LPF \_}.
+From this, we can learn a structural constraint that we should not allow the form \texttt{LPF \_ >> HPF \_}.
+We will add this as a \textit{derived structural constraint}, and continue synthesis.
+\end{exmp}
+
+\subsection{Deriving Metric Constraints}
 Additionally, we can improve our next parameter search over a new program structure.
 To do this, we map the parameters from the best program in the previous parameter search onto the new program structure.
 In this way, we can choose a better starting point for our parameter search.
+
+This is where we are working in a numerical-driven supervised learning style.
+We take the same log from above, and see that, across all structures, \texttt{HPF 800} is slightly better than \texttt{200}, 
+  and \texttt{LPF 200} is slightly better than \texttt{800}.
+To leverage this new knowledge, we can accordingly adjust our initial values for the starting point of our gradient descent.

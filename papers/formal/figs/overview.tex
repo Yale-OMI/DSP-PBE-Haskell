@@ -11,12 +11,12 @@
     % Place nodes
     \node [data] (examples) {User \\ Examples};
     \node [b, below of=examples] (struct) {Structural Synthesis Sec.~\ref{sec:struct}};
-    \node [b, left of=struct, node distance=8em] (userRefs) {User provided Grammar Refinements Sec.~\ref{sec:struct}};
-    \node [b, right of=struct, node distance=8em] (structRef) {Derived Grammar Refinements \\ Sec.~\ref{sec:feedback}};
-    \node [b, below of=structRef, node distance=7em] (paramRef) {Derived Parameter Constaints \\ Sec.~\ref{sec:feedback}};
-    \node [b, left of=paramRef, node distance=8em] (params) {Parameter Tuning \\ Sec.~\ref{sec:opt}};
+    \node [b, left of=struct, node distance=8em] (userRefs) {User provided Refinements Sec.~\ref{sec:struct}};
+    \node [b, right of=struct, node distance=8em] (structRef) {Derived Structural Constraints \\ Sec.~\ref{sec:feedback}};
+    \node [b, below of=structRef, node distance=7em] (paramRef) {Derived Metrical Weights \\ Sec.~\ref{sec:feedback}};
+    \node [b, left of=paramRef, node distance=8em] (params) {Metrical Sythesis \\ Sec.~\ref{sec:opt}};
     \node [decision, below of=params] (thres) {Below Cost Threshold?};
-    \node [data, below of=thres] (synth) {Synthesized Filter};
+    \node [data, below of=thres] (synth) {Synthesized Program};
 
 %Online Flow
 
@@ -36,7 +36,7 @@
     \path [l] (thres) -- (synth);
 
 \end{tikzpicture}
-  \caption{Synthesis first assigns prunes the search space with grammar refinements, then uses a feedback loop to choose a program structure and tunes the parameters of the structure based on user-provided examples.}
+  \caption{Synthesis first prunes the search space with user provided refinements, then uses a feedback loop to generate strucutal constraints on $G$, and metrical weights on $\constants$, to futher guide the search process.}
   \label{fig:overview}
 \end{figure}
 

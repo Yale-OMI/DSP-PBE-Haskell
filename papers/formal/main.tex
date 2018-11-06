@@ -4,7 +4,9 @@
 %% For single-blind review submission
 %\documentclass[acmlarge,review]{acmart}\settopmatter{printfolios=true}
 %% For final camera-ready submission
-\documentclass[sigplan,screen]{acmart}\settopmatter{}
+%\documentclass[sigplan,screen]{acmart}\settopmatter{}
+
+\documentclass[sigplan,10pt,review,anonymous]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
 
 %% Note: Authors migrating a paper from PACMPL format to traditional
 %% SIGPLAN proceedings format should change 'acmlarge' to
@@ -129,6 +131,7 @@ CCF-1302327 and CCF-1715387.}
 %% Note: \begin{abstract}...\end{abstract} environment must come
 %% before \maketitle command
 \begin{abstract}
+\input{secs/abstract}
 \end{abstract}
 
 
