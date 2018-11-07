@@ -17,23 +17,20 @@ to read more on this project, see http://marksantolucito.com/dsp-pbe.pdf
 
 To install 
 
-   pip install scipy numpy matplotlib
-   apt-get install python-tk supercollider
-   scide (supercollider needs to be opened and closed once in order to initialize some folders that are used by the vivid api)
-   make
+   sudo pip install scipy numpy matplotlib
+   sudo apt-get install python-tk supercollider
+   scide #supercollider needs to be opened and closed once in order to initialize some folders that are used by the vivid api
+   cabal sandbox init
+   cabal new-install
 
 To test
 
-   make test
+  cabal new-test 
 
-or, to run the tests with a ramdisk
- 
-   ./runTests.sh
+To run the executable
 
-To run
-
-   make && ./runAll.sh
-
+  .cabal-sandbox/bin/musicSynth input-file output-file target-file
+  
 ## Inputs
 
-must be stero tracks at 44.1k
+must be stereo tracks at 44.1k

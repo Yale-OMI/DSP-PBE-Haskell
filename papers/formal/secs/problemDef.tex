@@ -36,16 +36,17 @@ To overcome this challenge, we can proactively prune the search space before app
 Since the optimization problem of \approximatePBE is over a space of programs, we can leverage techniques from formal methods to first refine the search space by generating a $G'$ such that $\languageOf{G'} \subset \languageOf{G}$.
 
 \begin{exmp}
-Applying \approximatePBE to Audio DSP.
+\approximatePBE for Commutative Audio DSP filters.
 
-In the domain of Audio Digital Signal Processing, the \exampleDomain is audio waveforms of type \texttt{[Double]}.
-We will use as the distance function $\distFxn$ an audio fingerprinting technique~\cite{SantolucitoFARM} that measures how different two audio clips sound.
+As an illustrative running example, we will work in the domain of Audio Digital Signal Processing, and focus on a small grammar of simple DSP filters.
+In Audio DSP, the \exampleDomain is audio waveforms of type \texttt{[Double]}.
+We will use as the distance function $\distFxn$ an audio fingerprinting technique~\cite{SantolucitoFARM} that measures how different two audio clips sound to the human ear.
 
 We define our grammar $G$ for a DSP program as follows:
 
 \begin{align*}
 DSP &= P \arrComp P\ |\ P \\
-P   & = LPF \ [0,1]^2 \ |\ HPF \ [0,1]^2 \ |\ WN \ [0,1]
+P   & = LPF \ [0,20k] \ [0,1] \ |\ HPF \ [0,20k] \ [0,1] \ |\ WN \ [0,1]
 \end{align*}
 
 For a program $p \in \languageOf{G}$ generated from this grammar, we must fix constants for each parameterized node of the AST.

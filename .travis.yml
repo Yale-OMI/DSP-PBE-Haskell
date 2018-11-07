@@ -1,0 +1,7 @@
+language: haskell
+ghc:
+  - "8.4.3"
+
+script:
+  cabal configure --enable-tests && cabal new-install && cabal new-test
+
