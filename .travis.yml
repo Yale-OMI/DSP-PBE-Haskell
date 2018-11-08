@@ -8,5 +8,5 @@ before_install:
   - xvfb-run --server-args="-screen 0, 1280x800x24" sclang & sleep 5 ; kill %1
 
 script:
-  cabal configure --enable-tests && cabal install && cabal test
+  cd DSP-PBE && cabal configure --enable-tests && cabal install && cabal test
 
