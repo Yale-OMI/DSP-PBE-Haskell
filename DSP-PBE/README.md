@@ -1,10 +1,8 @@
-[![Build Status](https://travis-ci.com/Yale-OMI/DSP-PBE.svg?branch=master)](https://travis-ci.com/Yale-OMI/DSP-PBE)
-
 # Synthesis Synthesis
 
 The goal of this project is to build filter by providing example sound files
 
-to read more on this project, see http://marksantolucito.com/dsp-pbe.pdf, or any of the ongoing writing in the 'papers' directory
+to read more on this project, see http://marksantolucito.com/dsp-pbe.pdf
 
 ## Milestones
 
@@ -13,7 +11,6 @@ to read more on this project, see http://marksantolucito.com/dsp-pbe.pdf, or any
 - [x] generate Vivid program from DSP filter
 - [ ] output generated program in runable form
 - [ ] Use refinement types to find better initial guess for SGD
-- [ ] Replace SGD with a more efficient search
 - [ ] build online interface
 
 ## Usage

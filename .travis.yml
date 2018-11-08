@@ -2,6 +2,11 @@ language: haskell
 ghc:
   - "8.4.3"
 
+before_install:
+  - sudo apt-get install python-tk supercollider
+  - sudo pip install scipy numpy matplotlib
+  - sclang
+
 script:
-  cabal configure --enable-tests && cabal new-install && cabal new-test
+  cabal configure --enable-tests && cabal install && cabal test
 

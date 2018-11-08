@@ -20,10 +20,10 @@ import qualified Settings as S
 import Utils
 
 -- | Use data type Theta for params to be passed to eval fxn
--- | calc new theta and build map of theta to value to avoid recomputation
+--   calc new theta and build map of theta to value to avoid recomputation
 multiVarSGD :: RandomGen g => 
   _ ->        -- ^ selectors for all dimension of theta
-  g ->        -- ^ a random generator
+  g ->        -- ^ a random generator for the Stochastic-ness of SGD
   Int ->      -- ^ the size of each batch in SGD
   Double ->   -- ^ the goal for covergence - what do we condsider to be a negligible gain from one step of SGD
   Double ->   -- ^ the learning rate, this is not a global setting as some SGD implementations use a dynamic learning rate

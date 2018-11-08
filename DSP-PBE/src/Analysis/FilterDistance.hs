@@ -26,13 +26,15 @@ testFilter in_fp (out_fp,outAudio) f= do
     --Right a -> return $ auralDistance outAudio a
     Right a -> auralDistance (out_fp,outAudio) (newOutFilepath,a)
 
-
+-- | A small wrapper to geneate the vAction, perform that action in nonrealtime (writeNRT), 
+--   then save it in out_filepath
 runFilter :: FilePath -> FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> Float -> IO(String)
 runFilter out_filepath srcFile vCode secsToGenerate = do
    writeNRT out_filepath $ vAction secsToGenerate srcFile vCode 
    return out_filepath
 
-
+-- | This is the template of the Vivid (SuperCollider) function that we use 
+--   to construct a runnable Vivid program from a filter (vCode) given a particular audio input (srcFile)
 vAction :: Float -> FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> _
 vAction secsToGenerate srcFile vCode = do
    b <- newBufferFromFile srcFile

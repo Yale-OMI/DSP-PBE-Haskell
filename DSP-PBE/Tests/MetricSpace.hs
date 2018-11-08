@@ -17,7 +17,9 @@ import Control.Concurrent.ParallelIO.Global
 import PrintAudio
 ----------
 --
---  Tests the aural distance function for sanity
+--  Tests the aural distance function for properties of:
+--  1) Metric Space
+--  2) Aural reasonability 
 --
 ----------
 
@@ -62,27 +64,23 @@ comparisonTests = do
   t3v4 <- auralDistance w3 w4
 
   mapM_ print $ zip [1..] filenames
-  --identity
-  checkTest "id d(1,1)" 0 (==) t1v1
+  
+  print "Checking properties of metric space"
+  checkTest "id of indiscernibles d(1,1)" 0 (==) t1v1
 
-  --assocativty
-  checkTest "assoc d(1,3)=d(3,1)" (abs $ t1v3-t3v1) (<) 3
-  checkTest "assoc d(1,4)=d(4,1)" (abs $ t1v4-t4v1) (<) 3
+  checkTest "symmetry d(1,3)=d(3,1)" (abs $ t1v3-t3v1) (<) 3
+  checkTest "symmetry d(1,4)=d(4,1)" (abs $ t1v4-t4v1) (<) 3
+  
+  checkTest "triangle inequality - d(1,4) less than d(1,3) + d(3,4)" t1v3 (<) (t1v3 + t3v4)
 
-  --filter is less than pitch
+  print "Checking properties specific to aural perception"
+
   checkTest "filter d(1,2) less than pitch d(1,4)" t1v2 (<) t1v4
 
-  --filter is less than instrument
   checkTest "filter d(1,2) less than instrument d(1,3)" t1v2 (<) t1v3
   
-  --pitch is more than 500
   checkTest "inst+pitch d(1,3) more than pitch d(1,4)" t1v3 (>) t1v4
   
-  --instrument is more than 500
-  checkTest "instrument d(1,3) > 500" t1v3 (>) 500
-
-  --pitch is more than 500
-  checkTest "pitch d(1,4) > 500" t1v4 (>) 500
   
   stopGlobalPool
 

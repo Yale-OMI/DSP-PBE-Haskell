@@ -28,7 +28,7 @@ default (T.Text)
 peakListPython :: FilePath -> IO (OverTime (OverFreq Peak))
 peakListPython audio_fp = do
   results <- shelly $ silently $ run (fromString "python") 
-           [  "fft.py"
+           [  "PythonUtils/fft.py"
             , T.pack $ audio_fp
             , T.pack $ show S.frameRes
             , T.pack $ show S.overlap]
