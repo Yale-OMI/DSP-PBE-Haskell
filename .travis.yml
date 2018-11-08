@@ -1,6 +1,7 @@
 language: haskell
-ghc:
-  - "8.4.3"
+
+env:
+ - CABALVER=2.5 GHCVER=8.4.3
 
 before_install:
   - sudo apt-get install python-tk supercollider
