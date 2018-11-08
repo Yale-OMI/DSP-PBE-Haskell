@@ -5,7 +5,7 @@ ghc:
 before_install:
   - sudo apt-get install python-tk supercollider
   - sudo pip install scipy numpy matplotlib
-  - xvfb-run --server-args="-screen 0, 1280x800x24" sclang & sleep 5 ; kill $!
+  - xvfb-run --server-args="-screen 0, 1280x800x24" sclang & sleep 5 ; kill %1
 
 script:
   cabal configure --enable-tests && cabal install && cabal test
