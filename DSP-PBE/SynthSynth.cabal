@@ -31,8 +31,10 @@ library
                        Types.Filter
                        Types.Common
                        Utils
-  other-modules:       Synth.SGD
                        Settings 
+  other-modules:       Synth.SGD
+                       Settings.Options
+                       Settings.FixedSettings
                        Analysis.FFT_Py
   build-depends:       
        base >=4.10
@@ -56,6 +58,7 @@ library
      , vector
      , cassava
      , bytestring
+     , cmdargs
  ghc-options:
 --    -Wall 
     -O3
@@ -76,6 +79,7 @@ executable musicSynth
      , HCodecs >=0.5
      , directory
      , filepath
+     , cmdargs
 
 Test-Suite MetricSpace
    type: exitcode-stdio-1.0
