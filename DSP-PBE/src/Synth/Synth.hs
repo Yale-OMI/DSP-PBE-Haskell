@@ -20,6 +20,7 @@ import qualified Data.HashMap.Strict as H
 
 import qualified Settings as S
 import Utils
+import Control.Monad
 
 import qualified Codec.Wav as W
 
@@ -37,7 +38,7 @@ synthCode S.SynthesisOptions{..} = do
       return solution
     Left e -> error e
   print solutionProgram
-  runFilter resultantAudioPath targetAudioPath (toVivid solutionProgram) 10
+  when (targetAudioPath /= "") $ runFilter resultantAudioPath targetAudioPath (toVivid solutionProgram) 10 >> return ()
   return ()
 
   
