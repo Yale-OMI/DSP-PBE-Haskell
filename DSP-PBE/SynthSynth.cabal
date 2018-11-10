@@ -30,6 +30,7 @@ library
                        Synth.RandInitGuess
                        Types.Filter
                        Types.Common
+                       Types.Thetas
                        Utils
                        Settings 
   other-modules:       Synth.SGD

@@ -3,6 +3,7 @@ module Synth.RTypeFilterGuess where
 
 import Types.Common
 import Types.Filter
+import Types.Thetas
 
 import Analysis.FFT
 

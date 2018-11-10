@@ -15,6 +15,7 @@ import Analysis.FilterDistance
 
 import Types.Common
 import Types.Filter
+import Types.Thetas
 
 import qualified Data.HashMap.Strict as H
 

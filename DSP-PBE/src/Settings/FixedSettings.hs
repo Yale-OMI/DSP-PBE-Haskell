@@ -1,6 +1,6 @@
 module Settings.FixedSettings where
 
-import Types.Filter
+import Types.Thetas
 import Data.Functor.Identity
 
 debug = True

@@ -15,6 +15,7 @@ import Control.Lens
 import Control.Monad
 
 import Types.Filter
+import Types.Thetas
 import qualified Settings as S
 
 import Utils
