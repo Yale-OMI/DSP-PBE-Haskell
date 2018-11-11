@@ -4,6 +4,7 @@ import Synth.Synth
 import Analysis.FilterDistance
 import Types.Common
 import Types.Filter
+import Types.Thetas
 import Synth.RTypeFilterGuess
 
 import System.Directory
