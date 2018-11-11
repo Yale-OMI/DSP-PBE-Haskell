@@ -34,7 +34,6 @@ library
                        Utils
                        Settings 
                        Synth.SGD
-                       Synth.SGDNoCache
   other-modules:       
                        Settings.Options
                        Settings.FixedSettings

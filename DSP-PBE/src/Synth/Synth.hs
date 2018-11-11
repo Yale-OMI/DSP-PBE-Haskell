@@ -68,8 +68,8 @@ optimize rGen tester initFilter = multiVarSGD
     0.01 --convergance goal
     1 --learn rate
     initFilter
-    H.empty
     tester
+    H.empty
 
 -- | Adjust the params of a filter to get the best score
 refineFilter :: FilePath -> (FilePath, AudioFormat) -> Thetas -> IO Filter
@@ -77,5 +77,5 @@ refineFilter in_audio_fp (out_fp, out_audio) initF = do
   let tester = testFilter in_audio_fp (out_fp, out_audio) . thetaToFilter
   rGen <- getStdGen
   solution <- optimize rGen tester initF
-  return $ thetaToFilter $ fst solution
+  return $ thetaToFilter solution
 
