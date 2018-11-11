@@ -30,8 +30,9 @@ multiVarSGD :: RandomGen g =>
   Double ->   -- ^ the learning rate, this is not a global setting as some SGD implementations use a dynamic learning rate
   Thetas ->   -- ^ the current theta, from which we will descend the gradient
   (Thetas -> IO Double) -> 
+  ResCache ->
   IO Thetas
-multiVarSGD thetaSelectors g batchSize goal !learnRate !currentTheta costFxn = do
+multiVarSGD thetaSelectors g batchSize goal !learnRate !currentTheta costFxn currentCache = do
 
   -- in SGD, in each round, we randomly (g) select a few (batchSize) dimensions (thetaSelectors) to descend on
   let randSelectors = stochasticBatch g batchSize thetaSelectors
@@ -42,20 +43,30 @@ multiVarSGD thetaSelectors g batchSize goal !learnRate !currentTheta costFxn = d
 
   steppedScore <- costFxn steppedThetas
 
+
   let 
+    newCache = H.insert steppedThetas steppedScore currentCache
     -- build the call to try again using updatedThetas, allowing us to explore worse directions, but every n step returning to best
-    continueGD = multiVarSGD thetaSelectors (snd $ next g) batchSize goal learnRate steppedThetas costFxn
+    continueGD = multiVarSGD thetaSelectors (snd $ next g) batchSize goal learnRate steppedThetas costFxn newCache
     -- converge if we try to descend and still find the same best thetas (within the goal threshold)
-    converged = thetaDiff steppedThetas currentTheta <= goal 
+    converged = thetaDiff steppedThetas currentTheta <= goal || H.member steppedThetas currentCache 
 
   debugPrint $ "Score for this step is "++(show steppedScore)
   
   if not converged 
   then (trace "\n" continueGD)
   else do
-    debugPrint ("\n\n\nFinished SGD with score = "++(show steppedScore)
-                  ++"\nUsing Theta: "++ (indent $ show $ thetaToFilter steppedThetas))
-    return steppedThetas
+    let (bestThetas, bestScore) = getMinScore currentCache
+    debugPrint ("\n\n\nFinished SGD with score = "++(show bestScore)
+                  ++"\nUsing Theta: "++ (indent $ show $ thetaToFilter bestThetas))
+    return bestThetas
+
+getMinScore :: ResCache -> (Thetas, Double)
+getMinScore cache = 
+  H.foldlWithKey' (\(bestT,bestS) t s -> if bestS > s then (t,s) else (bestT,bestS)) (initThetas, read "Infinity") cache
+  -- or, a more clear, but less efficent version
+  -- minimumBy (comparing snd) $ H.toList cache 
+
 
 -- TODO make sure we always take the thetas that were the most effective in the previous step
 stochasticBatch :: RandomGen g => g -> Int -> [a] -> [a]
