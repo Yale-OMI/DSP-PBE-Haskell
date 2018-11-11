@@ -5,8 +5,6 @@
 
 module Synth.Synth where
 
-import System.Random
-
 import Synth.SGD
 import Synth.RTypeFilterGuess
 import Synth.RandInitGuess
@@ -17,13 +15,13 @@ import Types.Common
 import Types.Filter
 import Types.Thetas
 
-import qualified Data.HashMap.Strict as H
-
 import qualified Settings as S
 import Utils
 import Control.Monad
 
 import qualified Codec.Wav as W
+import qualified Data.HashMap.Strict as H
+import System.Random
 
 -- | The main runner for DSP-PBE
 -- TODO have synthesis export a runnable filter

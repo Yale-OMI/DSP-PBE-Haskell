@@ -19,11 +19,11 @@ guessRandInitFilter in_audio out_audio = do
   peaks1 <- peakList in_audio
   peaks2 <- peakList out_audio
   let 
-    initFilter' = initFilter { _pitchShiftApp = -1 }
+    initThetas' = initThetas { _pitchShiftApp = -1 }
     testFilter' = testFilter (fst in_audio) out_audio
-    lows  = map (\thres -> initFilter' { _lpfThreshold = invFreqScale thres, _lpfApp = 1 }) [1000,2000..10000]
-    highs = map (\thres -> initFilter' { _hpfThreshold = invFreqScale thres, _hpfApp = 1 }) [1000,2000..10000]
-    lowAndHighs = map (\(thres1,thres2) -> initFilter' { 
+    lows  = map (\thres -> initThetas' { _lpfThreshold = invFreqScale thres, _lpfApp = 1 }) [1000,2000..10000]
+    highs = map (\thres -> initThetas' { _hpfThreshold = invFreqScale thres, _hpfApp = 1 }) [1000,2000..10000]
+    lowAndHighs = map (\(thres1,thres2) -> initThetas' { 
                                      _lpfThreshold = invFreqScale thres1
                                    , _lpfApp = 1
                                    , _hpfThreshold = invFreqScale thres2

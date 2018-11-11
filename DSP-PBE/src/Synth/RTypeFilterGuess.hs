@@ -19,7 +19,7 @@ guessInitFilter in_audio out_audio = do
     -- the highest threshold for a lpf is the strongest refinement type we can guess
     lpf_init = takeLast fst (map (lpf_refinement_template peaks1 peaks2) lpf_thresholds)
   
-  return $ initFilter {
+  return $ initThetas {
              -- TODO replace 0
              _lpfThreshold = maybe 0 (invFreqScale . snd) lpf_init } 
 

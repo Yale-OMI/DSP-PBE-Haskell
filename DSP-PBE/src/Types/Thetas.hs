@@ -56,8 +56,8 @@ type ResCache = H.HashMap Thetas Double
 --   this can have a large impact on the effectivness of learning
 --   might consider randomize restart as well
 --   TODO: init value depend on the refinement type inference results
-initFilter :: Thetas
-initFilter = (Thetas {
+initThetas :: Thetas
+initThetas = (Thetas {
   _lpfThreshold=(-0.8), _lpfApp=(1),
   _hpfThreshold=(-1), _hpfApp=(-1),
   _pitchShiftFreq =(-0.8), _pitchShiftApp=(1),

@@ -1,6 +1,12 @@
+{-# LANGUAGE RecordWildCards #-}
+
 module Main where
 
-import Synth.SGD
+import Synth.SGDNoCache
+import Types.Thetas
+
+import qualified Data.HashMap.Strict as H
+import System.Random
 
 ----------
 --
@@ -12,18 +18,18 @@ main :: IO ()
 main = do
   
   rGen <- getStdGen
-  multiVarSGD
-        rGen
-        1       --batchSize
-        0.1     --convergance goal
-        1       --learn rate
-        initFilter
-        H.empty
-        simpleCost
+  _ <- multiVarSGD
+          [ampApp]
+          rGen
+          1       --batchSize
+          0.1     --convergance goal
+          1       --learn rate
+          initThetas
+          simpleCost
+  return ()
 
 simpleCost :: Thetas -> IO Double
-simpleCost ts = 
-  return 
+simpleCost Thetas{..} = 
+  return $ abs _ampApp
    
-        
- 
+       
