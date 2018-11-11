@@ -2,7 +2,7 @@
 
 module Main where
 
-import Synth.SGDNoCache
+import Synth.SGD
 import Types.Thetas
 
 import qualified Data.HashMap.Strict as H
