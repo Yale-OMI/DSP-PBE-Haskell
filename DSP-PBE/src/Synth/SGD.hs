@@ -31,8 +31,8 @@ multiVarSGD :: RandomGen g =>
   Thetas ->   -- ^ the current theta, from which we will descend the gradient
   (Thetas -> IO Double) -> 
   ResCache ->
-  IO Thetas
-multiVarSGD thetaSelectors g batchSize goal !learnRate !currentTheta costFxn currentCache = do
+  IO (Thetas, Double, ResCache) -- ^ returns the solution, the cost, and the log of all attempts
+multiVarSGD thetaSelectors g batchSize goal learnRate currentTheta costFxn currentCache = do
 
   -- in SGD, in each round, we randomly (g) select a few (batchSize) dimensions (thetaSelectors) to descend on
   let randSelectors = stochasticBatch g batchSize thetaSelectors
@@ -42,7 +42,6 @@ multiVarSGD thetaSelectors g batchSize goal !learnRate !currentTheta costFxn cur
   steppedThetas  <- foldM (takeStep learnRate currentTheta costFxn) currentTheta randSelectors
 
   steppedScore <- costFxn steppedThetas
-
 
   let 
     newCache = H.insert steppedThetas steppedScore currentCache
@@ -56,10 +55,10 @@ multiVarSGD thetaSelectors g batchSize goal !learnRate !currentTheta costFxn cur
   if not converged 
   then (trace "\n" continueGD)
   else do
-    let (bestThetas, bestScore) = getMinScore currentCache
+    let (bestThetas, bestScore) = getMinScore newCache
     debugPrint ("\n\n\nFinished SGD with score = "++(show bestScore)
-                  ++"\nUsing Theta: "++ (indent $ show $ thetaToFilter bestThetas))
-    return bestThetas
+                  ++"\nUsing Theta: "++ (indent $ show bestThetas))
+    return (bestThetas, bestScore, newCache)
 
 getMinScore :: ResCache -> (Thetas, Double)
 getMinScore cache = 
@@ -76,7 +75,7 @@ stochasticBatch g batchSize xs =
 -- | descend by a single step in the direction of the largest gradient over a single dimension
 takeStep :: 
   Double -> -- ^ the learning rate
-  Thetas -> 
+  Thetas ->
   (Thetas -> IO Double) 
   -> Thetas
   -> _ 
@@ -85,7 +84,7 @@ takeStep learnRate t f updatedTheta part = do
   slope <- partialDerivative f part t
   let newTheta = over part (boundedUpdate learnRate slope) updatedTheta --not allowed to move more than 0.2 in a single step
   debugPrint ("Adjusting "++(thetaFieldChange newTheta updatedTheta)++" by "++(show (thetaDiff updatedTheta newTheta)))
-  debugPrint ("Scoring program...\n"++(indent $ show $ thetaToFilter newTheta))
+  debugPrint ("Scoring program...\n"++(indent $ show newTheta))
   debugPrint ""
   return newTheta
 

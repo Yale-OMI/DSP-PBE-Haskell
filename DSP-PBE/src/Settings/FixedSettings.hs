@@ -5,14 +5,36 @@ import Data.Functor.Identity
 
 debug = True
 
+-----------------
+--
+-- SGD Settings
+--
+-----------------
+
 -- | selects the thetas should we vary during GD
 thetaSelectors :: [(Double -> Identity Double) -> Thetas -> Identity Thetas]
 --thetaSelectors = [lpfThreshold, hpfThreshold,ringzFreq,ringzDecaySecs,ringzApp,lpfApp,hpfApp,whiteApp,ampApp,pitchShiftFreq,pitchShiftApp]
---thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, whiteApp, ampApp]
---thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, ampApp]
---thetaSelectors = [lpfThreshold, lpfApp, hpfThreshold, hpfApp, ampApp, pitchShiftFreq, pitchShiftApp]
---thetaSelectors = [lpfThreshold, lpfApp, ampApp]
 thetaSelectors = [hpfThreshold]
+
+batchSize :: Int
+batchSize = 4
+
+learnRate :: Double
+learnRate = 1
+
+converganceGoal :: Double
+converganceGoal = 0.01
+
+--How often to we go back to the best Theta we found so far
+--restartRound :: Int
+--restartRound = 15
+
+
+----------------
+--
+-- FFT settings
+--
+----------------
 
 -- each bin is 1Hz and each frame is 1s
 frameRes :: Int
@@ -30,18 +52,7 @@ numPeaks = 40
 binSize :: Int
 binSize = 2
 
---How often to we go back to the best Theta we found so far
-restartRound :: Int
-restartRound = 15
-
 -- a higher value reduces the resolution of the fft
 -- but can significantly improve running time
 resolution :: Int
 resolution = 0
-
-tmpDir :: String
-tmpDir = "tmp2/"
-
-finalWav :: String
-finalWav = "final.wav" 
-

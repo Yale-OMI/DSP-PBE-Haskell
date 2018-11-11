@@ -10,9 +10,17 @@ import Analysis.FFT
 import Text.Printf
 import Utils
 
-guessInitFilter :: (FilePath,AudioFormat) -> (FilePath,AudioFormat) -> IO Thetas
-guessInitFilter in_audio out_audio = do
-  peaks1 <- peakList in_audio
+guessInitFilter :: (FilePath,AudioFormat) -> (FilePath,AudioFormat) -> IO Filter
+
+guessInitFilter in_audio out_audio = return $
+  AmpApp 0 $
+    Compose (LPF 0 0) $
+      Compose (HPF 0 0) $
+        Compose (PitchShift 0 0) $
+          Compose (Ringz 0 0 0) $
+            (WhiteNoise 0)
+
+{-  peaks1 <- peakList in_audio
   peaks2 <- peakList out_audio
   let 
     -- TODO replace with a fold
@@ -22,16 +30,14 @@ guessInitFilter in_audio out_audio = do
   return $ initThetas {
              -- TODO replace 0
              _lpfThreshold = maybe 0 (invFreqScale . snd) lpf_init } 
-
+-}
  
 lpf_thresholds = [350,400..6000]
-
 
 -- TODO maybe returns a probabilty/score?
 -- | returns wheather the refinement is true on two peakLists, and the threshold used
 
 -- Peak = (freq, amp, phase)
-
 
 -- this is problematic, since the score (As it is wrtten now) will always increase as we add freqs
 

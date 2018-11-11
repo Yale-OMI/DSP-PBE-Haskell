@@ -24,58 +24,64 @@ import qualified Data.HashMap.Strict as H
 import System.Random
 
 -- | The main runner for DSP-PBE
+--   this is a wrapper that handles the file io for runSynth
 -- TODO have synthesis export a runnable filter
 synthCode :: S.Options -> IO ()
-synthCode S.SynthesisOptions{..} = do
+synthCode settings@S.SynthesisOptions{..} = do
+  S.checkOptions settings
   fileActions <- mapM W.importFile [inputExample,outputExample] :: IO [Either String (AudioFormat)]
   solutionProgram <- case sequence fileActions of
     Right fs -> do
       solution <- 
-        runSynth 
-           (inputExample, head fs) 
-           (outputExample, head $ tail fs)
+        runSynth
+           settings
+           (head fs)
+           (head $ tail fs)
       return solution
     Left e -> error e
   print solutionProgram
   when (targetAudioPath /= "") $ runFilter resultantAudioPath targetAudioPath (toVivid solutionProgram) 10 >> return ()
   return ()
 
-  
--- | generate the Vivid program to turn the in_example to the out_example
-runSynth :: (FilePath, AudioFormat) -> (FilePath, AudioFormat) -> IO (Filter)
-runSynth (in_filepath,in_audio) (out_filepath,out_audio) = do
-  --First, determine a 'best guess' initFilter
-  --TODO this might need to be a in a loop if we can learn a better after SGD
-  --  myInitFilter <- guessInitFilter (in_filepath,in_audio) (out_filepath,out_audio)
-  myInitFilter <- guessRandInitFilter (in_filepath,in_audio) (out_filepath,out_audio)
+-- | Kicks off synthesis by using the user-provided refinements to select an initFilter
+--   then enters the synthesis loop  
+runSynth :: S.Options -> AudioFormat -> AudioFormat -> IO (Filter)
+runSynth settings@S.SynthesisOptions{..} in_audio out_audio = do
+  initFilter <- guessInitFilter (inputExample,in_audio) (outputExample,out_audio)
   debugPrint "Starting with best filter as:"
-  debugPrint $ show myInitFilter
-  --Once we have an initFilter, we refine it with SGD
-  synthedFilter <- refineFilter in_filepath (out_filepath,out_audio) myInitFilter
-  runFilter (S.tmpDir++S.finalWav) in_filepath (toVivid synthedFilter) 1.0
-  return synthedFilter
+  debugPrint $ show initFilter
+  synthLoop settings H.empty out_audio initFilter 
 
+-- | If we scored below the user provided threshold, we are done
+--   If not we dervive new constraints on synthesis and try again
+synthLoop :: S.Options -> ResCache -> AudioFormat -> Filter -> IO Filter
+synthLoop settings@S.SynthesisOptions{..} prevLog out_audio prevFilter = do
+  let initFilter = generateNewFilter prevFilter prevLog
+  (synthedThetas, score, log) <- refineFilter inputExample (outputExample,out_audio) initFilter
+  let synthedFilter = thetaOverFilter initFilter synthedThetas
+  if score < epsilon
+  then
+    return synthedFilter
+  else
+    synthLoop settings log out_audio synthedFilter
 
+-- | Generate a new init filter based on the previous synthesis attempt
+--   to derive structual constraints, find bad subpatterns from the log and avoid those
+--   to apply dervived numerical constaints, just preserve the thetas of the previous filter
+generateNewFilter :: Filter -> ResCache -> Filter
+generateNewFilter f log =
+  if log == H.empty --special case to catch the first time through the loop
+  then f
+  else undefined 
 
--- | This uses stochastic gradient descent to find a minimal theta
+-- | This uses stochastic gradient descent to find a minimal cost theta
 --   SGD is problematic since we cannot calculate a derivative of the cost function
 --   TODO Another option might be to use http://www.jhuapl.edu/SPSA/ which does not require the derivative
 --   TODO many options here https://www.reddit.com/r/MachineLearning/comments/2e8797/gradient_descent_without_a_derivative/
-optimize rGen tester initFilter = multiVarSGD
-    S.thetaSelectors
-    rGen
-    4 --batch size (how many directions to test)
-    0.01 --convergance goal
-    1 --learn rate
-    initFilter
-    tester
-    H.empty
-
--- | Adjust the params of a filter to get the best score
-refineFilter :: FilePath -> (FilePath, AudioFormat) -> Thetas -> IO Filter
+refineFilter :: FilePath -> (FilePath, AudioFormat) -> Filter -> IO (Thetas, Double, ResCache)
 refineFilter in_audio_fp (out_fp, out_audio) initF = do
-  let tester = testFilter in_audio_fp (out_fp, out_audio) . thetaToFilter
+  let tester = testFilter in_audio_fp (out_fp, out_audio) . (thetaOverFilter initF)
   rGen <- getStdGen
-  solution <- optimize rGen tester initF
-  return $ thetaToFilter solution
+  solution <- multiVarSGD S.thetaSelectors rGen S.batchSize S.converganceGoal S.learnRate (filterToThetas initF) tester H.empty
+  return solution
 

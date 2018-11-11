@@ -21,6 +21,7 @@ data Options
   , outputExample :: FilePath
   , targetAudioPath :: FilePath
   , resultantAudioPath :: FilePath
+  , epsilon :: Double
   , verbose :: Bool
   } deriving (Show, Data, Typeable)
 
@@ -29,10 +30,11 @@ defaultOptions = SynthesisOptions {
   , outputExample = "" &= help "The output audio example file" &= typDir
   , targetAudioPath = "" &= help "The target audio example path on which to apply the generated transformation" &= typDir
   , resultantAudioPath = "" &= help "The path on which to save the generated transformation" &= typDir
+  , epsilon = 1 &= help "The thershold for aural distance at which point we can say we succeded in synthesis" &= (typ "DOUBLE")
   , verbose = False
   }
 
-checkSettings SynthesisOptions{..} = do
+checkOptions SynthesisOptions{..} = do
   inputExists <- doesFileExist inputExample
   outputExists <- doesFileExist outputExample
   when (inputExists) $ die "SynthSynth: Could not find input audio example. See help."
