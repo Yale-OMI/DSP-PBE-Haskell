@@ -50,6 +50,7 @@ runSynth settings@S.SynthesisOptions{..} in_audio out_audio = do
   initFilter <- guessInitFilter (inputExample,in_audio) (outputExample,out_audio)
   debugPrint "Starting with best filter as:"
   debugPrint $ show initFilter
+  error "done"
   synthLoop settings H.empty out_audio initFilter 
 
 -- | If we scored below the user provided threshold, we are done

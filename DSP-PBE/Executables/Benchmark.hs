@@ -8,6 +8,6 @@ import System.Console.CmdArgs
 
 main = do
   synthCode defaultOptions
-              { inputExample = "Sounds/SynthesisBenchmarks/Constructed/cartoon010.wav" 
-              , outputExample = "Sounds/SynthesisBenchmarks/Constructed/cartoon010-lpf800.wav"
+              { inputExample = "Sounds/SynthesisBenchmarks/Constructed/BTS-DNA.wav" 
+              , outputExample = "Sounds/SynthesisBenchmarks/Constructed/BTS-DNA-lpf2000.wav"
               }
