@@ -16,8 +16,8 @@ guessInitFilter in_audio out_audio = return $
   AmpApp 0 $
     Compose (LPF 0 0) $
       Compose (HPF 0 0) $
-        Compose (PitchShift 0 0) $
-          Compose (Ringz 0 0 0) $
+        Compose (PitchShift 0 (-1)) $
+          Compose (Ringz 0 0 (-1)) $
             (WhiteNoise 0)
 
 {-  peaks1 <- peakList in_audio

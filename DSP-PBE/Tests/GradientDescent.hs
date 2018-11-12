@@ -4,6 +4,7 @@ module Main where
 
 import Synth.SGD
 import Types.Thetas
+import qualified Settings as S
 
 import qualified Data.HashMap.Strict as H
 import System.Random
@@ -19,6 +20,7 @@ main = do
   
   rGen <- getStdGen
   _ <- multiVarSGD
+          S.defaultOptions
           [ampApp]
           rGen
           1       --batchSize
@@ -29,6 +31,7 @@ main = do
           H.empty
 
   _ <- multiVarSGD
+          S.defaultOptions
           [ampApp,lpfThreshold]
           rGen
           1       --batchSize

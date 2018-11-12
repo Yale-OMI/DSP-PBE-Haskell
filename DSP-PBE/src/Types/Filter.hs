@@ -34,7 +34,7 @@ data Filter =
 
 instance Show Filter where
   show (Compose f f') = (show f) ++ (" >>> \n") ++ (show f')
-  show (AmpApp x f) = "SetVolume: " ++ (printf "%.2f" x) ++ "% \n" ++ show f
+  show (AmpApp x f) = "SetVolume: " ++ (showAmp x) ++ "% \n" ++ show f
   show (WhiteNoise x) = "WhiteNoise: " ++ (showAmp x) ++ "% "
   show (HPF fq a) = "HiPass: "++ (showFreq fq) ++ " " ++ (showAmp a)
   show (LPF fq a) = "LoPass: "++ (showFreq fq) ++ " " ++ (showAmp a)

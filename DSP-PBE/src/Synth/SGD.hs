@@ -23,6 +23,7 @@ import Utils
 -- | Use data type Theta for params to be passed to eval fxn
 --   calc new theta and build map of theta to value to avoid recomputation
 multiVarSGD :: RandomGen g => 
+  S.Options ->
   _ ->        -- ^ selectors for all dimension of theta
   g ->        -- ^ a random generator for the Stochastic-ness of SGD
   Int ->      -- ^ the size of each batch in SGD
@@ -32,21 +33,30 @@ multiVarSGD :: RandomGen g =>
   (Thetas -> IO Double) -> 
   ResCache ->
   IO (Thetas, Double, ResCache) -- ^ returns the solution, the cost, and the log of all attempts
-multiVarSGD thetaSelectors g batchSize goal learnRate currentTheta costFxn currentCache = do
+multiVarSGD settings thetaSelectors g batchSize goal learnRate currentTheta costFxn currentCache = do
 
   -- in SGD, in each round, we randomly (g) select a few (batchSize) dimensions (thetaSelectors) to descend on
   let randSelectors = stochasticBatch g batchSize thetaSelectors
 
   -- In GD, we must use a fixed theta (t) for updating each dimension (takeStep) of theta,
   -- and aggregate those these updates in a seperate copy of theta (updatesThetas) by using the fold
+  debugPrint "Taking a step"
   steppedThetas  <- foldM (takeStep learnRate currentTheta costFxn) currentTheta randSelectors
 
+  debugPrint "Scoring step"
   steppedScore <- costFxn steppedThetas
 
   let 
     newCache = H.insert steppedThetas steppedScore currentCache
+
+    -- every time we hit a restartRound, jump to the current best
+    nextThetas = 
+      if (H.size newCache) `mod` (S.restartRound settings) == 0 
+      then fst $ getMinScore newCache 
+      else steppedThetas
+
     -- build the call to try again using updatedThetas, allowing us to explore worse directions, but every n step returning to best
-    continueGD = multiVarSGD thetaSelectors (snd $ next g) batchSize goal learnRate steppedThetas costFxn newCache
+    continueGD = multiVarSGD settings thetaSelectors (snd $ next g) batchSize goal learnRate nextThetas costFxn newCache
     -- converge if we try to descend and still find the same best thetas (within the goal threshold)
     converged = thetaDiff steppedThetas currentTheta <= goal || H.member steppedThetas currentCache 
 
@@ -92,7 +102,7 @@ takeStep learnRate t f updatedTheta part = do
 --   never update by more than [-0.2,0.2] in a single step
 boundedUpdate learnRate slope prevVal  = let
   proposedStep = learnRate * slope
-  boundedStep = max (-0.2) $ min (0.2) proposedStep
+  boundedStep = max (-0.3) $ min (0.3) proposedStep
  in  
   -- (-) here because if the tangent has positive slope (increasing prevVal increases cost), we need to go in the opposite direction
   max (-1) $ min 1 $ (prevVal + boundedStep) 
@@ -109,6 +119,7 @@ partialDerivative f part t = do
   -- derivative approximation step size TODO, move to settings?
   let s = 0.01 
 
+  debugPrint "Getting first score"
   -- score of current theta
   scoreOrig <- f t
   debugPrint $ "Calculating Partial Derivative wrt "++(thetaFieldChange t (over part (\x -> x+s) t))

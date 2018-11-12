@@ -13,21 +13,18 @@ debug = True
 
 -- | selects the thetas should we vary during GD
 thetaSelectors :: [(Double -> Identity Double) -> Thetas -> Identity Thetas]
---thetaSelectors = [lpfThreshold, hpfThreshold,ringzFreq,ringzDecaySecs,ringzApp,lpfApp,hpfApp,whiteApp,ampApp,pitchShiftFreq,pitchShiftApp]
-thetaSelectors = [hpfThreshold]
+thetaSelectors = [lpfThreshold, hpfThreshold,ringzFreq,ringzDecaySecs,ringzApp,lpfApp,hpfApp,whiteApp,ampApp,pitchShiftFreq,pitchShiftApp]
+--thetaSelectors = [hpfThreshold]
 
 batchSize :: Int
 batchSize = 4
 
 learnRate :: Double
-learnRate = 1
+learnRate = 0.0001
 
 converganceGoal :: Double
 converganceGoal = 0.01
 
---How often to we go back to the best Theta we found so far
---restartRound :: Int
---restartRound = 15
 
 
 ----------------
