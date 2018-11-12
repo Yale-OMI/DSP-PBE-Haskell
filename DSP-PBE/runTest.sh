@@ -8,6 +8,6 @@ rm -rf ./tmp
 mkdir -p ./tmp
 sudo mount -t tmpfs -o size=256m tmpfs ./tmp/
 
-time cabal new-run pldi_benchmarks -- --color=always
+cabal new-run farm_benchmarks -- --color=always
 
 

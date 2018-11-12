@@ -23,7 +23,8 @@ import Text.Printf
 import Debug.Trace
 
 data Filter = 
-    HPF Float Float
+    ID Float
+  | HPF Float Float
   | LPF Float Float
   | PitchShift Float Float
   | Ringz Float Float Float
@@ -32,10 +33,13 @@ data Filter =
   | AmpApp Float Filter
   deriving (Eq)
 
+-- | show with *** for parallel composition, and >>> for sequential composition
+--   these are close, but not exactly the same meanings as Haskell's Control.Arrow combinators
 instance Show Filter where
-  show (Compose f f') = (show f) ++ (" >>> \n") ++ (show f')
-  show (AmpApp x f) = "SetVolume: " ++ (showAmp x) ++ "% \n" ++ show f
+  show (Compose f f') = (show f) ++ (" *** ") ++ (show f')
+  show (AmpApp x f) = "SetVolume: " ++ (showAmp x) ++ "% >>> " ++ show f
   show (WhiteNoise x) = "WhiteNoise: " ++ (showAmp x) ++ "% "
+  show (ID a) = "Identity: "++ (showAmp a)
   show (HPF fq a) = "HiPass: "++ (showFreq fq) ++ " " ++ (showAmp a)
   show (LPF fq a) = "LoPass: "++ (showFreq fq) ++ " " ++ (showAmp a)
   show (PitchShift fq a) = "PitchShift: "++ (showFreqP fq) ++ " " ++ (showAmp a)
@@ -56,6 +60,7 @@ showDelay d = "delay@" ++ (printf "%.2f" $ delayScale d)
 --we onyl scale them back to the appropriate values when we need to apply theatas in a filter
 toVivid :: Filter -> (SDBody' '[] Signal -> SDBody' '[] Signal)
 toVivid = \case
+      ID a                   -> (\bufs -> (ampScale a::Float) ~* bufs)
       HPF t a                -> (\bufs -> (ampScale a::Float) ~* hpf (freq_ (freqScale t::Float), in_ bufs))
       LPF t a                -> (\bufs -> (ampScale a::Float) ~* lpf (freq_ (freqScale t::Float), in_ bufs))
       PitchShift t a         -> (\bufs -> (ampScale a::Float) ~* freqShift (freq_ (freqScalePitchShift t::Float), in_ bufs)) -- there is also pitchShift in vivid, but it is more complex

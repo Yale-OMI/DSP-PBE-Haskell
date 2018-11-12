@@ -19,27 +19,29 @@ main :: IO ()
 main = do
   
   rGen <- getStdGen
-  _ <- multiVarSGD
+  (_,c1,_) <- multiVarSGD
           S.defaultOptions
           [ampApp]
-          rGen
-          1       --batchSize
-          0.1     --convergance goal
-          1       --learn rate
-          initThetas
           simpleCost
+          rGen
           H.empty
+          initThetas
 
-  _ <- multiVarSGD
+  (_,c2,_) <- multiVarSGD
           S.defaultOptions
           [ampApp,lpfThreshold]
-          rGen
-          1       --batchSize
-          0.1     --convergance goal
-          1       --learn rate
-          initThetas
           simpleCost2
+          rGen
           H.empty
+          initThetas
+
+  if c1 < 0.2
+  then putStrLn "PASSED GD in 1 dimension" >> return ()
+  else error "FAILED GD in 1 dimension"
+
+  if c2 < 0.2
+  then putStrLn "PASSED GD in 2 dimensions" >> return ()
+  else error "FAILED GD in 2 dimensions"
 
   return ()
 

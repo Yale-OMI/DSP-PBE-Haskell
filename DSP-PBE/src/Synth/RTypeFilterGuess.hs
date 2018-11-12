@@ -22,14 +22,17 @@ guessInitFilter in_audio out_audio = do
 
   let lpf_init = lpf_refinement peaks1 peaks2
   let hpf_init = hpf_refinement peaks1 peaks2
+  -- if we aren't applying lpf or hpf, we need to pipe the input back out
+  let idapp = if isNothing lpf_init && isNothing hpf_init then 1 else (-1)
 
   return $
-    AmpApp 0 $
+    AmpApp 1 $
       Compose (LPF (fromMaybe 0 lpf_init) (maybe (-1) (\x -> 1) lpf_init)) $
         Compose (HPF (fromMaybe 0 hpf_init) (maybe (-1) (\x -> 1) hpf_init)) $
           Compose (PitchShift 0 (-1)) $
             Compose (Ringz 0 0 (-1)) $
-              (WhiteNoise 0)
+              Compose (ID idapp) $
+                (WhiteNoise (-1))
 
  
 -- | As a very rough estimate, if the max freq peak of the output is less than the max freq peak of input

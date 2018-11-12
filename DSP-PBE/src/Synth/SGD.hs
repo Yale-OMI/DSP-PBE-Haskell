@@ -25,62 +25,82 @@ import Utils
 multiVarSGD :: RandomGen g => 
   S.Options ->
   _ ->        -- ^ selectors for all dimension of theta
-  g ->        -- ^ a random generator for the Stochastic-ness of SGD
-  Int ->      -- ^ the size of each batch in SGD
-  Double ->   -- ^ the goal for covergence - what do we condsider to be a negligible gain from one step of SGD
-  Double ->   -- ^ the learning rate, this is not a global setting as some SGD implementations use a dynamic learning rate
-  Thetas ->   -- ^ the current theta, from which we will descend the gradient
   (Thetas -> IO Double) -> 
+  g ->        -- ^ a random generator for the Stochastic-ness of SGD
   ResCache ->
+  Thetas ->   -- ^ the current theta, from which we will descend the gradient
   IO (Thetas, Double, ResCache) -- ^ returns the solution, the cost, and the log of all attempts
-multiVarSGD settings thetaSelectors g batchSize goal learnRate currentTheta costFxn currentCache = do
+multiVarSGD settings thetaSelectors costFxn g currentCache currentTheta = do
 
-  -- in SGD, in each round, we randomly (g) select a few (batchSize) dimensions (thetaSelectors) to descend on
-  let randSelectors = stochasticBatch g batchSize thetaSelectors
-
-  -- In GD, we must use a fixed theta (t) for updating each dimension (takeStep) of theta,
-  -- and aggregate those these updates in a seperate copy of theta (updatesThetas) by using the fold
-  debugPrint "Taking a step"
-  steppedThetas  <- foldM (takeStep learnRate currentTheta costFxn) currentTheta randSelectors
-
-  debugPrint "Scoring step"
-  steppedScore <- costFxn steppedThetas
+  (steppedThetas, steppedScore) <- stochasticStep settings thetaSelectors costFxn g currentTheta
 
   let 
     newCache = H.insert steppedThetas steppedScore currentCache
-
-    -- every time we hit a restartRound, jump to the current best
-    nextThetas = 
-      if (H.size newCache) `mod` (S.restartRound settings) == 0 
-      then fst $ getMinScore newCache 
-      else steppedThetas
+    (bestThetas, bestScore) = getMinScore newCache
 
     -- build the call to try again using updatedThetas, allowing us to explore worse directions, but every n step returning to best
-    continueGD = multiVarSGD settings thetaSelectors (snd $ next g) batchSize goal learnRate nextThetas costFxn newCache
+    -- TODO use Reader monad
+    callToContinueGD =  multiVarSGD settings thetaSelectors costFxn (snd $ next g) newCache
+
     -- converge if we try to descend and still find the same best thetas (within the goal threshold)
-    converged = thetaDiff steppedThetas currentTheta <= goal || H.member steppedThetas currentCache 
+    converged = thetaDiff steppedThetas currentTheta <= (S.converganceGoal settings) || H.member steppedThetas currentCache
+
+  -- TODO if we think we have converged, do one last pass with all threshold selectors to check all directions
+  lastStepThetas <- return Nothing
 
   debugPrint $ "Score for this step is "++(show steppedScore)
   
   if not converged 
-  then (trace "\n" continueGD)
+  then do
+    debugPrint "\n" 
+    callToContinueGD $ 
+      case lastStepThetas of
+        Nothing -> adjustForRestarts settings newCache steppedThetas bestThetas
+        Just ts -> ts
   else do
-    let (bestThetas, bestScore) = getMinScore newCache
     debugPrint ("\n\n\nFinished SGD with score = "++(show bestScore)
                   ++"\nUsing Theta: "++ (indent $ show bestThetas))
     return (bestThetas, bestScore, newCache)
+
+{-
+lastCheck = do 
+    if converged
+    then
+      allDirThetas <- foldM (takeStep learnRate currentTheta costFxn) currentTheta thetaSelector
+      if (thetaDiff allDirTheta bestThetas) <= goal
+      then return Nothing
+      else return $ Just allDirThetas
+    else
+      return Nothing
+  -}
+
+-- | Every time we hit a restartRound, jump to the current best
+adjustForRestarts settings cache currThetas bestThetas = 
+  if (H.size cache) `mod` (S.restartRound settings) == 0 
+  then bestThetas 
+  else currThetas
+
+-- | in SGD, in each round, we randomly (g) select a few (batchSize) dimensions (thetaSelectors) to descend on
+stochasticStep settings thetaSelectors costFxn g currentTheta = do
+  -- TODO always take the thetas that were the most effective in the previous step
+  let randSelectors = take (S.batchSize settings) $ shuffle' thetaSelectors (length thetaSelectors) g
+
+  -- In GD, we must use a fixed theta (t) for updating each dimension (takeStep) of theta,
+  -- and aggregate those these updates in a seperate copy of theta (updatesThetas) by using the fold
+  debugPrint "Taking a step"
+  steppedThetas  <- foldM (takeStep (S.learnRate settings) currentTheta costFxn) currentTheta randSelectors
+
+  debugPrint "Scoring step"
+  steppedScore <- costFxn steppedThetas
+
+  return (steppedThetas, steppedScore)
+
 
 getMinScore :: ResCache -> (Thetas, Double)
 getMinScore cache = 
   H.foldlWithKey' (\(bestT,bestS) t s -> if bestS > s then (t,s) else (bestT,bestS)) (initThetas, read "Infinity") cache
   -- or, a more clear, but less efficent version
   -- minimumBy (comparing snd) $ H.toList cache 
-
-
--- TODO make sure we always take the thetas that were the most effective in the previous step
-stochasticBatch :: RandomGen g => g -> Int -> [a] -> [a]
-stochasticBatch g batchSize xs =
-  take batchSize $ shuffle' xs (length xs) g
 
 -- | descend by a single step in the direction of the largest gradient over a single dimension
 takeStep :: 
@@ -128,5 +148,8 @@ partialDerivative f part t = do
 
   -- rise over run to find slope 
   let adjustment = (scoreOrig-scoreDelta)/s
+  --debugPrint $ show s
+  --debugPrint $ show scoreOrig
+  --debugPrint $ show scoreDelta
   debugPrint $ "Derivative in "++(thetaFieldChange t (over part (\x -> x+s) t))++" = "++(show adjustment)
   return $ adjustment

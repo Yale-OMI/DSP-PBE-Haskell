@@ -22,18 +22,31 @@ data Options
   , targetAudioPath :: FilePath
   , resultantAudioPath :: FilePath
   , epsilon :: Double
+
+  -- SGD specific
+  , batchSize :: Int
+  , learnRate :: Double
+  , converganceGoal :: Double
   , restartRound :: Int -- ^ How often to we go back to the best Theta we found so far
   , verbose :: Bool
   } deriving (Show, Data, Typeable)
 
+defaultEpsilon = 1
+
 defaultRestartRound = 5
+defaultBatchSize = 4
+defaultLearnRate = 0.1
+defaultConverganceGoal = 0.01
 
 defaultOptions = SynthesisOptions {
     inputExample = "" &= help "The input audio example file" &= typDir
   , outputExample = "" &= help "The output audio example file" &= typDir
   , targetAudioPath = "" &= help "The target audio example path on which to apply the generated transformation" &= typDir
   , resultantAudioPath = "" &= help "The path on which to save the generated transformation" &= typDir
-  , epsilon = 1 &= help "The thershold for aural distance at which point we can say we succeded in synthesis" &= (typ "DOUBLE")
+  , epsilon = defaultEpsilon &= help ("The thershold for aural distance at which point we can say we succeded in synthesis"++(show defaultEpsilon)) &= (typ "DOUBLE")
+  , batchSize = defaultBatchSize &= help ("Batch size for SGD. Default ="++(show defaultBatchSize)) &= (typ "INT")
+  , learnRate = defaultLearnRate &= help ("Learn rate for SGD. Too small, and we will think we have converged, too large and we will \'bounce\' around. Default ="++(show defaultLearnRate)) &= (typ "Double")
+  , converganceGoal = defaultConverganceGoal &= help ("what do we condsider to be a negligible gain from one step of SGD. Set higher to converge sooner. Default ="++(show defaultConverganceGoal)) &= (typ "DOUBLE")
   , restartRound = defaultRestartRound &= help ("How often should we restart GD at the last best found theta. Default ="++(show defaultRestartRound)) &= (typ "INT")
   , verbose = False
   }

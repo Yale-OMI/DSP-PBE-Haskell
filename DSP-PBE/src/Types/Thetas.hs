@@ -32,7 +32,8 @@ data Thetas = Thetas{
    _pitchShiftApp  :: Double,
    _ringzApp       :: Double,
    _whiteApp       :: Double,
-   _ampApp         :: Double
+   _ampApp         :: Double,
+   _idApp          :: Double
    } deriving (Show,Generic,Hashable)
 
 makeLenses ''Thetas
@@ -52,6 +53,7 @@ thetaDiff t t' = let
          , _pitchShiftApp
          , _whiteApp
          , _ampApp
+         , _idApp
          , _ringzApp]
 
 type ResCache = H.HashMap Thetas Double
@@ -67,6 +69,7 @@ initThetas = (Thetas {
   _pitchShiftFreq =(-0.8) , _pitchShiftApp=(1) ,
   _ringzFreq=(-0.1)       , _ringzDecaySecs=0  , _ringzApp=((-0.5)) ,
   _whiteApp=(-1)          ,
+  _idApp=(1)          ,
   _ampApp=1})
 
 
@@ -80,6 +83,7 @@ thetaFieldChange t t' = if
   | _pitchShiftApp  t - _pitchShiftApp  t' /= 0 -> "pitchShiftApp"
   | _whiteApp       t - _whiteApp       t' /= 0 -> "whiteApp"
   | _ampApp         t - _ampApp         t' /= 0 -> "ampApp"
+  | _idApp          t - _idApp          t' /= 0 -> "idApp"
   | _ringzFreq      t - _ringzFreq      t' /= 0 -> "ringzFreq"
   | _ringzDecaySecs t - _ringzDecaySecs t' /= 0 -> "ringzDecaySecs"
   | _ringzApp       t - _ringzApp       t' /= 0 -> "ringzApp"
@@ -111,6 +115,7 @@ thetaToFilter t = AmpApp (realToFrac $ _ampApp t) $
 -- Map the values of the given theta over the fitler
 thetaOverFilter :: Filter -> Thetas -> Filter
 thetaOverFilter filterStructure ts@Thetas{..} = case filterStructure of
+      ID a           -> ID (rtf _idApp)
       HPF t a        -> HPF (rtf _hpfThreshold) (rtf _hpfApp)
       LPF t a        -> LPF (rtf _lpfThreshold) (rtf _lpfApp)
       PitchShift t a -> PitchShift (rtf _pitchShiftFreq) (rtf _pitchShiftApp)
@@ -128,6 +133,7 @@ filterToThetas filter = filterToThetas' filter blankThetas
 
 filterToThetas' :: Filter -> Thetas -> Thetas
 filterToThetas' filter thetasAccum@Thetas{..} = case filter of 
+    ID a           -> thetasAccum {_idApp=rtf a}
     HPF t a        -> thetasAccum {_hpfThreshold=rtf t, _hpfApp=rtf a}
     LPF t a        -> thetasAccum {_lpfThreshold=rtf t, _lpfApp=rtf a}
     PitchShift t a -> thetasAccum {_pitchShiftFreq=rtf t, _pitchShiftApp=rtf a}
@@ -146,6 +152,7 @@ mergeByMax t1 t2 = Thetas {
   , _lpfApp         = max ( _lpfApp         t1 ) ( _lpfApp         t2 )
   , _hpfThreshold   = max ( _hpfThreshold   t1 ) ( _hpfThreshold   t2 )
   , _hpfApp         = max ( _hpfApp         t1 ) ( _hpfApp         t2 )
+  , _idApp          = max ( _idApp          t1 ) ( _idApp          t2 )
   , _pitchShiftFreq = max ( _pitchShiftFreq t1 ) ( _pitchShiftFreq t2 )
   , _pitchShiftApp  = max ( _pitchShiftApp  t1 ) ( _pitchShiftApp  t2 )
   , _ringzFreq      = max ( _ringzFreq      t1 ) ( _ringzFreq      t2 )
@@ -163,6 +170,7 @@ blankThetas = (Thetas {
   _pitchShiftFreq = (-1) , _pitchShiftApp  = (-1) ,
   _ringzFreq      = (-1) , _ringzDecaySecs = (-1) , _ringzApp = (-1) ,
   _whiteApp       = (-1) ,
+  _idApp          = (-1) ,
   _ampApp         = (-1)})
 
 
