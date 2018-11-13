@@ -27,9 +27,9 @@ multiVarSGD :: RandomGen g =>
   _ ->        -- ^ selectors for all dimension of theta
   (Thetas -> IO Double) -> 
   g ->        -- ^ a random generator for the Stochastic-ness of SGD
-  ResCache ->
+  ThetaLog ->
   Thetas ->   -- ^ the current theta, from which we will descend the gradient
-  IO (Thetas, Double, ResCache) -- ^ returns the solution, the cost, and the log of all attempts
+  IO (Thetas, Double, ThetaLog) -- ^ returns the solution, the cost, and the log of all attempts
 multiVarSGD settings thetaSelectors costFxn g currentCache currentTheta = do
 
   (steppedThetas, steppedScore) <- stochasticStep settings thetaSelectors costFxn g currentTheta
@@ -98,11 +98,6 @@ stochasticStep settings thetaSelectors costFxn g currentTheta = do
   return (steppedThetas, steppedScore)
 
 
-getMinScore :: ResCache -> (Thetas, Double)
-getMinScore cache = 
-  H.foldlWithKey' (\(bestT,bestS) t s -> if bestS > s then (t,s) else (bestT,bestS)) (initThetas, read "Infinity") cache
-  -- or, a more clear, but less efficent version
-  -- minimumBy (comparing snd) $ H.toList cache 
 
 -- | descend by a single step in the direction of the largest gradient over a single dimension
 takeStep :: 

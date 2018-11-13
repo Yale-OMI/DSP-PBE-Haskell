@@ -49,36 +49,37 @@ runSynth settings@S.SynthesisOptions{..} in_audio out_audio = do
   initFilter <- guessInitFilter (inputExample,in_audio) (outputExample,out_audio)
   debugPrint "Starting with best filter as:"
   debugPrint $ show initFilter
-  synthLoop settings H.empty out_audio initFilter
+  synthLoop settings out_audio H.empty H.empty initFilter
 
 -- | If we scored below the user provided threshold, we are done
 --   If not we dervive new constraints on synthesis and try again
-synthLoop :: S.Options -> ResCache -> AudioFormat -> Filter -> IO (Filter, Double)
-synthLoop settings@S.SynthesisOptions{..} prevLog out_audio prevFilter = do
+synthLoop :: S.Options -> AudioFormat -> ThetaLog -> FilterLog -> Filter -> IO (Filter, Double)
+synthLoop settings@S.SynthesisOptions{..} out_audio prevTLog prevFLog prevFilter = do
   debugPrint "Initiating strucutral synthesis..."
-  let initFilter = if prevLog == H.empty --special case to catch the first time through the loop
+  let initFilter = if prevTLog == H.empty --special case to catch the first time through the loop
                    then prevFilter
-                   else generateNewFilter settings prevFilter prevLog
+                   else generateNewFilter settings prevFilter prevTLog prevFLog
   debugPrint "Found a program structure:"
   debugPrint $ show initFilter
   debugPrint "Initiating metrical synthesis..."
-  (synthedThetas, score, log) <- parameterTuning settings inputExample (outputExample,out_audio) initFilter
+  (synthedThetas, score, tLog) <- parameterTuning settings inputExample (outputExample,out_audio) initFilter
   let synthedFilter = thetaOverFilter initFilter synthedThetas
   if score < epsilon
   then
     return (synthedFilter, score)
-  else
-    synthLoop settings log out_audio synthedFilter
+  else do
+    let fLog = H.insert initFilter score prevFLog
+    synthLoop settings out_audio tLog fLog synthedFilter
 
 -- | Generate a new init filter based on the previous synthesis attempt
 --   to derive structual constraints, find bad subpatterns from the log and avoid those
 --   to apply dervived numerical constaints, just preserve the thetas of the previous filter
-generateNewFilter :: S.Options -> Filter -> ResCache -> Filter
-generateNewFilter settings prevFilter log = let
+generateNewFilter :: S.Options -> Filter -> ThetaLog -> FilterLog -> Filter
+generateNewFilter settings prevFilter tLog fLog = let
   -- find a new structure
-  structure = structuralRefinement settings prevFilter log
+  structure = structuralRefinement settings prevFilter tLog fLog
   -- use the prev log to find a good point for init thetas
-  initThetas = filterToThetas prevFilter
+  initThetas = filterToThetas $ fst $ getMinScore fLog
  in
   thetaOverFilter structure initThetas 
 
@@ -88,7 +89,7 @@ generateNewFilter settings prevFilter log = let
 --   SGD is problematic since we cannot calculate a derivative of the cost function
 --   TODO Another option might be to use http://www.jhuapl.edu/SPSA/ which does not require the derivative
 --   TODO many options here https://www.reddit.com/r/MachineLearning/comments/2e8797/gradient_descent_without_a_derivative/
-parameterTuning :: S.Options -> FilePath -> (FilePath, AudioFormat) -> Filter -> IO (Thetas, Double, ResCache)
+parameterTuning :: S.Options -> FilePath -> (FilePath, AudioFormat) -> Filter -> IO (Thetas, Double, ThetaLog)
 parameterTuning settings in_audio_fp (out_fp, out_audio) initF = do
   let costFxn = testFilter in_audio_fp (out_fp, out_audio) . (thetaOverFilter initF)
   let rGen = mkStdGen 0

@@ -56,7 +56,7 @@ thetaDiff t t' = let
          , _idApp
          , _ringzApp]
 
-type ResCache = H.HashMap Thetas Double
+type ThetaLog = H.HashMap Thetas Double
 
 -- | initial points for thetas in GD
 --   this can have a large impact on the effectivness of learning

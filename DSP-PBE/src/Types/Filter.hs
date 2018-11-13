@@ -22,6 +22,7 @@ import Text.Printf
 
 import Debug.Trace
 
+-- TODO seperate structure and filter into two datatypes
 data Filter = 
     ID Float
   | HPF Float Float
@@ -32,7 +33,11 @@ data Filter =
   | ParallelCompose Filter Filter
   | SequentialCompose Filter Filter
   | AmpApp Float Filter
-  deriving (Eq)
+  deriving (Eq, Generic, Hashable)
+
+-- A log of the best filter for each structure
+-- TODO should be StructureLog = H.HashMap Structure Double
+type FilterLog = H.HashMap Filter Double
 
 -- | show with *** for parallel composition, and >>> for sequential composition
 --   these are close, but not exactly the same meanings as Haskell's Control.Arrow combinators

@@ -5,18 +5,17 @@ import Types.Filter
 import Types.Thetas
 
 import Data.List
+import qualified Data.HashMap.Strict as H
 
-structuralRefinement :: S.Options -> Filter -> ResCache -> Filter
-structuralRefinement settings prevFilter log =
+structuralRefinement :: S.Options -> Filter -> ThetaLog -> FilterLog -> Filter
+structuralRefinement settings prevFilter tLog fLog =
   if S.smartStructuralRefinement settings
-  then smartRefine prevFilter log 
-  else bruteForceRefine prevFilter
+  then smartRefine prevFilter tLog fLog
+  else bruteForceRefine fLog
 
--- TODO keep a record of the attempted structures
--- for brute force we can then use
-bruteForceRefine :: Filter -> Filter
-bruteForceRefine f = undefined
--- head $ drop (length attemptedStructures) allFilters
+bruteForceRefine :: FilterLog -> Filter
+bruteForceRefine fLog  =
+  head $ drop (H.size fLog) allFilters
 
 cores :: [Filter]
 cores = 
@@ -72,5 +71,5 @@ flipOneParallel f = case f of
 
 -- TODO choose strucutres intelligently...
 -- maybe based of the weights? sequence filters with high weight?
-smartRefine :: Filter -> ResCache -> Filter
-smartRefine f log = f
+smartRefine :: Filter -> ThetaLog -> FilterLog -> Filter
+smartRefine f tLog fLog = f
