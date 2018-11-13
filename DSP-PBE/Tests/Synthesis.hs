@@ -82,6 +82,7 @@ getCostMap inEx outEx range = do
           _lpfApp=(-1),
           _hpfApp=(1),
           _whiteApp=(-1),
+          _idApp=(-1),
           _ampApp=(1)})) range
   case sequence fileActions of
     Right fs -> do

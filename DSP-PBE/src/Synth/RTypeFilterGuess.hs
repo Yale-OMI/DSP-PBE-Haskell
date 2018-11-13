@@ -27,11 +27,11 @@ guessInitFilter in_audio out_audio = do
 
   return $
     AmpApp 1 $
-      Compose (LPF (fromMaybe 0 lpf_init) (maybe (-1) (\x -> 1) lpf_init)) $
-        Compose (HPF (fromMaybe 0 hpf_init) (maybe (-1) (\x -> 1) hpf_init)) $
-          Compose (PitchShift 0 (-1)) $
-            Compose (Ringz 0 0 (-1)) $
-              Compose (ID idapp) $
+      ParallelCompose (LPF (fromMaybe 0 lpf_init) (maybe (-1) (\x -> 1) lpf_init)) $
+        ParallelCompose (HPF (fromMaybe 0 hpf_init) (maybe (-1) (\x -> 1) hpf_init)) $
+          ParallelCompose (PitchShift 0 (-1)) $
+            ParallelCompose (Ringz 0 0 (-1)) $
+              ParallelCompose (ID idapp) $
                 (WhiteNoise (-1))
 
  

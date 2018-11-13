@@ -7,6 +7,7 @@ module Synth.Synth where
 
 import Synth.SGD
 import Synth.RTypeFilterGuess
+import Synth.StructuralRefinement
 --import Synth.RandInitGuess
 
 import Analysis.FilterDistance
@@ -55,11 +56,13 @@ runSynth settings@S.SynthesisOptions{..} in_audio out_audio = do
 synthLoop :: S.Options -> ResCache -> AudioFormat -> Filter -> IO (Filter, Double)
 synthLoop settings@S.SynthesisOptions{..} prevLog out_audio prevFilter = do
   debugPrint "Initiating strucutral synthesis..."
-  let initFilter = generateNewFilter prevFilter prevLog
+  let initFilter = if prevLog == H.empty --special case to catch the first time through the loop
+                   then prevFilter
+                   else generateNewFilter settings prevFilter prevLog
   debugPrint "Found a program structure:"
   debugPrint $ show initFilter
   debugPrint "Initiating metrical synthesis..."
-  (synthedThetas, score, log) <- refineFilter settings inputExample (outputExample,out_audio) initFilter
+  (synthedThetas, score, log) <- parameterTuning settings inputExample (outputExample,out_audio) initFilter
   let synthedFilter = thetaOverFilter initFilter synthedThetas
   if score < epsilon
   then
@@ -70,22 +73,23 @@ synthLoop settings@S.SynthesisOptions{..} prevLog out_audio prevFilter = do
 -- | Generate a new init filter based on the previous synthesis attempt
 --   to derive structual constraints, find bad subpatterns from the log and avoid those
 --   to apply dervived numerical constaints, just preserve the thetas of the previous filter
-generateNewFilter :: Filter -> ResCache -> Filter
-generateNewFilter prevFilter log =
-  if log == H.empty --special case to catch the first time through the loop
-  then prevFilter
-  else undefined
-   {- 1 use log to find new structure
-      2 extract thetas from prevFilter
-      3 map extraced thetas over new structure 
-   -}
+generateNewFilter :: S.Options -> Filter -> ResCache -> Filter
+generateNewFilter settings prevFilter log = let
+  -- find a new structure
+  structure = structuralRefinement settings prevFilter log
+  -- use the prev log to find a good point for init thetas
+  initThetas = filterToThetas prevFilter
+ in
+  thetaOverFilter structure initThetas 
+
+
 
 -- | This uses stochastic gradient descent to find a minimal cost theta
 --   SGD is problematic since we cannot calculate a derivative of the cost function
 --   TODO Another option might be to use http://www.jhuapl.edu/SPSA/ which does not require the derivative
 --   TODO many options here https://www.reddit.com/r/MachineLearning/comments/2e8797/gradient_descent_without_a_derivative/
-refineFilter :: S.Options -> FilePath -> (FilePath, AudioFormat) -> Filter -> IO (Thetas, Double, ResCache)
-refineFilter settings in_audio_fp (out_fp, out_audio) initF = do
+parameterTuning :: S.Options -> FilePath -> (FilePath, AudioFormat) -> Filter -> IO (Thetas, Double, ResCache)
+parameterTuning settings in_audio_fp (out_fp, out_audio) initF = do
   let costFxn = testFilter in_audio_fp (out_fp, out_audio) . (thetaOverFilter initF)
   let rGen = mkStdGen 0
   debugPrint $ show (initF)

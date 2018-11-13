@@ -26,6 +26,7 @@ library
   exposed-modules:     Analysis.FFT 
                        Analysis.FilterDistance
                        Synth.Synth
+                       Synth.StructuralRefinement
                        Synth.RTypeFilterGuess
                        Synth.RandInitGuess
                        Types.Filter

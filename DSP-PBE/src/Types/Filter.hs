@@ -29,14 +29,16 @@ data Filter =
   | PitchShift Float Float
   | Ringz Float Float Float
   | WhiteNoise Float
-  | Compose Filter Filter
+  | ParallelCompose Filter Filter
+  | SequentialCompose Filter Filter
   | AmpApp Float Filter
   deriving (Eq)
 
 -- | show with *** for parallel composition, and >>> for sequential composition
 --   these are close, but not exactly the same meanings as Haskell's Control.Arrow combinators
 instance Show Filter where
-  show (Compose f f') = (show f) ++ (" *** ") ++ (show f')
+  show (ParallelCompose f f') = (show f) ++ (" *** ") ++ (show f')
+  show (SequentialCompose f f') = (show f) ++ (" >>> ") ++ (show f')
   show (AmpApp x f) = "SetVolume: " ++ (showAmp x) ++ "% >>> " ++ show f
   show (WhiteNoise x) = "WhiteNoise: " ++ (showAmp x) ++ "% "
   show (ID a) = "Identity: "++ (showAmp a)
@@ -58,7 +60,7 @@ showDelay d = "delay@" ++ (printf "%.2f" $ delayScale d)
 
 --implements feature scaling so during GD our thetas are -1<t<1
 --we onyl scale them back to the appropriate values when we need to apply theatas in a filter
-toVivid :: Filter -> (SDBody' '[] Signal -> SDBody' '[] Signal)
+toVivid :: Filter -> SDBody' '[] Signal -> SDBody' '[] Signal
 toVivid = \case
       ID a                   -> (\bufs -> (ampScale a::Float) ~* bufs)
       HPF t a                -> (\bufs -> (ampScale a::Float) ~* hpf (freq_ (freqScale t::Float), in_ bufs))
@@ -66,9 +68,7 @@ toVivid = \case
       PitchShift t a         -> (\bufs -> (ampScale a::Float) ~* freqShift (freq_ (freqScalePitchShift t::Float), in_ bufs)) -- there is also pitchShift in vivid, but it is more complex
       WhiteNoise a           -> (\bufs -> (ampScale a::Float) ~* whiteNoise)
       Ringz f d a            -> (\bufs -> (ampScale a::Float) ~* ringz (freq_ (freqScale f::Float), decaySecs_ (delayScale d::Float), in_ bufs))
-      Compose f f'           -> (\bufs -> do (((toVivid f) bufs) ~+ ((toVivid f') bufs)))
-      -- TODO support both parallel and sequential composition - only parallel atm
-      --ParallelCompose f f'   -> (\bufs -> do (((toVivid f) bufs) ~+ ((toVivid f') bufs)))
-      --SequentialCompose f f' -> (\bufs -> do (((toVivid f) (toVivid f') bufs)))
+      ParallelCompose f f'   -> (\bufs -> do (((toVivid f) bufs) ~+ ((toVivid f') bufs)))
+      SequentialCompose f f' -> (\bufs -> (toVivid f') $ (toVivid f) bufs )
       AmpApp a f             -> (\bufs -> do (((a+2)/3) ~* ((toVivid f) bufs))) -- can only turn down the total vol down to 1/3
 

@@ -93,36 +93,38 @@ thetaFieldChange t t' = if
 -- | we only care about equality of theta up to equality on filters
 --   if two thetas are different in a way that cannot be expressed in vivid, 
 --   it doesnt matter that they are different
+--   we choose the default fitler structure here since what we really care about are the theta value conversions
+--   TODO should get rid of thetaToFilter and inspect value directly
 instance Eq Thetas where
   (==) a b = thetaToFilter a == thetaToFilter b
 
---TODO this is a fixed form for now, which is fine as long as the filter are associative
---later we should be able to generate different applciation orders
 thetaToFilter :: Thetas -> Filter
 thetaToFilter t = AmpApp (realToFrac $ _ampApp t) $
-  Compose 
-     (LPF (realToFrac $ _lpfThreshold t) (realToFrac $ _lpfApp t))
-     (Compose
+  ParallelCompose 
+   (LPF (realToFrac $ _lpfThreshold t) (realToFrac $ _lpfApp t))
+   (ParallelCompose
        (HPF (realToFrac $ _hpfThreshold t) (realToFrac $ _hpfApp t))
-     (Compose
+     (ParallelCompose
        (PitchShift (realToFrac $ _pitchShiftFreq t) (realToFrac $ _pitchShiftApp t))
-       (Compose
+       (ParallelCompose
          (Ringz (realToFrac $ _ringzFreq t) (realToFrac $ _ringzDecaySecs t) (realToFrac $ _ringzApp t))
          (WhiteNoise (realToFrac $ _whiteApp t))
        )
-     ))
+     )
+   )
 
 -- Map the values of the given theta over the fitler
 thetaOverFilter :: Filter -> Thetas -> Filter
 thetaOverFilter filterStructure ts@Thetas{..} = case filterStructure of
-      ID a           -> ID (rtf _idApp)
-      HPF t a        -> HPF (rtf _hpfThreshold) (rtf _hpfApp)
-      LPF t a        -> LPF (rtf _lpfThreshold) (rtf _lpfApp)
-      PitchShift t a -> PitchShift (rtf _pitchShiftFreq) (rtf _pitchShiftApp)
-      WhiteNoise a   -> WhiteNoise (rtf _whiteApp)
-      Ringz t d a    -> Ringz (rtf _ringzFreq) (rtf _ringzDecaySecs) (rtf _ringzApp)
-      AmpApp a f     -> AmpApp (rtf _ampApp) (thetaOverFilter f ts)
-      Compose f f'   -> Compose (thetaOverFilter f ts) (thetaOverFilter f' ts)
+      ID a                   -> ID (rtf _idApp)
+      HPF t a                -> HPF (rtf _hpfThreshold) (rtf _hpfApp)
+      LPF t a                -> LPF (rtf _lpfThreshold) (rtf _lpfApp)
+      PitchShift t a         -> PitchShift (rtf _pitchShiftFreq) (rtf _pitchShiftApp)
+      WhiteNoise a           -> WhiteNoise (rtf _whiteApp)
+      Ringz t d a            -> Ringz (rtf _ringzFreq) (rtf _ringzDecaySecs) (rtf _ringzApp)
+      AmpApp a f             -> AmpApp (rtf _ampApp) (thetaOverFilter f ts)
+      ParallelCompose f f'   -> ParallelCompose (thetaOverFilter f ts) (thetaOverFilter f' ts)
+      SequentialCompose f f' -> SequentialCompose (thetaOverFilter f ts) (thetaOverFilter f' ts)
     where
   rtf = realToFrac
 
@@ -133,14 +135,15 @@ filterToThetas filter = filterToThetas' filter blankThetas
 
 filterToThetas' :: Filter -> Thetas -> Thetas
 filterToThetas' filter thetasAccum@Thetas{..} = case filter of 
-    ID a           -> thetasAccum {_idApp=rtf a}
-    HPF t a        -> thetasAccum {_hpfThreshold=rtf t, _hpfApp=rtf a}
-    LPF t a        -> thetasAccum {_lpfThreshold=rtf t, _lpfApp=rtf a}
-    PitchShift t a -> thetasAccum {_pitchShiftFreq=rtf t, _pitchShiftApp=rtf a}
-    WhiteNoise a   -> thetasAccum {_whiteApp=rtf a}
-    Ringz t d a    -> thetasAccum {_ringzFreq=rtf t, _ringzDecaySecs=rtf d, _ringzApp=rtf a}
-    AmpApp a f     -> (filterToThetas' f thetasAccum) {_ampApp=rtf a}
-    Compose f f'   -> mergeByMax (filterToThetas' f thetasAccum) (filterToThetas' f' thetasAccum)
+    ID a                   -> thetasAccum {_idApp=rtf a}
+    HPF t a                -> thetasAccum {_hpfThreshold=rtf t, _hpfApp=rtf a}
+    LPF t a                -> thetasAccum {_lpfThreshold=rtf t, _lpfApp=rtf a}
+    PitchShift t a         -> thetasAccum {_pitchShiftFreq=rtf t, _pitchShiftApp=rtf a}
+    WhiteNoise a           -> thetasAccum {_whiteApp=rtf a}
+    Ringz t d a            -> thetasAccum {_ringzFreq=rtf t, _ringzDecaySecs=rtf d, _ringzApp=rtf a}
+    AmpApp a f             -> (filterToThetas' f thetasAccum) {_ampApp=rtf a}
+    ParallelCompose f f'   -> mergeByMax (filterToThetas' f thetasAccum) (filterToThetas' f' thetasAccum)
+    SequentialCompose f f' -> mergeByMax (filterToThetas' f thetasAccum) (filterToThetas' f' thetasAccum)
  where
   rtf = realToFrac
 

@@ -46,6 +46,8 @@ multiVarSGD settings thetaSelectors costFxn g currentCache currentTheta = do
     converged = thetaDiff steppedThetas currentTheta <= (S.converganceGoal settings) || H.member steppedThetas currentCache
 
   -- TODO if we think we have converged, do one last pass with all threshold selectors to check all directions
+  -- if that makes us better overall, continue with that, otherwise just finish
+  -- this could improve accuracy, but will cost us in terms of time
   lastStepThetas <- return Nothing
 
   debugPrint $ "Score for this step is "++(show steppedScore)
