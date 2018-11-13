@@ -113,6 +113,8 @@ takeStep learnRate t f updatedTheta part = do
   debugPrint ("Adjusting "++(thetaFieldChange newTheta updatedTheta)++" by "++(show (thetaDiff updatedTheta newTheta)))
   debugPrint ("Scoring program...\n"++(indent $ show newTheta))
   debugPrint ""
+  --TODO should end synthesis at this point by taking whatever we had as the best so far
+  when (isNaN $ thetaDiff updatedTheta newTheta) $ error "Generated NaN. This probably means that all filters have been zero'ed out and FFT doesnt know what to do"
   return newTheta
 
 -- | never move outside [-1,1] and
