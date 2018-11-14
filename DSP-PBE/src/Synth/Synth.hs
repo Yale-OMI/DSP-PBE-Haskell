@@ -27,11 +27,11 @@ import System.Random
 -- | The main runner for DSP-PBE
 --   this is a wrapper that handles the file io for runSynth
 -- TODO have synthesis export a runnable filter
-synthCode :: S.Options -> IO (Filter, Double)
+synthCode :: S.Options -> IO (Filter, Double, Int)
 synthCode settings@S.SynthesisOptions{..} = do
 --  S.checkOptions settings
   fileActions <- mapM W.importFile [inputExample,outputExample] :: IO [Either String (AudioFormat)]
-  (solutionProgram, score) <- case sequence fileActions of
+  (solutionProgram, score, structureAttempts) <- case sequence fileActions of
     Right fs -> do
        runSynth
            settings
@@ -40,11 +40,11 @@ synthCode settings@S.SynthesisOptions{..} = do
     Left e -> error e
   debugPrint $ show solutionProgram
   when (targetAudioPath /= "") $ runFilter resultantAudioPath targetAudioPath (toVivid solutionProgram) 10 >> return ()
-  return (solutionProgram, score)
+  return (solutionProgram, score, structureAttempts)
 
 -- | Kicks off synthesis by using the user-provided refinements to select an initFilter
 --   then enters the synthesis loop  
-runSynth :: S.Options -> AudioFormat -> AudioFormat -> IO (Filter, Double)
+runSynth :: S.Options -> AudioFormat -> AudioFormat -> IO (Filter, Double, Int)
 runSynth settings@S.SynthesisOptions{..} in_audio out_audio = do
   initFilter <- guessInitFilter (inputExample,in_audio) (outputExample,out_audio)
   debugPrint "Starting with best filter as:"
@@ -53,7 +53,7 @@ runSynth settings@S.SynthesisOptions{..} in_audio out_audio = do
 
 -- | If we scored below the user provided threshold, we are done
 --   If not we dervive new constraints on synthesis and try again
-synthLoop :: S.Options -> AudioFormat -> ThetaLog -> FilterLog -> Filter -> IO (Filter, Double)
+synthLoop :: S.Options -> AudioFormat -> ThetaLog -> FilterLog -> Filter -> IO (Filter, Double, Int)
 synthLoop settings@S.SynthesisOptions{..} out_audio prevTLog prevFLog prevFilter = do
   debugPrint "Initiating strucutral synthesis..."
   let initFilter = if prevTLog == H.empty --special case to catch the first time through the loop
@@ -64,11 +64,11 @@ synthLoop settings@S.SynthesisOptions{..} out_audio prevTLog prevFLog prevFilter
   debugPrint "Initiating metrical synthesis..."
   (synthedThetas, score, tLog) <- parameterTuning settings inputExample (outputExample,out_audio) initFilter
   let synthedFilter = thetaOverFilter initFilter synthedThetas
-  if score < epsilon
+  let fLog = H.insert synthedFilter score prevFLog
+  if score < epsilon || H.size prevFLog > 40
   then
-    return (synthedFilter, score)
+    return (fst $ getMinScore fLog, score, H.size fLog)
   else do
-    let fLog = H.insert initFilter score prevFLog
     synthLoop settings out_audio tLog fLog synthedFilter
 
 -- | Generate a new init filter based on the previous synthesis attempt

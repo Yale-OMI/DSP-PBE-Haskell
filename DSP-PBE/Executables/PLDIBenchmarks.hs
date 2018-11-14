@@ -5,30 +5,31 @@ import Settings
 
 import Control.Monad
 import System.Console.CmdArgs
-import System.CPUTime
 
+import Utils
 
 results_file = "pldi_benchmark_results.txt"
 main = do
   
-  writeFile results_file "Input, Output, Solution, Score, Time (sec)"
+  writeHeader results_file
 
-  runBenchmark $ 
+  runBenchmark results_file $ 
+    defaultOptions
+        { inputExample = "Sounds/SynthesisBenchmarks/Constructed/cartoon010.wav" 
+        , outputExample = "Sounds/SynthesisBenchmarks/Constructed/cartoon010-sc-lpf2000.wav"
+        , smartStructuralRefinement = False
+        , epsilon = 10 
+        , learnRate = 0.001
+        , converganceGoal = 0.001
+        }
+
+{-
+  runBenchmark results_file $ 
     defaultOptions
         { inputExample = "Sounds/SynthesisBenchmarks/Constructed/Holst.wav" 
         , outputExample = "Sounds/SynthesisBenchmarks/Constructed/Holst-hpf3500.wav"
         , smartStructuralRefinement = False
         , epsilon = 10 } --using a lower espsilon than in FARM benchmarks, which should trigger the strucutral loop
 
+-}
 
-runBenchmark options = do
-  start <- getCPUTime
-  (solution, score) <- synthCode options
-  end   <- getCPUTime
-  let diff = (fromIntegral (end - start)) / (10^12)
-  appendFile results_file $ "\n" ++
-    (inputExample options)++", "++
-    (outputExample options)++", "++
-    (show solution)++", "++
-    (show score )++", "++
-    (show diff)

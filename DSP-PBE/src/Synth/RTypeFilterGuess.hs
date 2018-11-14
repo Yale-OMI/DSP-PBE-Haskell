@@ -26,6 +26,17 @@ guessInitFilter in_audio out_audio = do
   let idapp = if isNothing lpf_init && isNothing hpf_init then 1 else (-1)
 
   return $
+
+{-
+    AmpApp 1 $
+      ParallelCompose 
+        (SequentialCompose (PitchShift (-0.5) 1) (LPF (-0.8) 1))
+        (ParallelCompose (Ringz (-0.8) (0) (-0.8)) $
+          ParallelCompose (HPF (-1) (-1)) $
+            ParallelCompose (ID (-1)) $
+              (WhiteNoise (-1)))
+-}
+ 
     AmpApp 1 $
       ParallelCompose (LPF (fromMaybe 0 lpf_init) (maybe (-1) (\x -> 1) lpf_init)) $
         ParallelCompose (HPF (fromMaybe 0 hpf_init) (maybe (-1) (\x -> 1) hpf_init)) $
@@ -34,7 +45,7 @@ guessInitFilter in_audio out_audio = do
               ParallelCompose (ID idapp) $
                 (WhiteNoise (-1))
 
- 
+
 -- | As a very rough estimate, if the max freq peak of the output is less than the max freq peak of input
 --   we need a lpf, and it should have a value a bit less than the max peak of output
 lpf_refinement :: [[Peak]] -> [[Peak]] -> Maybe Float

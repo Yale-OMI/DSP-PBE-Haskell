@@ -55,7 +55,7 @@ combine _ _ = error "tried to combine incorrect num of ops and filters"
     |allPairs|    = |allCores| * |composes|
     = 1,492,992
 -}
-allFilters = map (uncurry combine) allFilterComposePairs
+allFilters = map (AmpApp 0) $ map (uncurry combine) allFilterComposePairs
 
 {-
 toList f = case f of

@@ -52,7 +52,7 @@ multiVarSGD settings thetaSelectors costFxn g currentCache currentTheta = do
 
   debugPrint $ "Score for this step is "++(show steppedScore)
   
-  if not converged 
+  if (not converged) && (not $ isNaN steppedScore)
   then do
     debugPrint "\n" 
     callToContinueGD $ 
@@ -113,8 +113,6 @@ takeStep learnRate t f updatedTheta part = do
   debugPrint ("Adjusting "++(thetaFieldChange newTheta updatedTheta)++" by "++(show (thetaDiff updatedTheta newTheta)))
   debugPrint ("Scoring program...\n"++(indent $ show newTheta))
   debugPrint ""
-  --TODO should end synthesis at this point by taking whatever we had as the best so far
-  when (isNaN $ thetaDiff updatedTheta newTheta) $ error "Generated NaN. This probably means that all filters have been zero'ed out and FFT doesnt know what to do"
   return newTheta
 
 -- | never move outside [-1,1] and
@@ -151,4 +149,6 @@ partialDerivative f part t = do
   --debugPrint $ show scoreOrig
   --debugPrint $ show scoreDelta
   debugPrint $ "Derivative in "++(thetaFieldChange t (over part (\x -> x+s) t))++" = "++(show adjustment)
-  return $ adjustment
+  --TODO should end synthesis at this point by taking whatever we had as the best so far
+  -- when (isNaN adjustment) $ error "Generated NaN. This probably means that all filters have been zero'ed out and FFT doesnt know what to do"
+  return adjustment
