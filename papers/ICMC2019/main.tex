@@ -1,0 +1,213 @@
+% ===========================================
+% Template for ICMC-NYCEMF 2019 (version2)
+% adapted from earlier LaTeX paper templates for the ICMC, SMC, etc...
+% ===========================================
+
+\documentclass{article}
+\usepackage{icmc2019template}
+\usepackage{times}
+\usepackage{ifpdf}
+\usepackage{soul}
+\usepackage[english]{babel}
+%\usepackage{cite}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%% Some useful packages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% See related documentation %%%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage{amsmath} % popular packages from Am. Math. Soc. Please use the 
+%\usepackage{amssymb} % related math environments (split, subequation, cases,
+%\usepackage{amsfonts}% multline, etc.)
+%\usepackage{bm}      % Bold Math package, defines the command \bf{}
+%\usepackage{paralist}% extended list environments
+%%subfig.sty is the modern replacement for subfigure.sty. However, subfig.sty 
+%%requires and automatically loads caption.sty which overrides class handling 
+%%of captions. To prevent this problem, preload caption.sty with caption=false 
+%\usepackage[caption=false]{caption}
+%\usepackage[font=footnotesize]{subfig}
+
+% ====================================================
+% ================ Define title and author names here ===============
+% ====================================================
+%user defined variables
+\def\papertitle{Paper Template for ICMC-NYCEMF 2019}
+\def\firstauthor{First Author}
+\def\secondauthor{Second Author}
+\def\thirdauthor{Third Author}
+\def\fourthauthor{Fourth Author}
+\def\fifthauthor{Fifth Author}
+\def\sixthauthor{Sixth Author}
+
+% adds the automatic
+% Saves a lot of output space in PDF... after conversion with the distiller
+% Delete if you cannot get PS fonts working on your system.
+
+% pdf-tex settings: detect automatically if run by latex or pdflatex
+\newif\ifpdf
+\ifx\pdfoutput\relax
+\else
+   \ifcase\pdfoutput
+      \pdffalse
+   \else
+      \pdftrue
+  \fi
+\fi
+
+\ifpdf % compiling with pdflatex
+  \usepackage[pdftex,
+    pdftitle={\papertitle},
+    pdfauthor={\firstauthor, \secondauthor, \thirdauthor},
+    bookmarksnumbered, % use section numbers with bookmarks
+    pdfstartview=XYZ % start with zoom=100% instead of full screen; 
+                     % especially useful if working with a big screen :-)
+   ]{hyperref}
+  %\pdfcompresslevel=9
+
+  \usepackage[pdftex]{graphicx}
+  % declare the path(s) where your graphic files are and their extensions so 
+  %you won't have to specify these with every instance of \includegraphics
+  \graphicspath{{./figures/}}
+  \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+
+  \usepackage[figure,table]{hypcap}
+
+\else % compiling with latex
+  \usepackage[dvips,
+    bookmarksnumbered, % use section numbers with bookmarks
+    pdfstartview=XYZ % start with zoom=100% instead of full screen
+  ]{hyperref}  % hyperrefs are active in the pdf file after conversion
+
+  \usepackage[dvips]{epsfig,graphicx}
+  % declare the path(s) where your graphic files are and their extensions so 
+  %you won't have to specify these with every instance of \includegraphics
+  \graphicspath{{./figures/}}
+  \DeclareGraphicsExtensions{.eps}
+
+  \usepackage[figure,table]{hypcap}
+\fi
+
+%setup the hyperref package - make the links black without a surrounding frame
+\hypersetup{
+    colorlinks,%
+    citecolor=black,%
+    filecolor=black,%
+    linkcolor=black,%
+    urlcolor=black
+}
+
+
+% ====================================================
+% ================ Title and author info starts here ===============
+% ====================================================
+% Title.
+% ------
+\title{\papertitle}
+
+% Authors
+% Please note that submissions are anonymous, therefore 
+% authors' names should not be VISIBLE in your paper submission.
+% They should only be included in the camera-ready version of accepted papers.
+% uncomment and use the appropriate section (1, 2 or 3 authors)
+%
+% Single address
+% To use with only one author or several with the same address
+% ---------------
+%\oneauthor
+%   {\firstauthor} {Affiliation \\ %
+%     {\tt \href{mailto:author@unt.edu}{author@unt.edu}}}
+
+%Two addresses
+% the default spacing is 1.5in, but this can be reduced to 0.5in or less, if needed
+%--------------
+% \twoauthors
+%   {1.5in}
+%   {\firstauthor} {Affiliation1 \\  %
+%     {\tt \href{mailto:author1@unt.edu}{author1@unt.edu}}}
+%   {\secondauthor} {Affiliation2 \\  %
+%     {\tt \href{mailto:author2@unt.edu}{author2@unt.edu}}}
+
+% Three addresses
+% the default spacing is 0.5in, but this can be reduced to 0.3in or less, if needed
+% --------------
+ \threeauthors
+   {0.5in}
+   {\firstauthor} {Affiliation1 \\ %
+     {\tt \href{mailto:author1@smcnetwork.org}{author1@smcnetwork.org}}}
+   {\secondauthor} {Affiliation2 \\ %
+     {\tt \href{mailto:author2@smcnetwork.org}{author2@smcnetwork.org}}}
+   {\thirdauthor} { Affiliation3 \\ %
+     {\tt \href{mailto:author3@smcnetwork.org}{author3@smcnetwork.org}}}
+
+% Four addresses
+% the default spacing is 1.5in, but this can be reduced to 0.5in or less, if needed
+% --------------
+% \fourauthors
+%   {1.5in}
+%   {\firstauthor} {Affiliation1 \\ %
+%     {\tt \href{mailto:author1@unt.edu}{author1@unt.edu}}}
+%   {\secondauthor} {Affiliation2 \\ %
+%     {\tt \href{mailto:author2@unt.edu}{author2@unt.edu}}}
+%   {\thirdauthor} { Affiliation3 \\ %
+%     {\tt \href{mailto:author3@unt.edu}{author3@unt.edu}}}
+%   {\fourthauthor} { Affiliation4 \\ %
+%     {\tt \href{mailto:author4@unt.edu}{author4@unt.edu}}}
+
+% Five addresses
+% the default spacing is 0.5in, but this can be reduced to 0.3in or less, if needed
+% --------------
+% \fiveauthors
+%   {0.5in}
+%   {\firstauthor} {Affiliation1 \\ %
+%     {\tt \href{mailto:author1@unt.edu}{author1@unt.edu}}}
+%   {\secondauthor} {Affiliation2 \\ %
+%     {\tt \href{mailto:author2@unt.edu}{author2@unt.edu}}}
+%   {\thirdauthor} { Affiliation3 \\ %
+%     {\tt \href{mailto:author3@unt.edu}{author3@unt.edu}}}
+%   {\fourthauthor} { Affiliation4 \\ %
+%     {\tt \href{mailto:author4@unt.edu}{author4@unt.edu}}}
+%   {\fifthauthor} { Affiliation5 \\ %
+%     {\tt \href{mailto:author5@unt.edu}{author5@unt.edu}}}
+
+% Six addresses
+% the default spacing is 0.5in, but this can be reduced to 0.3in or less, if needed
+% --------------
+% \sixauthors
+%   {0.5in}
+%   {\firstauthor} {Affiliation1 \\ %
+%     {\tt \href{mailto:author1@unt.edu}{author1@unt.edu}}}
+%   {\secondauthor} {Affiliation2 \\ %
+%     {\tt \href{mailto:author2@unt.edu}{author2@unt.edu}}}
+%   {\thirdauthor} { Affiliation3 \\ %
+%     {\tt \href{mailto:author3@unt.edu}{author3@unt.edu}}}
+%   {\fourthauthor} { Affiliation4 \\ %
+%     {\tt \href{mailto:author4@unt.edu}{author4@unt.edu}}}
+%   {\fifthauthor} { Affiliation5 \\ %
+%     {\tt \href{mailto:author5@unt.edu}{author5@unt.edu}}}
+%   {\sixthauthor} { Affiliation6 \\ %
+%     {\tt \href{mailto:author6@unt.edu}{author6@unt.edu}}}
+
+
+% ====================================================
+% =============== The document content starts here ===============
+% ====================================================
+\begin{document}
+%
+\capstartfalse
+\maketitle
+\capstarttrue
+%
+\begin{abstract}
+The abstract should be placed at the start of the top left column and should contain about 150-200 words. The abstract should be formatted in italic type (this has already been set in the abstract style).
+\end{abstract}
+%
+
+\input{secs/intro}
+
+\begin{acknowledgments}
+At the end of the Conclusions, acknowledgements to people, projects, funding agencies, etc. can be included after the second-level heading ``Acknowledgments'' (with no numbering).
+\end{acknowledgments} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%bibliography here
+\bibliography{icmc2019template}
+
+\end{document}
