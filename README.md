@@ -6,16 +6,6 @@ The goal of this project is to build filter by providing example sound files
 
 to read more on this project, see http://marksantolucito.com/dsp-pbe.pdf, or any of the ongoing writing in the 'papers' directory
 
-## Milestones
-
-- [x] Compare aural 'distance' of two sound files
-- [x] Use stochastic gradient descent to find a DSP filter to fit the examples
-- [x] generate Vivid program from DSP filter
-- [ ] output generated program in runable form
-- [ ] Use refinement types to find better initial guess for SGD
-- [ ] Replace SGD with a more efficient search
-- [ ] build online interface
-
 ## Usage
 
 To install 
