@@ -8,13 +8,13 @@ To read more on this project, see http://marksantolucito.com/dsp-pbe.pdf, or any
 
 ## Usage
 
-To install, run the following commands (taken from the [travis build file](.travis.yml)). This will take a good while
+To install (on linux), run the following commands (taken from the [travis build file](.travis.yml)). This will take a good while
 
 ```
 sudo add-apt-repository -y ppa:hvr/ghc
 sudo apt-get update
-sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER
-export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
+sudo apt-get install cabal-install-head ghc-8.4.3
+export PATH=/opt/ghc/head/bin:/opt/cabal/8.4.3/bin:$PATH
 sudo apt-get install python-tk supercollider
 sudo pip install scipy numpy matplotlib
 xvfb-run --server-args="-screen 0, 1280x800x24" sclang & sleep 5 ; kill %1
