@@ -2,28 +2,48 @@
 
 # Synthesis Synthesis
 
-The goal of this project is to build filter by providing example sound files
+The goal of this project is to build a filter by providing example sound files
 
-to read more on this project, see http://marksantolucito.com/dsp-pbe.pdf, or any of the ongoing writing in the 'papers' directory
+To read more on this project, see http://marksantolucito.com/dsp-pbe.pdf, or any of the ongoing writing in the 'papers' directory
 
 ## Usage
 
-To install 
+To install, run the following commands (taken from the [travis build file](.travis.yml)). This will take a good while
 
-   sudo pip install scipy numpy matplotlib
+```
+   sudo add-apt-repository -y ppa:hvr/ghc
+   sudo apt-get update
+   sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER
+   export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
    sudo apt-get install python-tk supercollider
-   scide #supercollider needs to be opened and closed once in order to initialize some folders that are used by the vivid api
+   sudo pip install scipy numpy matplotlib
+   xvfb-run --server-args="-screen 0, 1280x800x24" sclang & sleep 5 ; kill %1
+   cd DSP-PBE
+   cabal --version
+   ghc --version
+   cabal update
    cabal sandbox init
-   cabal new-install
+   cabal install
+```
 
-To test
+To run the test suite
 
-  cabal new-test 
+```
+   cabal new-test
+```
 
 To run the executable
 
+```
   .cabal-sandbox/bin/musicSynth input-file output-file target-file
-  
+```
+ 
+or
+
+```
+cabal new-run farm_benchmarks -- --color-always
+```
+
 ## Inputs
 
 must be stereo tracks at 44.1k
