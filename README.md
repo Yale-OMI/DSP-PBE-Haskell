@@ -11,31 +11,31 @@ To read more on this project, see http://marksantolucito.com/dsp-pbe.pdf, or any
 To install, run the following commands (taken from the [travis build file](.travis.yml)). This will take a good while
 
 ```
-   sudo add-apt-repository -y ppa:hvr/ghc
-   sudo apt-get update
-   sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER
-   export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
-   sudo apt-get install python-tk supercollider
-   sudo pip install scipy numpy matplotlib
-   xvfb-run --server-args="-screen 0, 1280x800x24" sclang & sleep 5 ; kill %1
-   cd DSP-PBE
-   cabal --version
-   ghc --version
-   cabal update
-   cabal sandbox init
-   cabal install
+sudo add-apt-repository -y ppa:hvr/ghc
+sudo apt-get update
+sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER
+export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
+sudo apt-get install python-tk supercollider
+sudo pip install scipy numpy matplotlib
+xvfb-run --server-args="-screen 0, 1280x800x24" sclang & sleep 5 ; kill %1
+cd DSP-PBE
+cabal --version
+ghc --version
+cabal update
+cabal sandbox init
+cabal install
 ```
 
 To run the test suite
 
 ```
-   cabal new-test
+cabal new-test
 ```
 
 To run the executable
 
 ```
-  .cabal-sandbox/bin/musicSynth input-file output-file target-file
+.cabal-sandbox/bin/musicSynth input-file output-file target-file
 ```
  
 or
