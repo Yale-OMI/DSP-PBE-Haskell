@@ -1,0 +1,29 @@
+\section{System Overview}
+
+How much of this should be the algorithm and how much should be implementation specific
+
+\markk{system image here}
+
+\subsection{Aural Distance as a Metric Space}
+
+In FARM we did not explain details about properties of the aural distance.
+These properties make this a metric space, which is good for machine learning.
+
+\subsection{Gradient Descent}
+
+We use a modified version of gradient descent to find good parameters for the filter.
+Have to decide how much to go into this - probably too technical for ICMC, but there are few things that are new from FARM that would be nice to highlight
+
+\subsection{Choosing an initial starting point}
+
+As a very rough estimate, if the max freq peak of the output is less than the max freq peak of input
+  we need a lpf, and it should have a value a bit less than the max peak of output
+
+\subsection{Searching for DSP structure}
+
+Just brute force for now - maybe guided by user? 
+Something smarter can come later.
+
+\subsection{Generating Program Code}
+
+\markk{how to we turn the solution into a PD/MaxMSP/SuperCollider program (see TODO on github, still need to actually code this)}
