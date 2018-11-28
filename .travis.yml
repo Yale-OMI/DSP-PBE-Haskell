@@ -1,5 +1,9 @@
 language: haskell
 
+branches:
+  only:
+    - master
+
 env:
  - CABALVER=head GHCVER=8.4.3
 
