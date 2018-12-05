@@ -15,6 +15,8 @@ import Vivid
 import qualified Data.HashMap.Strict as H
 import Data.Hashable
 
+import Data.List
+
 import GHC.Generics
 import Control.Lens
 
@@ -76,4 +78,78 @@ toVivid = \case
       ParallelCompose f f'   -> (\bufs -> do (((toVivid f) bufs) ~+ ((toVivid f') bufs)))
       SequentialCompose f f' -> (\bufs -> (toVivid f') $ (toVivid f) bufs )
       AmpApp a f             -> (\bufs -> do (((a+2)/3) ~* ((toVivid f) bufs))) -- can only turn down the total vol down to 1/3
+
+supercolliderPrint :: Filter -> String
+supercolliderPrint f = toSCWrap $ toSC f
+
+-- create variable declarations
+-- create playbuf and out signal lines
+toSCWrap :: ([String], (String, String)) -> String
+toSCWrap scf =
+  "( \n" ++
+  "SynthDef(\\dsp_pbe, {|out=0|\n" ++
+  "var " ++ (intercalate "," (fst scf)) ++ ";\n" ++ 
+  (fst (snd scf)) ++ playBuf ++ (snd (snd scf)) ++ 
+  "Out.ar(out, " ++ ((fst scf) !! 0) ++ ");\n" ++  
+  "}).add;\n" ++
+  ")"
+  where playBuf = "PlayBuf.ar(2, filename)"
+
+-- returns a tuple with the first element being an array of
+-- var names and the second being another tuple of two strings
+-- var names must be collected so they may be defined late (toSCWrap
+-- takes care of this)
+-- TODO: Abstract SuperColliderFunction printing, 
+-- some function that could take an array of pairs and output the SC
+-- function call with the parameters formatted correctly
+toSC :: Filter -> ([String], (String, String))
+toSC = \case
+  LPF t a  -> ([varName], (varName ++ " = LPF.ar(in:", ", freq: " ++ (show t) ++ 
+                                                       ", mul: " ++ (show a) ++ ");\n"))
+                      where varName = "lpfS" -- ++ (show t) ++ (show a)
+  HPF t a  -> ([varName], (varName ++ " = RHPF.ar(in: ", ", freq: " ++ (show t) ++ 
+                                                         ", mul: " ++ (show a) ++ ");\n"))
+                      where varName = "hpfS" -- ++ (show t) ++ (show a)
+  Ringz fq d a -> ([varName], (varName ++ " = Ringz.ar(in: ", ", freq: " ++ (show fq) ++ 
+                                                              ", decaytime: " ++ (show d) ++ 
+                                                              ", mul: " ++ (show a)++ ");\n")) 
+                      where varName = "ringzS" -- ++ (show d) ++ (show a)
+  PitchShift t a -> ([varName], (varName ++ " = PitchShift.ar(in: ", ", pitchRatio: " ++ (show t) ++ 
+                                                                     ", mul: " ++ (show a) ++ ");\n"))
+                      where varName = "pitchShiftS"
+  WhiteNoise x -> ([varName], (varName ++ " = Mix.ar([", ", " ++ "WhiteNoise.ar(" ++ (show x) ++ "]);\n"))
+                      where varName = "whiteNoiseS"
+  SequentialCompose f1 f2 -> (vars, (fst (snd scf1), nscf2))
+                      where
+                        scf1 = toSC f1
+                        scf2 = toSC f2
+                        nscf2 = (snd (snd scf1)) ++
+                                " \n " ++  
+                                (fst (snd scf2)) ++ 
+                                ((fst scf1) !! 0) ++
+                                (snd (snd scf2))
+                        vars = (fst scf2) ++ (fst scf1)
+
+  ParallelCompose f1 f2 -> (vars, (nscf1, nscf2))
+                      where 
+                        scf1 = toSC f1 
+                        scf2 = toSC f2
+                        varName = ((fst scf2) !! 0) ++ "P" ++ ((fst scf1) !! 0)
+                        varNameOut = "out_" ++ varName
+                        varNameIn = "in_" ++ varName
+                        vars  = varNameOut:varNameIn:((fst scf2) ++ (fst scf1))
+                        nscf1 = varNameIn ++ " = "
+                        nscf2 = ";\n" ++
+                                (fst (snd scf1)) ++ 
+                                varNameIn ++
+                                (snd (snd scf1)) ++
+                                " \n " ++
+                                (fst (snd scf2)) ++
+                                varNameIn ++ 
+                                (snd (snd scf2)) ++
+                                " \n " ++
+                                varNameOut ++ 
+                                " = "++
+                                ((fst scf1) !! 0) ++ " + " ++
+                                ((fst scf2) !! 0) ++ ";\n"
 
