@@ -1,3 +1,14 @@
 \section{Related Work}
 
-\markk{similar to related work from FARM, also need to include a summary of the work from FARM and how this is different (now focused on analog effects rather than reconstructing programs)}
+Various resynthesis techniques - a lot of these are covered in the FARM paper.
+\markk{Particularly interested in getting Scott's input on this one.}
+
+Programming-by-example is a research field that has had an explosion of growth in the past decade. 
+A critical point was the introduction of FlashFill in Microsoft Excel 2013~\cite{GulwaniHS12}, a programming-by-example technology that allows users to automatically generate excel scripts to transform data.
+The majority of
+
+In prior work has explored the application of programming-by-example to digital signal processing~\cite{SantolucitoFARM}.
+This work was focused on reconstructing DSP filters from digital examples, for example finding the threshold of an applied low-pass filter.
+In contrast, this work looks at how programming-by-example can be applied to audio recordings of real-world effects.
+One main challenges we face here is that when learning DSP programs to model analog effects, we do not apriori have any information about the correct DSP program.
+We must now synthesize, not just the value (e.g. threshold for low-pass), but also the overall structure of the DSP filter.

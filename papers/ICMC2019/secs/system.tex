@@ -2,12 +2,17 @@
 
 How much of this should be the algorithm and how much should be implementation specific
 
-\markk{system image here}
+\markk{system image here specialized on analog effects}
 
 \subsection{Aural Distance as a Metric Space}
 
-In FARM we did not explain details about properties of the aural distance.
-These properties make this a metric space, which is good for machine learning.
+One of the key components in machine learning systems is having a metric that to quantifies how close the candidate solution is to the desired solution.
+In the case of programming-by-example, the desired solution is defined by the user-provided input-output example pairs.
+At a high-level, our goal is to minimize the distance, $dist$, between the output of the candidate function, $F$, on the provided input, $I$, and the provided output $O$.
+Put mathematically, we have a minimization problem: $min (dist ( F(I)), O)$.
+
+Previous work proposed using a distance metric between two audio files based on constellation plots of multiple FFT plots over the samples~\cite{SantolucitoFARM}.
+We adopt the same distance metric for this work.
 
 \subsection{Gradient Descent}
 
