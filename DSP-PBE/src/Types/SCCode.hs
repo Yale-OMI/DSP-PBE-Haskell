@@ -62,17 +62,27 @@ makeSCFilter f ioid inn =
                             scf2 = makeSCFilter f2 ((oid scf1) + 1) inn
                             newOid = (oid scf2) + 1
                             new_vars = ("out" ++ (show newOid)):((vars scf2) ++ (vars scf1))
+              (AmpApp a f)      -> SCSeqCompose { oid=(oid scf2), vars=new_vars, iname=inn, f=scf1, f'=scf2 }
+                      where scf1 = makeSCFilter f (ioid + 1) inn
+                            scf2 = makeSCFilter (ID a) ((oid scf1) + 1) ((vars scf1) !! 0)
+                            new_vars = (vars scf2) ++ (vars scf1)
 
 getSCInfo :: Filter -> (String, [(String, String)])
 getSCInfo = \case
-    ID a                    -> ((show a) ++ " * ", [])  
-    LPF t a                 -> ("LPF.ar", [("freq", show t), ("mul", show a)])
-    HPF t a                 -> ("HPF.ar", [("freq", show t), ("mul", show a)])
-    Ringz t d a             -> ("Ringz.ar", [("freq", show t), ("decaytime", show d), ("mul", show a)])
-    PitchShift t a          -> ("PitchShift.ar", [("pitchRatio", show t), ("mul", show a)])
-    WhiteNoise x            -> ("WhiteNoise.ar", [("mul", show x)]) 
+    ID a                    -> ((show $ ampScale a) ++ " * ", [])  
+    LPF t a                 -> ("LPF.ar", [("freq", show $ freqScale t), ("mul", show $ ampScale a)])
+    HPF t a                 -> ("HPF.ar", [("freq", show $ freqScale t), ("mul", show $ ampScale a)])
+    Ringz t d a             -> ("Ringz.ar", 
+                                [
+                                  ("freq", show $ freqScale t), 
+                                  ("decaytime", show $ delayScale d), 
+                                  ("mul", show $ ampScale a)
+                                ])
+    PitchShift t a          -> ("PitchShift.ar", [("pitchRatio", show $ freqScalePitchShift t), ("mul", show $ ampScale a)])
+    WhiteNoise x            -> ("WhiteNoise.ar", [("mul", show $ ampScale x)]) 
     SequentialCompose f f'  -> ("", [])
     ParallelCompose f f'    -> ("", [])
+    AmpApp a f              -> ("", [])
 
 getArgString :: [(String, String)] -> String
 getArgString []   = ""
