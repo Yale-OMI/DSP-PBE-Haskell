@@ -23,6 +23,8 @@ data Options
   , resultantAudioPath :: FilePath
   , epsilon :: Double
   , smartStructuralRefinement :: Bool
+  , filterLogSizeTimeout :: Int
+  , thetaLogSizeTimeout :: Int
 
   -- SGD specific
   , batchSize :: Int
@@ -33,6 +35,8 @@ data Options
   } deriving (Show, Data, Typeable)
 
 defaultEpsilon = 1
+defaultFilterLogSizeTimeout = 3
+defaultThetaLogSizeTimeout = 30
 
 defaultRestartRound = 5
 defaultBatchSize = 4
@@ -44,8 +48,10 @@ defaultOptions = SynthesisOptions {
   , outputExample = "" &= help "The output audio example file" &= typDir
   , targetAudioPath = "" &= help "The target audio example path on which to apply the generated transformation" &= typDir
   , resultantAudioPath = "" &= help "The path on which to save the generated transformation" &= typDir
-  , epsilon = defaultEpsilon &= help ("The thershold for aural distance at which point we can say we succeded in synthesis"++(show defaultEpsilon)) &= (typ "DOUBLE")
+  , epsilon = defaultEpsilon &= help ("The thershold for aural distance at which point we can say we succeded in synthesis: "++(show defaultEpsilon)) &= (typ "DOUBLE")
   , smartStructuralRefinement = True &= help "When turned off, uses brute force exploration of structural space. Turned on by default" &= (typ "BOOL")
+  , filterLogSizeTimeout = defaultFilterLogSizeTimeout &= help ("max number of structures to try before timing out - setting it very low for now: "++(show defaultFilterLogSizeTimeout)) &= (typ "INT")
+  , thetaLogSizeTimeout = defaultThetaLogSizeTimeout &= help ("max number of thetas to try before timing out of SGD and triggering strucutral synthesis: "++(show defaultFilterLogSizeTimeout)) &= (typ "INT")
   , batchSize = defaultBatchSize &= help ("Batch size for SGD. Default ="++(show defaultBatchSize)) &= (typ "INT")
   , learnRate = defaultLearnRate &= help ("Learn rate for SGD. Too small, and we will think we have converged, too large and we will \'bounce\' around. Default ="++(show defaultLearnRate)) &= (typ "Double")
   , converganceGoal = defaultConverganceGoal &= help ("what do we condsider to be a negligible gain from one step of SGD. Set higher to converge sooner. Default ="++(show defaultConverganceGoal)) &= (typ "DOUBLE")

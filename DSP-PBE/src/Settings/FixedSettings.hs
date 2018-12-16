@@ -1,23 +1,9 @@
 module Settings.FixedSettings where
 
-import Types.Thetas
-import Data.Functor.Identity
-
 debug = True
 
 
 -- TODO Move this whole file to Settings.Options
-
------------------
---
--- SGD Settings
---
------------------
-
--- | selects the thetas should we vary during GD
-thetaSelectors :: [(Double -> Identity Double) -> Thetas -> Identity Thetas]
-thetaSelectors = [lpfThreshold, hpfThreshold,ringzFreq,ringzDecaySecs,ringzApp,lpfApp,hpfApp,whiteApp,ampApp,pitchShiftFreq,pitchShiftApp,idApp]
-
 ----------------
 --
 -- FFT settings

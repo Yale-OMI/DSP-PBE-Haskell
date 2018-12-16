@@ -3,10 +3,14 @@
 module Main where
 
 import Synth.SGD
-import Types.Thetas
 import qualified Settings as S
 
-import qualified Data.HashMap.Strict as H
+import Types.Filter
+import Types.PrettyFilter
+import Types.DSPNode
+import Data.Tree
+
+import qualified Data.Map.Strict as M
 import System.Random
 
 ----------
@@ -21,19 +25,19 @@ main = do
   rGen <- getStdGen
   (_,c1,_) <- multiVarSGD
           S.defaultOptions
-          [ampApp]
+          ([head $ extractThetaUpdaters initFilter])
           simpleCost
           rGen
-          H.empty
-          initThetas
+          M.empty
+          initFilter
 
   (_,c2,_) <- multiVarSGD
           S.defaultOptions
-          [ampApp,lpfThreshold]
+          (extractThetaUpdaters initFilter)
           simpleCost2
           rGen
-          H.empty
-          initThetas
+          M.empty
+          initFilter
 
   if c1 < 0.2
   then putStrLn "PASSED GD in 1 dimension" >> return ()
@@ -45,13 +49,14 @@ main = do
 
   return ()
 
-simpleCost :: Thetas -> IO Double
-simpleCost Thetas{..} = 
-  return $ abs _ampApp
+initFilter = toInternalFilter $ LPF_p 1 1
+
+simpleCost :: Filter -> IO Double
+simpleCost f = 
+  return $ snd $ head $ getParams $ nodeContent $ rootLabel f
    
-simpleCost2 :: Thetas -> IO Double
-simpleCost2 Thetas{..} = 
-  return ((abs _ampApp) + (abs _lpfThreshold))
-   
+simpleCost2 :: Filter -> IO Double
+simpleCost2 f = 
+  return $ sum $ map snd $ getParams $ nodeContent $ rootLabel f
        
        

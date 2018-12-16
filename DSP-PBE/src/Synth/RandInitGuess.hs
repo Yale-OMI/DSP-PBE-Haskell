@@ -2,7 +2,6 @@ module Synth.RandInitGuess where
 
 import Types.Common
 import Types.Filter
-import Types.Thetas
 
 import Analysis.FFT
 import Analysis.FilterDistance
