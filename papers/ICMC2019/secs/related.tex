@@ -1,7 +1,15 @@
 \section{Related Work}
 
 Various resynthesis techniques - a lot of these are covered in the FARM paper.
-\markk{Particularly interested in getting Scott's input on this one.}
+\markk{We need a paragraph about physical modelling - how cool it is, but also how difficult it is for beginners. Maybe even say that it is chapter 13 (or whatever - I'm sure it is not one of the first chapters anyway) in that book in AKW123. This is good evidence that we need a different approach to physical modelling that is more accessible to novice DSP programmers. Also not all analog effects can be effectively modelled using physical modelling (e.g. voice underwater - speaking of which, would be nice to have a benchmark audio file for this if anyone wants to search online/do some field recording).}
+
+DSP-PBE is similar to using impulse response for acoustic modelling of rooms, such as studios and concert halls.
+Measuring the impulse response allows the user to model how a room affects a source sound.
+When measuring the impulse response, we can use any sound we like (typically, a sine wave sweep), and then deconvolve the source signal in order to isolate the frequency response and resonance of the room.
+However, in the case of modelling physical, analog effects, the effect can only be applied to a particular sound.
+
+\url{https://www.acoustics-engineering.com/files/TN001.pdf}
+\url{https://www.gearslutz.com/board/studio-building-acoustics/469574-measuring-room-acoustics.html}
 
 Programming-by-example is a research field that has had an explosion of growth in the past decade. 
 A critical point was the introduction of FlashFill in Microsoft Excel 2013~\cite{GulwaniHS12}, a programming-by-example technology that allows users to automatically generate excel scripts to transform data.
