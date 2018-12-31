@@ -15,6 +15,8 @@ import Vivid
 import qualified Data.HashMap.Strict as H
 import Data.Hashable
 
+import Data.List
+
 import GHC.Generics
 import Control.Lens
 
