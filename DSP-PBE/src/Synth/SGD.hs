@@ -23,23 +23,23 @@ import Utils
 --   calc new theta and build map of theta to value to avoid recomputation
 multiVarSGD :: RandomGen g => 
   S.Options ->
-  [Filter -> (Double -> Double) -> Filter] -> -- ^ updaters for all dimension of theta
   (Filter -> IO Double) ->
   g ->                                        -- ^ a random generator for the Stochastic-ness of SGD
   FilterLog ->
+  [Filter -> (Double -> Double) -> Filter] -> -- ^ updaters for all dimension of theta
   Filter ->                                   -- ^ the current theta, from which we will descend the gradient
   IO (Filter, Double, FilterLog)               -- ^ returns the solution, the cost, and the log of all attempts
-multiVarSGD settings thetaSelectors costFxn g currentCache currentTheta = do
+multiVarSGD settings costFxn g currentCache thetaSelectors currentTheta = do
 
   (steppedThetas, steppedScore) <- stochasticStep settings thetaSelectors costFxn g currentTheta
 
-  let 
+  let
     newCache = M.insert steppedThetas steppedScore currentCache
     (bestThetas, bestScore) = M.findMin newCache
-
+    
     -- build the call to try again using updatedThetas, allowing us to explore worse directions, but every n step returning to best
     -- TODO use Reader monad
-    callToContinueGD =  multiVarSGD settings thetaSelectors costFxn (snd $ next g) newCache
+    callToContinueGD =  multiVarSGD settings costFxn (snd $ next g) newCache
 
     -- converge if we try to descend and still find the same best thetas (within the goal threshold)
     converged = filterDiff steppedThetas currentTheta <= (S.converganceGoal settings) || M.member steppedThetas currentCache
@@ -48,18 +48,21 @@ multiVarSGD settings thetaSelectors costFxn g currentCache currentTheta = do
   -- if that makes us better overall, continue with that, otherwise just finish
   -- this could improve accuracy, but will cost us in terms of time
   lastStepThetas <- return Nothing
-
   debugPrint $ "Score for this step is "++(show steppedScore)
-  
+  debugPrint $ "FOUND IN CACHE:   " ++ (show $ M.member steppedThetas currentCache)
+
   if (not converged) && (not $ isNaN steppedScore) && M.size newCache < (S.thetaLogSizeTimeout settings)
   then do
-    debugPrint "\n" 
-    callToContinueGD $ 
-      case lastStepThetas of
+    let 
+      newTheta = case lastStepThetas of
         Nothing -> adjustForRestarts settings newCache steppedThetas bestThetas
         Just ts -> ts
+      newThetaUpdaters = [head $ extractThetaUpdaters newTheta]
+
+    callToContinueGD newThetaUpdaters newTheta 
+      
   else do
-    debugPrint ("\n\n\nFinished SGD with score = "++(show bestScore)
+    debugPrint ("\n[+] Finished SGD with score = "++(show bestScore)
                   ++"\nUsing Theta: "++ (indent $ show bestThetas))
     return (bestThetas, bestScore, newCache)
 
@@ -138,6 +141,8 @@ partialDerivative f part t = do
   debugPrint "Getting first score"
   -- score of current theta
   scoreOrig <- f t
+
+  debugPrint("F1: " ++ (show t) ++ " F2: " ++ (show (part t (\x -> x+s))))
   debugPrint $ "Calculating Partial Derivative wrt "++(filterFieldChange t (part t (\x -> x+s) ))
   -- score of theta with small movement in dimension of interest
   scoreDelta <- f (part t (\x -> x+s))

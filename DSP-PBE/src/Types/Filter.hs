@@ -72,7 +72,8 @@ filterFieldChange :: Filter -> Filter -> [Char]
 filterFieldChange f1 f2 =
   if sameStructure f1 f2
   then let
-         fieldDiff p1 p2 = if (snd p1-snd p2) /= 0 then Nothing else Just $ fst p1
+        -- TODO change 0.0000001 to something else
+         fieldDiff p1 p2 = if (snd p1-snd p2) < 0.00000001 then Nothing else Just $ fst p1
          nodeDiff n1 n2 = zipWith fieldDiff (getParams $ nodeContent n1) (getParams $ nodeContent n2)
          diffTree :: T.Tree ([Maybe String])
          diffTree = liftA2 nodeDiff f1 f2

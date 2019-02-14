@@ -93,6 +93,6 @@ parameterTuning settings in_audio_fp (out_fp, out_audio) initF = do
   let costFxn = testFilter in_audio_fp (out_fp, out_audio)
   let rGen = mkStdGen 0
   debugPrint $ show initF
-  solution <- multiVarSGD settings (extractThetaUpdaters initF) costFxn rGen M.empty initF
+  solution <- multiVarSGD settings costFxn rGen M.empty (extractThetaUpdaters initF) initF
   return solution
 
