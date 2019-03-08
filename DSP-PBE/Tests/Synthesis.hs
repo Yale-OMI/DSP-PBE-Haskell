@@ -4,7 +4,6 @@ import Synth.Synth
 import Analysis.FilterDistance
 import Types.Common
 import Types.Filter
-import Types.Thetas
 import Synth.RTypeFilterGuess
 
 import System.Directory
@@ -71,7 +70,7 @@ getCostMap inEx outEx range = do
   print ("Distances for :" ++ inEx ++ " & " ++ outEx)
   fileActions <- mapM importFile [inEx,outEx] :: IO [Either String (AudioFormat)]
   let testFilters = 
-        map (\x-> (Thetas {
+        map (\x-> (toInternalFilter {
           _lpfThreshold=(1),
           _hpfThreshold=(x),
           _pitchShiftFreq=0,
