@@ -76,7 +76,7 @@ getCostMap inEx outEx range = do
           range
   case sequence fileActions of
     Right fs -> do
-      rs <- mapM (\t -> (testFilter inEx (outEx, head$ tail fs) t)) testFilters
+      rs <- mapM (\t -> testFilter inEx (outEx, head$ tail fs) t) testFilters
       return $ zip (map (floor. freqScale) range) rs
     Left e -> error e
 
