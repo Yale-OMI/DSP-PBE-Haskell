@@ -21,12 +21,6 @@ listToCSV :: [Peak] -> String
 listToCSV = 
   concatMap (\(f,a) -> (show f) ++ ", " ++ (show a) ++ "\n")
 
-getMinScore :: H.HashMap a Double -> (a, Double)
-getMinScore cache = 
-  H.foldlWithKey' (\(bestK,bestV) k v -> if bestV > v then (k,v) else (bestK,bestV)) (fst $ head $ H.toList cache, read "Infinity") cache
-  -- or, a more clear, but less efficent version
-  -- minimumBy (comparing snd) $ H.toList cache 
-
 -- | Take the first instance from a list that satisfies the predicate
 takeLast :: (a -> Bool) -> [a] -> Maybe a
 takeLast p xs = case filter (not. p) xs of

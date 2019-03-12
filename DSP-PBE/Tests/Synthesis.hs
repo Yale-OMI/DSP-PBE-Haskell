@@ -4,7 +4,8 @@ import Synth.Synth
 import Analysis.FilterDistance
 import Types.Common
 import Types.Filter
-import Types.Thetas
+import Types.PrettyFilter
+import Types.DSPNode
 import Synth.RTypeFilterGuess
 
 import System.Directory
@@ -71,22 +72,12 @@ getCostMap inEx outEx range = do
   print ("Distances for :" ++ inEx ++ " & " ++ outEx)
   fileActions <- mapM importFile [inEx,outEx] :: IO [Either String (AudioFormat)]
   let testFilters = 
-        map (\x-> (Thetas {
-          _lpfThreshold=(1),
-          _hpfThreshold=(x),
-          _pitchShiftFreq=0,
-          _pitchShiftApp=0,
-          _ringzFreq=1,
-          _ringzDecaySecs=1,
-          _ringzApp=(-1),
-          _lpfApp=(-1),
-          _hpfApp=(1),
-          _whiteApp=(-1),
-          _idApp=(-1),
-          _ampApp=(1)})) range
+        map 
+          (\x-> toInternalFilter $ Node_p $ HPF x 1)
+          range
   case sequence fileActions of
     Right fs -> do
-      rs <- mapM (\t -> (testFilter inEx (outEx, head$ tail fs) $ thetaToFilter t)) testFilters
+      rs <- mapM (\t -> testFilter inEx (outEx, head$ tail fs) t) testFilters
       return $ zip (map (floor. freqScale) range) rs
     Left e -> error e
 

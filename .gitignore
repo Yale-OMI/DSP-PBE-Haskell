@@ -17,9 +17,12 @@ cabal.sandbox.config
 *.aux
 *.hp
 *.eventlog
+*.sw*
 .stack-work/
 cabal.project.local
 .HTF/
+*.ghc.environment*
 
+*out.wav
 tmp/
 logs/

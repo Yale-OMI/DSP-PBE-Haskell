@@ -13,6 +13,7 @@ main = do
   
   writeHeader results_file
 
+{-
   runBenchmark results_file $ 
     defaultOptions
         { inputExample = "Sounds/SynthesisBenchmarks/Constructed/cartoon010.wav" 
@@ -22,14 +23,15 @@ main = do
         , learnRate = 0.001
         , converganceGoal = 0.001
         }
+-}
 
-{-
   runBenchmark results_file $ 
     defaultOptions
         { inputExample = "Sounds/SynthesisBenchmarks/Constructed/Holst.wav" 
         , outputExample = "Sounds/SynthesisBenchmarks/Constructed/Holst-hpf3500.wav"
-        , smartStructuralRefinement = False
+        , smartStructuralRefinement = True
+        , thetaLogSizeTimeout = 0
+        , filterLogSizeTimeout = 10
         , epsilon = 10 } --using a lower espsilon than in FARM benchmarks, which should trigger the strucutral loop
 
--}
 

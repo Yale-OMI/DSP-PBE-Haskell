@@ -28,10 +28,10 @@ library
                        Synth.Synth
                        Synth.StructuralRefinement
                        Synth.RTypeFilterGuess
-                       Synth.RandInitGuess
                        Types.Filter
+                       Types.PrettyFilter
+                       Types.DSPNode
                        Types.Common
-                       Types.Thetas
                        Types.SCCode
                        Utils
                        Settings 
@@ -54,6 +54,7 @@ library
      , random-shuffle
      , process >=1.4
      , unordered-containers >=0.2.8.0
+     , containers >= 0.5.9
      , hashable >= 1.2.6.0
      , parallel >= 3.2.1.1
      , split >= 0.2.3.1
@@ -169,5 +170,5 @@ Test-Suite GradientDescent
    build-depends:       
        base >=4.10
      , SynthSynth
-     , unordered-containers >=0.2.8.0
+     , containers >= 0.5.9
      , random

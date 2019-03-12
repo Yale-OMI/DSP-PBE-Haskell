@@ -6,7 +6,7 @@ module Synth.SGD where
 import System.Random.Shuffle
 import System.Random
 
-import qualified Data.HashMap.Strict as H
+import qualified Data.Map as M
 import Data.List
 import Data.Ord
 
@@ -15,7 +15,6 @@ import Control.Lens
 import Control.Monad
 
 import Types.Filter
-import Types.Thetas
 import qualified Settings as S
 
 import Utils
@@ -24,43 +23,46 @@ import Utils
 --   calc new theta and build map of theta to value to avoid recomputation
 multiVarSGD :: RandomGen g => 
   S.Options ->
-  _ ->        -- ^ selectors for all dimension of theta
-  (Thetas -> IO Double) -> 
-  g ->        -- ^ a random generator for the Stochastic-ness of SGD
-  ThetaLog ->
-  Thetas ->   -- ^ the current theta, from which we will descend the gradient
-  IO (Thetas, Double, ThetaLog) -- ^ returns the solution, the cost, and the log of all attempts
-multiVarSGD settings thetaSelectors costFxn g currentCache currentTheta = do
+  (Filter -> IO Double) ->
+  g ->                                        -- ^ a random generator for the Stochastic-ness of SGD
+  FilterLog ->
+  [Filter -> (Double -> Double) -> Filter] -> -- ^ updaters for all dimension of theta
+  Filter ->                                   -- ^ the current theta, from which we will descend the gradient
+  IO (Filter, Double, FilterLog)               -- ^ returns the solution, the cost, and the log of all attempts
+multiVarSGD settings costFxn g currentCache thetaSelectors currentTheta = do
 
   (steppedThetas, steppedScore) <- stochasticStep settings thetaSelectors costFxn g currentTheta
 
-  let 
-    newCache = H.insert steppedThetas steppedScore currentCache
-    (bestThetas, bestScore) = getMinScore newCache
-
+  let
+    newCache = M.insert steppedThetas steppedScore currentCache
+    (bestThetas, bestScore) = M.findMin newCache
+    
     -- build the call to try again using updatedThetas, allowing us to explore worse directions, but every n step returning to best
     -- TODO use Reader monad
-    callToContinueGD =  multiVarSGD settings thetaSelectors costFxn (snd $ next g) newCache
+    callToContinueGD =  multiVarSGD settings costFxn (snd $ next g) newCache
 
     -- converge if we try to descend and still find the same best thetas (within the goal threshold)
-    converged = thetaDiff steppedThetas currentTheta <= (S.converganceGoal settings) || H.member steppedThetas currentCache
+    converged = filterDiff steppedThetas currentTheta <= (S.converganceGoal settings) || M.member steppedThetas currentCache
 
   -- TODO if we think we have converged, do one last pass with all threshold selectors to check all directions
   -- if that makes us better overall, continue with that, otherwise just finish
   -- this could improve accuracy, but will cost us in terms of time
   lastStepThetas <- return Nothing
-
   debugPrint $ "Score for this step is "++(show steppedScore)
-  
-  if (not converged) && (not $ isNaN steppedScore)
+  debugPrint $ "FOUND IN CACHE:   " ++ (show $ M.member steppedThetas currentCache)
+
+  if (not converged) && (not $ isNaN steppedScore) && M.size newCache < (S.thetaLogSizeTimeout settings)
   then do
-    debugPrint "\n" 
-    callToContinueGD $ 
-      case lastStepThetas of
+    let 
+      newTheta = case lastStepThetas of
         Nothing -> adjustForRestarts settings newCache steppedThetas bestThetas
         Just ts -> ts
+      newThetaUpdaters = [head $ extractThetaUpdaters newTheta]
+
+    callToContinueGD newThetaUpdaters newTheta 
+      
   else do
-    debugPrint ("\n\n\nFinished SGD with score = "++(show bestScore)
+    debugPrint ("\n[+] Finished SGD with score = "++(show bestScore)
                   ++"\nUsing Theta: "++ (indent $ show bestThetas))
     return (bestThetas, bestScore, newCache)
 
@@ -69,7 +71,7 @@ lastCheck = do
     if converged
     then
       allDirThetas <- foldM (takeStep learnRate currentTheta costFxn) currentTheta thetaSelector
-      if (thetaDiff allDirTheta bestThetas) <= goal
+      if (filterDiff allDirTheta bestThetas) <= goal
       then return Nothing
       else return $ Just allDirThetas
     else
@@ -78,7 +80,7 @@ lastCheck = do
 
 -- | Every time we hit a restartRound, jump to the current best
 adjustForRestarts settings cache currThetas bestThetas = 
-  if (H.size cache) `mod` (S.restartRound settings) == 0 
+  if (M.size cache) `mod` (S.restartRound settings) == 0 
   then bestThetas 
   else currThetas
 
@@ -101,16 +103,16 @@ stochasticStep settings thetaSelectors costFxn g currentTheta = do
 
 -- | descend by a single step in the direction of the largest gradient over a single dimension
 takeStep :: 
-  Double -> -- ^ the learning rate
-  Thetas ->
-  (Thetas -> IO Double) 
-  -> Thetas
-  -> _ 
-  -> IO Thetas
+     Double  -- ^ the learning rate
+  -> Filter 
+  -> (Filter -> IO Double) 
+  -> Filter
+  -> (Filter -> (Double -> Double) -> Filter) 
+  -> IO Filter
 takeStep learnRate t f updatedTheta part = do 
   slope <- partialDerivative f part t
-  let newTheta = over part (boundedUpdate learnRate slope) updatedTheta --not allowed to move more than 0.2 in a single step
-  debugPrint ("Adjusting "++(thetaFieldChange newTheta updatedTheta)++" by "++(show (thetaDiff updatedTheta newTheta)))
+  let newTheta = part updatedTheta (boundedUpdate learnRate slope) --not allowed to move more than 0.2 in a single step
+  debugPrint ("Adjusting "++(filterFieldChange newTheta updatedTheta)++" by "++(show (filterDiff updatedTheta newTheta)))
   debugPrint ("Scoring program...\n"++(indent $ show newTheta))
   debugPrint ""
   return newTheta
@@ -127,11 +129,11 @@ boundedUpdate learnRate slope prevVal  = let
 -- | Calculate the derivative of one dimension of the theta
 --   since we cannot calculate the derivative of the cost function, we just approximate the deritative with a small step
 --   this is an inefficent method (althought the caching helps) - other options are listed in Synth/Synth.hs
-partialDerivative  :: 
-     (Thetas -> IO Double) -- ^ distance metric
-  -> _                     -- ^ dimension selector
-  -> Thetas                -- ^ current theta to take partial derivative of
-  -> IO Double -- ^ derivative and updated cache
+partialDerivative  ::
+     (Filter -> IO Double)                    -- ^ distance metric
+  -> (Filter -> (Double -> Double) -> Filter) -- ^ dimension updater
+  -> Filter                                   -- ^ current theta to take partial derivative of
+  -> IO Double                                -- ^ derivative and updated cache
 partialDerivative f part t = do
   -- derivative approximation step size TODO, move to settings?
   let s = 0.01 
@@ -139,16 +141,18 @@ partialDerivative f part t = do
   debugPrint "Getting first score"
   -- score of current theta
   scoreOrig <- f t
-  debugPrint $ "Calculating Partial Derivative wrt "++(thetaFieldChange t (over part (\x -> x+s) t))
+
+  debugPrint("F1: " ++ (show t) ++ " F2: " ++ (show (part t (\x -> x+s))))
+  debugPrint $ "Calculating Partial Derivative wrt "++(filterFieldChange t (part t (\x -> x+s) ))
   -- score of theta with small movement in dimension of interest
-  scoreDelta <- f (over part (\x -> x+s) t)
+  scoreDelta <- f (part t (\x -> x+s))
 
   -- rise over run to find slope 
   let adjustment = (scoreOrig-scoreDelta)/s
   --debugPrint $ show s
   --debugPrint $ show scoreOrig
   --debugPrint $ show scoreDelta
-  debugPrint $ "Derivative in "++(thetaFieldChange t (over part (\x -> x+s) t))++" = "++(show adjustment)
+  debugPrint $ "Derivative in "++(filterFieldChange t (part t (\x -> x+s)))++" = "++(show adjustment)
   --TODO should end synthesis at this point by taking whatever we had as the best so far
   -- when (isNaN adjustment) $ error "Generated NaN. This probably means that all filters have been zero'ed out and FFT doesnt know what to do"
   return adjustment

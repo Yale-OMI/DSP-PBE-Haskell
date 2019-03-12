@@ -27,6 +27,10 @@ To test
 
   cabal new-test 
 
+To test one benchmark
+
+  cabal new-run farm_benchmarks -- --color=always
+
 To run the executable
 
   .cabal-sandbox/bin/musicSynth input-file output-file target-file

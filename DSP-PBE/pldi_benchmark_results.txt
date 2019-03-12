@@ -1,0 +1,1 @@
+Input, Output, Solution, Score, Structural Attempts, Time (sec)
