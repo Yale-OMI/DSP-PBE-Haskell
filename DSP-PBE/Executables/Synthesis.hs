@@ -5,6 +5,7 @@ import Settings
 import Analysis.FilterDistance
 import Types.Common
 import Types.Filter
+import Types.SCCode
 
 import System.Directory
 import System.Environment
@@ -21,4 +22,6 @@ main = do
   setForeignEncoding utf8  
 
   settings <- cmdArgs defaultOptions
-  synthCode settings
+  (soln, score, structs) <- synthCode settings
+  putStrLn $ "Found a program with score "++(show score)++" after "++(show structs)++" structural attempts."
+  putStrLn $ toSCCode soln

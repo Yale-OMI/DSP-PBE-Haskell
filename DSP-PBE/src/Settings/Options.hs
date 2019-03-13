@@ -60,8 +60,10 @@ defaultOptions = SynthesisOptions {
   }
 
 checkOptions SynthesisOptions{..} = do
+  when (inputExample == "")  $ die "SynthSynth: Must provide input audio example. See help with --help"
+  when (outputExample == "") $ die "SynthSynth: Must provide output audio example. See help with --help"
   inputExists <- doesFileExist inputExample
   outputExists <- doesFileExist outputExample
-  when (inputExists) $ die ("SynthSynth: Could not find input audio example : " ++ inputExample ++ ". See help.")
-  when (outputExists) $ die "SynthSynth: Could not find output audio example provided. See help."
+  when (not $ inputExists) $ die ("SynthSynth: Could not find input audio example : " ++ inputExample ++ ". See help.")
+  when (not $ outputExists) $ die "SynthSynth: Could not find output audio example provided. See help."
 

@@ -30,8 +30,8 @@ main = do
         { inputExample = "Sounds/SynthesisBenchmarks/Constructed/Holst.wav" 
         , outputExample = "Sounds/SynthesisBenchmarks/Constructed/Holst-hpf3500.wav"
         , smartStructuralRefinement = True
-        , thetaLogSizeTimeout = 0
-        , filterLogSizeTimeout = 10
-        , epsilon = 10 } --using a lower espsilon than in FARM benchmarks, which should trigger the strucutral loop
+        , thetaLogSizeTimeout = 2
+        , filterLogSizeTimeout = 5
+        , epsilon = 10 } --using a lower epsilon than in FARM benchmarks, which should trigger the strucutral loop
 
 

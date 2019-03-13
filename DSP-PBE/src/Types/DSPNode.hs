@@ -12,7 +12,7 @@ data DSPNode =
   | PitchShift Double Double
   | Ringz Double Double Double
   | WhiteNoise Double
-  | AmpApp Double
+  | AmpApp Double --TODO how is amp differnet from ID?
   deriving (Show, Eq, Ord, Data)
 
 getParams :: DSPNode -> [(String,Double)]

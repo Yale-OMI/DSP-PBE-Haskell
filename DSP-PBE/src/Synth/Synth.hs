@@ -29,7 +29,7 @@ import System.Random
 -- TODO have synthesis export a runnable filter
 synthCode :: S.Options -> IO (Filter, Double, Int)
 synthCode settings@S.SynthesisOptions{..} = do
---  S.checkOptions settings
+  S.checkOptions settings
   fileActions <- mapM W.importFile [inputExample,outputExample] :: IO [Either String (AudioFormat)]
   (solutionProgram, score, structureAttempts) <- case sequence fileActions of
     Right fs -> do
@@ -58,27 +58,32 @@ synthLoop settings@S.SynthesisOptions{..} out_audio prevFLog prevFilter = do
   debugPrint "Initiating strucutral synthesis..."
   let initFilter = if prevFLog == M.empty --special case to catch the first time through the loop
                    then prevFilter
-                   else generateNewFilter settings prevFilter prevFLog
+                   else generateNewFilter settings prevFLog
   debugPrint "Found a program structure:"
   debugPrint $ show initFilter
   debugPrint "Initiating metrical synthesis..."
+  debugPrint $ show $ M.size prevFLog
   (synthedFilter, score, fLog) <- parameterTuning settings inputExample (outputExample,out_audio) initFilter
-  --let fLog = M.insert synthedFilter score prevFLog
-  if score < epsilon || M.size fLog > filterLogSizeTimeout
+  debugPrint $ show $ M.size fLog
+  --let newFLog = M.union fLog prevFLog
+  let newFLog = M.insert synthedFilter score prevFLog
+  if score < epsilon || 
+     M.size newFLog > filterLogSizeTimeout || 
+     abs (score - (snd $ findMinByVal (M.union (M.fromList [(synthedFilter,99999)]) prevFLog))) < converganceGoal
   then
-    return (fst $ M.findMin fLog, score, M.size fLog)
+    return (fst $ findMinByVal fLog, score, M.size newFLog)
   else do
-    synthLoop settings out_audio fLog synthedFilter
+    synthLoop settings out_audio newFLog synthedFilter
 
 -- | Generate a new init filter based on the previous synthesis attempt
 --   to derive structual constraints, find bad subpatterns from the log and avoid those
 --   to apply dervived numerical constaints, just preserve the thetas of the previous filter
-generateNewFilter :: S.Options -> Filter -> FilterLog -> Filter
-generateNewFilter settings prevFilter fLog = let
+generateNewFilter :: S.Options -> FilterLog -> Filter
+generateNewFilter settings fLog = let
   -- find a new structure
-  structure = structuralRefinement settings prevFilter fLog
+  structure = structuralRefinement settings fLog
   -- use the prev log to find a good point for init thetas
-  initThetas = fst $ M.findMin fLog
+  initThetas = fst $ findMinByVal fLog
   -- apply the params of f1 to the structure of f2
   filterParamsOverFilter f1 f2 = fmap (\n -> paramsOverNode n $ findSameNode f1 n) f2
  in

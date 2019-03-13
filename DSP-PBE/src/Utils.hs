@@ -5,6 +5,8 @@ import qualified Settings
 import Types.Common
 
 import qualified Data.HashMap.Strict as H 
+import qualified Data.Map as M
+import Data.List
 
 traceMe x = D.traceShow x x
 trace printVal returnVal= 
@@ -20,6 +22,16 @@ debugPrint x =
 listToCSV :: [Peak] -> String
 listToCSV = 
   concatMap (\(f,a) -> (show f) ++ ", " ++ (show a) ++ "\n")
+
+-- | return the key val pair with the minimal val
+--   this is in contrast to M.findMin, which returns the minmal key
+findMinByVal :: Ord v => M.Map k v -> (k,v)
+findMinByVal m =
+  minimumBy c $ M.toList m
+ where
+  c x y = case snd x < snd y of
+    True -> LT
+    _    -> GT
 
 -- | Take the first instance from a list that satisfies the predicate
 takeLast :: (a -> Bool) -> [a] -> Maybe a

@@ -42,6 +42,9 @@ printSC sc =
   ")"
   where playBuf = "PlayBuf.ar(2, ~buf)"
  
+toSCCode :: Filter -> String
+toSCCode f =
+  printSC $ makeSCFilter (fromInternalFilter f) 0 "In.ar()"
 
 makeSCFilter :: PrettyFilter -> Int -> String -> SCCode
 makeSCFilter f ioid inn = let 

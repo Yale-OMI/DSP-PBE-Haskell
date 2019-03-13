@@ -37,6 +37,12 @@ import Debug.Trace
 --   TODO relax from Tree to Directed Acyclic Graph
 type Filter = T.Tree DSPNodeL
 
+drawFilter :: Filter -> String
+drawFilter = 
+  drawTree. fmap (show. toConstr. nodeContent)
+
+
+-- | check that two filters have the same structure, ignoring parameters
 -- TODO can this be written without so much repetition?
 sameStructure :: Filter -> Filter -> Bool
 sameStructure f1 f2 = fmap (toConstr. nodeContent) f1 == fmap (toConstr. nodeContent) f2
@@ -61,32 +67,34 @@ showFreqP freq = "freq@" ++ (printf "%.0f" $ freqScalePitchShift freq)
 showDelay d = "delay@" ++ (printf "%.2f" $ delayScale d)
 -}
 
-filterDiff :: Filter -> Filter -> Double
-filterDiff f1 f2 =
+checkStructureThen :: Filter -> Filter -> a -> a-> a
+checkStructureThen f1 f2 defaultVal a = 
   if sameStructure f1 f2
-  then let
-         nodeDiff n1 n2 = sum $ (zipWith (\p1 p2 -> abs (snd p1 - snd p2)) (getParams $ nodeContent n1) (getParams $ nodeContent n2))
-         diffTree = liftA2 nodeDiff f1 f2
-       in
-         sum diffTree
-  else error "can only calculate filterDiff on equivelant structures"
+  then a
+  else 
+     error "can only calculate compare filters on equivelant structures"
+
+filterDiff :: Filter -> Filter -> Double
+filterDiff f1 f2 = let
+   nodeDiff n1 n2 = sum $ (zipWith (\p1 p2 -> abs (snd p1 - snd p2)) (getParams $ nodeContent n1) (getParams $ nodeContent n2))
+   diffTree = liftA2 nodeDiff f1 f2
+ in 
+  checkStructureThen f1 f2 0 $ sum diffTree
 
 -- | which field changed between two filters
 --   if more than one change, returns only the first one found
 filterFieldChange :: Filter -> Filter -> [Char]
-filterFieldChange f1 f2 =
-  if sameStructure f1 f2
-  then let
-        -- TODO change 0.0000001 to something else
-         fieldDiff p1 p2 = if (snd p1-snd p2) < 0.00000001 then Nothing else Just $ fst p1
-         nodeDiff n1 n2 = zipWith fieldDiff (getParams $ nodeContent n1) (getParams $ nodeContent n2)
-         diffTree :: T.Tree ([Maybe String])
-         diffTree = liftA2 nodeDiff f1 f2
-       in
-         case catMaybes $ concat $ T.flatten diffTree of
-         [] -> "No change"
-         xs -> head xs
-  else error "can only calculate filterFieldChange on equivelant structures"
+filterFieldChange f1 f2 = let
+  -- TODO change 0.0000001 to something else
+   fieldDiff p1 p2 = if (snd p1-snd p2) < 0.00000001 then Nothing else Just $ fst p1
+   nodeDiff n1 n2 = zipWith fieldDiff (getParams $ nodeContent n1) (getParams $ nodeContent n2)
+   diffTree :: T.Tree ([Maybe String])
+   diffTree = liftA2 nodeDiff f1 f2
+ in 
+   checkStructureThen f1 f2 "No change" $
+     case catMaybes $ concat $ T.flatten diffTree of
+     [] -> "No change"
+     xs -> head xs
   
 -- | find a node in f that is the same DSPNode as n
 --   if no such node is found, give back n
@@ -121,6 +129,7 @@ nodeToVivid = \case
   PitchShift t a         -> (\bufs -> (ampScale a::Float) ~* freqShift (freq_ (freqScalePitchShift t::Float), in_ bufs)) -- there is also pitchShift in vivid, but it is more complex
   WhiteNoise a           -> (\bufs -> (ampScale a::Float) ~* whiteNoise) --TODO mix bufs into output
   Ringz f d a            -> (\bufs -> (ampScale a::Float) ~* ringz (freq_ (freqScale f::Float), decaySecs_ (delayScale d::Float), in_ bufs))
+  AmpApp a               -> (\bufs -> (ampScale a::Float) ~* bufs)
 
 -- | Given a filter structure, extract the theta selctors that we need to do parameter synthesis
 extractThetaUpdaters :: Filter -> [Filter -> (Double -> Double) -> Filter]

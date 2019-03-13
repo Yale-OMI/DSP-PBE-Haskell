@@ -35,7 +35,7 @@ multiVarSGD settings costFxn g currentCache thetaSelectors currentTheta = do
 
   let
     newCache = M.insert steppedThetas steppedScore currentCache
-    (bestThetas, bestScore) = M.findMin newCache
+    (bestThetas, bestScore) = findMinByVal newCache
     
     -- build the call to try again using updatedThetas, allowing us to explore worse directions, but every n step returning to best
     -- TODO use Reader monad
@@ -47,24 +47,26 @@ multiVarSGD settings costFxn g currentCache thetaSelectors currentTheta = do
   -- TODO if we think we have converged, do one last pass with all threshold selectors to check all directions
   -- if that makes us better overall, continue with that, otherwise just finish
   -- this could improve accuracy, but will cost us in terms of time
-  lastStepThetas <- return Nothing
   debugPrint $ "Score for this step is "++(show steppedScore)
   debugPrint $ "FOUND IN CACHE:   " ++ (show $ M.member steppedThetas currentCache)
 
-  if (not converged) && (not $ isNaN steppedScore) && M.size newCache < (S.thetaLogSizeTimeout settings)
+  if converged || 
+     isNaN steppedScore || 
+     M.size newCache > (S.thetaLogSizeTimeout settings)
   then do
-    let 
-      newTheta = case lastStepThetas of
-        Nothing -> adjustForRestarts settings newCache steppedThetas bestThetas
-        Just ts -> ts
-      newThetaUpdaters = [head $ extractThetaUpdaters newTheta]
-
-    callToContinueGD newThetaUpdaters newTheta 
-      
-  else do
+    when converged $ debugPrint "------ Metrical synthesis converged"
+    when (isNaN steppedScore) $ debugPrint "------ NAN for score"
+    when (M.size newCache > (S.thetaLogSizeTimeout settings)) $ debugPrint "------ log size timeout"
     debugPrint ("\n[+] Finished SGD with score = "++(show bestScore)
                   ++"\nUsing Theta: "++ (indent $ show bestThetas))
     return (bestThetas, bestScore, newCache)
+  else do
+    let 
+      newTheta =
+        adjustForRestarts settings newCache steppedThetas bestThetas
+      newThetaUpdaters = [head $ extractThetaUpdaters newTheta]
+    print $ "---------- "++(show $ M.size newCache)
+    callToContinueGD newThetaUpdaters newTheta 
 
 {-
 lastCheck = do 
@@ -142,7 +144,7 @@ partialDerivative f part t = do
   -- score of current theta
   scoreOrig <- f t
 
-  debugPrint("F1: " ++ (show t) ++ " F2: " ++ (show (part t (\x -> x+s))))
+  debugPrint("F1: " ++ (drawFilter t) ++ "\nF2: " ++ (drawFilter (part t (\x -> x+s))))
   debugPrint $ "Calculating Partial Derivative wrt "++(filterFieldChange t (part t (\x -> x+s) ))
   -- score of theta with small movement in dimension of interest
   scoreDelta <- f (part t (\x -> x+s))
