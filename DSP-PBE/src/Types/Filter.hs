@@ -72,7 +72,10 @@ checkStructureThen f1 f2 defaultVal a =
   if sameStructure f1 f2
   then a
   else 
-     error "can only calculate compare filters on equivelant structures"
+     -- TODO this shouldn't happen, 
+     -- but for now we just result defaultVal (whatever that is)
+     -- so that the program doesnt crash
+     defaultVal -- error "can only calculate compare filters on equivelant structures"
 
 filterDiff :: Filter -> Filter -> Double
 filterDiff f1 f2 = let

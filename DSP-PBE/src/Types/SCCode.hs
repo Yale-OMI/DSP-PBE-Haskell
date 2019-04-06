@@ -9,6 +9,8 @@ import Types.Filter
 import Types.PrettyFilter
 import Types.DSPNode
 
+import Utils
+
 rest :: [a] -> [a]
 rest [] = []
 rest (a:as) = as
@@ -34,13 +36,17 @@ printSC :: SCCode -> String
 printSC sc =
   "( \n" ++
   "SynthDef(\\dsp_pbe, {|out=0|\n" ++
-  "var " ++ (intercalate "," ("main_in":(vars sc))) ++ ";\n" ++ 
-  "main_in = " ++ playBuf ++ ";\n" ++ 
-  (show sc) ++ 
-  "Out.ar(out, " ++ ((vars sc) !! 0) ++ ");\n" ++  
+  (indent body) ++ "\n" ++
   "}).add;\n" ++
   ")"
-  where playBuf = "PlayBuf.ar(2, ~buf)"
+ where 
+  playBuf = 
+    "PlayBuf.ar(2, ~buf)"
+  body = 
+    "var " ++ (intercalate ", " ("main_in":(vars sc))) ++ ";\n" ++ 
+    "main_in = " ++ playBuf ++ ";\n" ++ 
+    (show sc) ++ 
+    "Out.ar(out, " ++ ((vars sc) !! 0) ++ ");\n" 
  
 toSCCode :: Filter -> String
 toSCCode f =

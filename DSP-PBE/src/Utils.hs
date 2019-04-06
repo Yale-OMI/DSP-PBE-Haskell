@@ -8,6 +8,10 @@ import qualified Data.HashMap.Strict as H
 import qualified Data.Map as M
 import Data.List
 
+
+-- | Helper for printing
+indent = ("\n" ++) . unlines. map ("   "++). lines
+
 traceMe x = D.traceShow x x
 trace printVal returnVal= 
   if Settings.debug 
@@ -38,9 +42,6 @@ takeLast :: (a -> Bool) -> [a] -> Maybe a
 takeLast p xs = case filter (not. p) xs of
   [] -> Nothing
   xs' -> Just $ last xs'
-
--- | Helper for printing
-indent = ("\n" ++) . unlines. map ("   "++). lines
 
 remove_every_nth :: Int -> [a] -> [a]
 remove_every_nth = recur 1

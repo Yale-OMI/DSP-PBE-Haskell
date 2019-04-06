@@ -14,6 +14,7 @@ import Analysis.FilterDistance
 import Types.Common
 import Types.Filter
 import Types.DSPNode
+import Types.SCCode
 
 import qualified Settings as S
 import Utils
@@ -38,7 +39,7 @@ synthCode settings@S.SynthesisOptions{..} = do
            (head fs)
            (head $ tail fs)
     Left e -> error e
-  debugPrint $ show solutionProgram
+  debugPrint $ toSCCode solutionProgram
   when (targetAudioPath /= "") $ runFilter resultantAudioPath targetAudioPath (toVivid solutionProgram) 10 >> return ()
   return (solutionProgram, score, structureAttempts)
 
@@ -70,8 +71,8 @@ synthLoop settings@S.SynthesisOptions{..} out_audio prevFLog prevFilter = do
   if score < epsilon || 
      M.size newFLog > filterLogSizeTimeout || 
      abs (score - (snd $ findMinByVal (M.union (M.fromList [(synthedFilter,99999)]) prevFLog))) < converganceGoal
-  then
-    return (fst $ findMinByVal fLog, score, M.size newFLog)
+  then do
+    return (fst $ findMinByVal newFLog, snd $ findMinByVal newFLog, M.size newFLog)
   else do
     synthLoop settings out_audio newFLog synthedFilter
 
