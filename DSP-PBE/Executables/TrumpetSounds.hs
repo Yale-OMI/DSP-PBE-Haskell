@@ -7,6 +7,8 @@ import Control.Monad
 import System.Console.CmdArgs
 
 import Utils
+import System.Directory
+import System.Timeout
 
 results_file = "trumpet_sounds_results.txt"
 main = do
@@ -19,38 +21,19 @@ main = do
     trumpetConfig = defaultOptions
                       { inputExample = input }
 
-  runBenchmark results_file $ 
-    trumpetConfig {
-          outputExample = dir++"mute_06_harmon_joral.wav"
-        , smartStructuralRefinement = True
-        , thetaLogSizeTimeout = 2
-        , filterLogSizeTimeout = 5
-        , epsilon = 10 } 
+    oneSecond = 1000000
+    runOne fp =
+      runBenchmarkTimed (10 * 60 * oneSecond) results_file $ 
+        trumpetConfig {
+              outputExample = dir++fp
+            , smartStructuralRefinement = True
+            , thetaLogSizeTimeout = 2
+            , filterLogSizeTimeout = 5
+            , epsilon = 10 } 
+      
+  allMuteSounds <- listDirectory dir
+
+  mapM_ runOne allMuteSounds
 
 
-  runBenchmark results_file $ 
-    trumpetConfig {
-          outputExample = dir++"mute_01_hat.wav"
-        , smartStructuralRefinement = True
-        , thetaLogSizeTimeout = 2
-        , filterLogSizeTimeout = 5
-        , epsilon = 10 } 
-
-
-  runBenchmark results_file $ 
-    trumpetConfig {
-          outputExample = dir++"mute_02_straight_gold.wav"
-        , smartStructuralRefinement = True
-        , thetaLogSizeTimeout = 2
-        , filterLogSizeTimeout = 5
-        , epsilon = 10 } 
-
-
-  runBenchmark results_file $ 
-    trumpetConfig {
-          outputExample = dir++"mute_13_plunger.wav"
-        , smartStructuralRefinement = True
-        , thetaLogSizeTimeout = 2
-        , filterLogSizeTimeout = 5
-        , epsilon = 10 } 
-
+    

@@ -49,6 +49,7 @@ multiVarSGD settings costFxn g currentCache thetaSelectors currentTheta = do
   -- this could improve accuracy, but will cost us in terms of time
   debugPrint $ "Score for this step is "++(show steppedScore)
   debugPrint $ "FOUND IN CACHE:   " ++ (show $ M.member steppedThetas currentCache)
+  debugPrint $ "CACHE Size:   " ++ (show $ M.size newCache)
 
   if converged || 
      isNaN steppedScore || 

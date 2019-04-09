@@ -72,6 +72,7 @@ synthLoop settings@S.SynthesisOptions{..} out_audio prevFLog prevFilter = do
      M.size newFLog > filterLogSizeTimeout || 
      abs (score - (snd $ findMinByVal (M.union (M.fromList [(synthedFilter,99999)]) prevFLog))) < converganceGoal
   then do
+    debugPrint $ ("Finished synthesis with score: "++ (show $ snd $ findMinByVal newFLog))
     return (fst $ findMinByVal newFLog, snd $ findMinByVal newFLog, M.size newFLog)
   else do
     synthLoop settings out_audio newFLog synthedFilter

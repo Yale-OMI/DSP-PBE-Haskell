@@ -110,6 +110,7 @@ executable trumpet_benchmarks
        base >=4.10 
      , SynthSynth
      , cmdargs
+     , directory
 
 
 
