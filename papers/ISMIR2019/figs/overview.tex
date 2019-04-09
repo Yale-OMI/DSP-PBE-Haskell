@@ -1,0 +1,45 @@
+
+\begin{figure}[t]
+  \centering
+  \tikzstyle{b} = [rectangle, draw, fill=none, text centered, sharp corners, minimum height=3em, text width=2cm, node distance=5em]
+  \tikzstyle{data} = [rectangle, draw, fill=lightgray, text centered, sharp corners, minimum height=3em, text width=2cm, node distance=5em]
+  \tikzstyle{decision} = [ellipse, draw, fill=lightgray, text centered, sharp corners, minimum height=2em, text width=1.75cm, node distance=5em]
+  \tikzstyle{l} = [draw, thick, ->]
+  \tikzstyle{info} = [draw, thick, dotted, ->]
+
+\begin{tikzpicture}[node distance = 9em, auto]
+    % Place nodes
+    \node [data] (examples) {User \\ Examples};
+    \node [b, below of=examples] (struct) {Structural Synthesis Sec.~\ref{sec:struct}};
+    \node [b, left of=struct, node distance=8em] (userRefs) {User provided Refinements Sec.~\ref{sec:struct}};
+    \node [b, right of=struct, node distance=8em] (structRef) {Derived Structural Constraints \\ Sec.~\ref{sec:feedback}};
+    \node [b, below of=structRef, node distance=7em] (paramRef) {Derived Metrical Weights \\ Sec.~\ref{sec:feedback}};
+    \node [b, left of=paramRef, node distance=8em] (params) {Metrical Sythesis \\ Sec.~\ref{sec:opt}};
+    \node [decision, below of=params] (thres) {Below Cost Threshold?};
+    \node [data, below of=thres] (synth) {Synthesized Program};
+
+%Online Flow
+
+    % Draw edges
+    \path [l] (examples) -- (struct);
+    \path [l] (struct) -- (params);
+    \draw [l] (params) -- (thres);
+
+    \draw [l] (thres) -| (paramRef);
+    \path [info] (userRefs) -- (struct);
+    \draw [info] (paramRef) -- (params);
+
+    \draw [l] (paramRef) -- (structRef);
+    \draw [l] (structRef) -- ([yshift=0.5em] structRef.north) -| (struct);
+    \draw [info] (structRef) -- (struct);
+
+    \path [l] (thres) -- (synth);
+
+\end{tikzpicture}
+  \caption{Synthesis first prunes the search space with user provided refinements, then uses a feedback loop to generate strucutal constraints on $G$, and metrical weights on $\constants$, to futher guide the search process.}
+  \label{fig:overview}
+\end{figure}
+
+
+
+

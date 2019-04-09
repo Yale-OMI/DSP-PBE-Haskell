@@ -1,0 +1,66 @@
+\section{Structural Synthesis}
+\label{sec:struct}
+In order to generate a reduced grammar $G', \languageOf{G'} \subset \languageOf{G}$, we require domain-specific knowledge from the user.
+Specifically, the user provides our synthesis system with a set of grammar transformations \mbox{$t: \typeOfGrammar \to \typeOfGrammar$}, where the transformations strictly reduce the size of the set terminals that the grammar can generate, \mbox{$\forall G \in \typeOfGrammar. \ \languageOf{t(G)} \subseteq \languageOf{G}$}.
+The user then also provides a refinement predicate $r: \exampleDomain \to \exampleDomain \to Boolean$ that describes when each transformation $t$ can be applied. 
+
+The language containment problem ($\languageOf{G_{1}} \subset \languageOf{G_{2}}$) is important for us here since we want to be sure that we are strictly decreasing the space of candidate programs to ensure that our search terminates.
+The problem of checking language containment ($\languageOf{G_{1}} \subset \languageOf{G_{2}}$) for arbitrary context-free grammars $G_1$ and $G_2$ is undecidable in general~\cite{hopcroft1969equivalence}.
+Ensuring that arbitrary transformations of the grammar indeed shrinks the search space is then not feasible.
+However, our structural refinements do not require this power.
+We instead limit the transformation to be one that only reduces the production rules $\productionRules_G$ to the production rules $\productionRules_{t(G)}$.
+Specifically, the transformation $t$ is constructed by a mapping of $RHS$ components of the production rules.
+
+\begin{align*}
+P_{t(G)} =& \ \{ \ (lhs,\ rhs(lhs)\ )\  \} \\
+&\text{where}\\
+&\qquad lhs = proj_{LHS}(P_G) \\
+&\qquad rhs(l) \subseteq proj_{RHS}(l) 
+\end{align*}
+
+The user must specify when each transformation may be applied.
+If the input/output examples have some relation $r$, then we can transform the search space in a way that removes potential programs that are not good.
+Put formally, we want to define relation $r$ and transformation $t$, such that all the programs that we have removed have a higher cost than some program in the transformed grammar.
+
+\begin{align*}
+   r(i,o) &\implies \\
+   & \forall p \in \languageOf{G} \setminus \languageOf{t(G)}. \\
+   & \exists p' \in \languageOf{t(G)}. \\
+   & \distFxn(o,p(i)) > \distFxn(o,p'(i)) 
+\end{align*}
+
+\begin{exmp} Limiting the DSP Grammar
+
+%Should this come earlier?
+In the grammar of our running example, we have two filters, a low-pass filter, $LFP \ [0,20k]\ [0,1]$, and a high-pass filter $HPF\ [0,20k]\ [0,1]$.
+A low-pass filter lets frequencies lower than a given threshold pass through to the output.
+Concertizing the threshold constants of $LPF$ at a value of 1500 Hz, and the application constant at 1, we then get $LPF \ 1500 \ 1$.
+
+Applying $LPF \ 1500 \ 1$ to an audio file with a flat frequency response look as follows:
+
+\markk{image of audio here}
+
+We then build a relation from this observation, using a similar syntax to the refinement type system for Haskell, LiquidHaskell~\cite{vazou2014refinement}, 
+Based on the above observation, we can write a refinement type on $LPF$ to describe that says the amplitude of the frequencies greater than the threshold frequency have decreased in the output Audio.
+%
+\begin{align*}
+  &\texttt{lpf :: t:\reals} \to  \texttt{xs:Audio} \to\ \texttt{ys:Audio}\ \mid \\
+  &\forall f_1 \in  \texttt{spectrogram(xs)}.\ \forall f_2 \in \texttt{spectrogram(ys)}. \\
+  &(f_1 > \texttt{t}  \land  f_2 > \texttt{t}  \land f_1 == f_2) \implies \texttt{amp}(f_1) > \texttt{amp}(f_2)
+\end{align*}
+
+Where \texttt{t} represents the level at which the lowpass filter is applied, \texttt{spectrogram} represents the spectrogram of the sound sample, $f_i$ represents a frequency, and \texttt{amp()} represents the amplitude of the frequency. 
+
+Similarly, we can build a relation to describe a high-pass filter as a refinement type that says the amplitude of the frequencies less than the threshold frequency have decreased in the output Audio.
+%
+\begin{align*}
+  &\texttt{hpf :: t:\reals} \to\ \texttt{xs:Audio} \to\ \texttt{ys:Audio}\ \mid \\
+  &(\forall f_1 \in \texttt{spectrogram(xs)}. \forall f_2 \in \texttt{spectrogram(ys)}). \\
+  &(f_1 < \texttt{t} \land f_2 < \texttt{t} \land f_1 == f_2) \implies \texttt{amp(}f_1\texttt{)} > \texttt{amp(} f_2 \texttt{)} 
+\end{align*}
+
+Notice that in these refinement types, we only need to calculate the spectrogram for the input and output statically.
+As opposed to the current technique of generating filters, applying them, and the calculating the aural distance, this approach is relatively static.
+We could quickly check many threshold values over the input and output examples.
+
+\end{exmp}

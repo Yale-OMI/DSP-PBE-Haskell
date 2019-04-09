@@ -1,0 +1,45 @@
+
+\section{Introduction}
+
+Approximate programming-by-example combines reasoning-based program search with numerical search methods from machine learning.
+The high-level idea is to shrink the search space as much as possible with formal methods, then switch over to machine learning.
+
+%\markk{when do we want approximate solutions? how do we formalize when it is ok}
+
+\subsection{Motivating Example}
+
+\begin{figure}
+\begin{lstlisting}
+b = Buffer.read(s, 
+  Platform.resourceDir +/+ "x.wav");
+
+SynthDef(\myLPF, {| out = 0, buf |
+  Out.ar(out,
+    LPF.ar(
+      PlayBuf.ar(1, 
+                 buf, 
+                 BufRateScale.kr(buf)),
+      2000)
+  )
+}).play(s, [\buf, b]);
+\end{lstlisting}
+\caption{A program in SuperCollider that applies a low-pass filter to an audio buffer}
+\label{fig:sc_code}
+\end{figure}
+
+Fig.~\ref{fig:sc_code} presents a simple program in SuperCollider.
+As difficult as the syntax is in SuperCollider, that is not the most difficult part for beginners.
+It is far harder to accomplish the conceptual goal, which is to discover the correct combination of DSP filters to reproduce an audio effect on a new sample.
+
+
+%\markk{when do we want approximate solutions? how do we formalize when it is ok}
+
+This paper makes the following contributions:
+
+\begin{enumerate}
+\item We present a comparison between programming-by-example and supervised learning using a common notation in order to understand the difference between the two problems.
+\item We define the Approximate Programming-by-example class of problems, which lies at the intersection of these two problem domains.
+\item We propose a counter-example guided synthesis algorithm for Approximate Programming-by-example and present an implementation and evaluation of this in the domain of Digital Signal Processing program synthesis 
+\end{enumerate}
+
+
