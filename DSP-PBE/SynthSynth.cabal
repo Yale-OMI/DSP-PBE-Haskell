@@ -82,6 +82,7 @@ executable farm_benchmarks
        base >=4.10 
      , SynthSynth
      , cmdargs
+     , filepath
 
 
 executable pldi_benchmarks
@@ -96,6 +97,7 @@ executable pldi_benchmarks
        base >=4.10 
      , SynthSynth
      , cmdargs
+     , filepath
 
 
 executable trumpet_benchmarks
@@ -111,6 +113,7 @@ executable trumpet_benchmarks
      , SynthSynth
      , cmdargs
      , directory
+     , filepath
 
 
 

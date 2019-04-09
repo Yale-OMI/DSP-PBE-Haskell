@@ -23,7 +23,7 @@ main = do
 
     oneSecond = 1000000
     runOne fp =
-      runBenchmarkTimed (10 * 60 * oneSecond) results_file $ 
+      runBenchmarkTimed (5 * 60 * oneSecond) results_file $ 
         trumpetConfig {
               outputExample = dir++fp
             , smartStructuralRefinement = True
