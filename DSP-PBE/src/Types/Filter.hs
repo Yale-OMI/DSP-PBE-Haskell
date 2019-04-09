@@ -58,7 +58,7 @@ type FilterLog = M.Map Filter Double
 freqScale x = realToFrac $ ((x+1)*10000)+100  -- freq operations 100<x<16k Hz
 freqScalePitchShift x = realToFrac $ x*2000  -- pitchshift -2000<x<2000 Hz
 invFreqScale x = ((x-100)/10000)-1
-ampScale x = realToFrac $ (x+1)/2.2           -- amp operations 0<x<.9 so there is always space to explore 'up' for derivative calcuation
+ampScale x = realToFrac $ (x+1)/2           
 delayScale x = realToFrac $ (x+1)/10             -- delay operations 0<x<.2
 
 {-showAmp amp = "amp@"++(printf "%.2f" $ ampScale amp)

@@ -30,7 +30,7 @@ testFilter in_fp (out_fp,outAudio) f = do
 --   then save it in out_filepath
 runFilter :: FilePath -> FilePath -> (SDBody' '[] Signal -> SDBody' '[] Signal) -> Float -> IO(String)
 runFilter out_filepath srcFile vCode secsToGenerate = do
-   writeNRT out_filepath $ vAction secsToGenerate srcFile vCode 
+   writeNRTWith (defaultNRTArgs {_nrtArgs_sampleRate = 44100}) out_filepath $ vAction secsToGenerate srcFile vCode 
    return out_filepath
 
 -- | This is the template of the Vivid (SuperCollider) function that we use 

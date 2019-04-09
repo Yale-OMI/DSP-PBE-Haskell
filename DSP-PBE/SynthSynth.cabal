@@ -114,6 +114,7 @@ executable trumpet_benchmarks
      , cmdargs
      , directory
      , filepath
+     , HCodecs >=0.5
 
 
 
