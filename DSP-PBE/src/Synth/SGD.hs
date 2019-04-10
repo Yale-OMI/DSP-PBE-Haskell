@@ -97,7 +97,7 @@ stochasticStep settings thetaSelectors costFxn g currentTheta = do
   debugPrint "Taking a step"
   steppedThetas  <- foldM (takeStep (S.learnRate settings) currentTheta costFxn) currentTheta randSelectors
 
-  debugPrint "Scoring step"
+  debugPrint $ "Scoring step of:\n " ++ show steppedThetas
   steppedScore <- costFxn steppedThetas
 
   return (steppedThetas, steppedScore)

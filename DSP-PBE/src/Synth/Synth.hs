@@ -24,6 +24,7 @@ import qualified Codec.Wav as W
 import qualified Data.HashMap.Strict as H
 import qualified Data.Map as M
 import System.Random
+import System.FilePath
 
 -- | The main runner for DSP-PBE
 --   this is a wrapper that handles the file io for runSynth
@@ -40,7 +41,9 @@ synthCode settings@S.SynthesisOptions{..} = do
            (head $ tail fs)
     Left e -> error e
   debugPrint $ toSCCode solutionProgram
-  when (targetAudioPath /= "") $ runFilter resultantAudioPath targetAudioPath (toVivid solutionProgram) 10 >> return ()
+  if targetAudioPath /= ""
+  then runFilter resultantAudioPath targetAudioPath (toVivid solutionProgram) 10 >> return ()
+  else runFilter ("final/"++(takeBaseName outputExample)++"-synth.wav") inputExample (toVivid solutionProgram) 10 >> return ()
   return (solutionProgram, score, structureAttempts)
 
 -- | Kicks off synthesis by using the user-provided refinements to select an initFilter
@@ -57,9 +60,9 @@ runSynth settings@S.SynthesisOptions{..} in_audio out_audio = do
 synthLoop :: S.Options -> AudioFormat -> FilterLog -> Filter -> IO (Filter, Double, Int)
 synthLoop settings@S.SynthesisOptions{..} out_audio prevFLog prevFilter = do
   debugPrint "Initiating strucutral synthesis..."
-  let initFilter = if prevFLog == M.empty --special case to catch the first time through the loop
-                   then prevFilter
-                   else generateNewFilter settings prevFLog
+  initFilter <- if prevFLog == M.empty --special case to catch the first time through the loop
+               then return $ prevFilter
+               else structuralRefinement settings out_audio prevFLog
   debugPrint "Found a program structure:"
   debugPrint $ show initFilter
   debugPrint "Initiating metrical synthesis..."
@@ -77,20 +80,6 @@ synthLoop settings@S.SynthesisOptions{..} out_audio prevFLog prevFilter = do
   else do
     synthLoop settings out_audio newFLog synthedFilter
 
--- | Generate a new init filter based on the previous synthesis attempt
---   to derive structual constraints, find bad subpatterns from the log and avoid those
---   to apply dervived numerical constaints, just preserve the thetas of the previous filter
-generateNewFilter :: S.Options -> FilterLog -> Filter
-generateNewFilter settings fLog = let
-  -- find a new structure
-  structure = structuralRefinement settings fLog
-  -- use the prev log to find a good point for init thetas
-  initThetas = fst $ findMinByVal fLog
-  -- apply the params of f1 to the structure of f2
-  filterParamsOverFilter f1 f2 = fmap (\n -> paramsOverNode n $ findSameNode f1 n) f2
- in
-  filterParamsOverFilter initThetas structure
-
 -- | This uses stochastic gradient descent to find a minimal cost theta
 --   SGD is problematic since we cannot analytically calculate a derivative of the cost function as the cost function is in IO
 --   TODO Another option might be to use http://www.jhuapl.edu/SPSA/ which does not require the derivative
@@ -100,6 +89,7 @@ parameterTuning settings in_audio_fp (out_fp, out_audio) initF = do
   let costFxn = testFilter in_audio_fp (out_fp, out_audio)
   let rGen = mkStdGen 0
   debugPrint $ show initF
-  solution <- multiVarSGD settings costFxn rGen M.empty (extractThetaUpdaters initF) initF
+  initCost <- costFxn initF
+  solution <- multiVarSGD settings costFxn rGen (M.singleton initF initCost) (extractThetaUpdaters initF) initF
   return solution
 

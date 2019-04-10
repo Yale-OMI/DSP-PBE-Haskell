@@ -4,6 +4,8 @@ import qualified Settings as S
 import Types.Filter
 import Types.PrettyFilter
 import Types.DSPNode
+import Types.Common
+import Analysis.FilterDistance
 
 import Data.List
 import System.Exit
@@ -14,39 +16,74 @@ import qualified Data.Tree as T
 import Utils 
 import Debug.Trace
 
-structuralRefinement :: S.Options -> FilterLog -> Filter
-structuralRefinement settings fLog =
+structuralRefinement :: S.Options -> AudioFormat -> FilterLog -> IO Filter
+structuralRefinement settings out_audio fLog =
   if S.smartStructuralRefinement settings
-  then smartRefine fLog
-  else bruteForceRefine fLog
+  then smartRefine settings out_audio fLog
+  else return $ bruteForceRefine fLog
 
+-- | brute force enumerates all filter structure and tries them one by one
 bruteForceRefine :: FilterLog -> Filter
 bruteForceRefine fLog  =
   toInternalFilter $ head $ drop (M.size fLog) allFilters
 
-smartRefine :: FilterLog -> Filter
-smartRefine fLog = let 
+smartRefine :: S.Options -> AudioFormat -> FilterLog -> IO Filter
+smartRefine settings outAudio fLog = let 
   bestSoFar = fst $ findMinByVal fLog
  in
-  greedyRefine bestSoFar [] fLog
+  greedyRefine settings outAudio bestSoFar [] fLog
 
 -- | First, find out what we haven't tried that builds off the best option so far
 --   If we tried every option off the best, take the next best option and try to build off that
 --   passing our entire current progress along each step of the way
-greedyRefine :: Filter -> [Filter] -> FilterLog -> Filter
-greedyRefine bestSoFar oldDeadEnds fLog = let
-  dspNodesUnused = filter (\c -> not $ any (sameConstructor c) $ map nodeContent $ T.flatten bestSoFar) cores
-  nextOptions = zipWith (\composer newFilterNode -> composer bestSoFar newFilterNode) composers_i dspNodesUnused
-  getKeys = map fst. M.toList
+greedyRefine :: S.Options -> AudioFormat -> Filter -> [Filter] -> FilterLog -> IO Filter
+greedyRefine settings outAudio bestSoFar oldDeadEnds fLog = let
+  dspNodesUnused = selectUnused bestSoFar
+  
+  -- try all ways to compose one new dspNode with the best choice so far for all dspNodes
+  nextOptions = concatMap (\newFilterNode -> map (\c -> c bestSoFar newFilterNode) composers_i) dspNodesUnused
+  
+  -- filter out any structure we have already tried
   nextOptionsUntested = filter (\x -> not $ any (sameStructure x) $ getKeys fLog) nextOptions
+  getKeys = map fst. M.toList
+  
+  nextUntestedWithVals = applyDerivedMetricalConstraints fLog nextOptionsUntested
   deadEnds = bestSoFar:oldDeadEnds
  in
-  case nextOptionsUntested of 
+  case nextUntestedWithVals of 
     [] -> traceShow ("Backtracking on: "++show(bestSoFar)) $ 
              if M.size fLog == 1
-             then traceShow "Tried all the options, giving back bestSoFar" bestSoFar --TODO is there something smarter to do here? this might cause a problem with termination 
-             else greedyRefine (fst $ findMinByVal $ foldl (flip M.delete) fLog deadEnds) deadEnds fLog
-    xs -> head xs
+             then do 
+               --TODO is there something smarter to do here? this might cause a problem with termination 
+               debugPrint "Tried all the options, giving back bestSoFar" 
+               return bestSoFar
+             else greedyRefine settings outAudio (fst $ findMinByVal $ foldl (flip M.delete) fLog deadEnds) deadEnds fLog
+    xs -> takeBestFilter settings outAudio xs
+
+-- | which dspNodes have we not used in the filter (we should probably allow adding any nodes instead?)
+selectUnused :: Filter -> [DSPNode]
+selectUnused bestSoFar = 
+   filter (\c -> not $ any (sameConstructor c) $ map nodeContent $ T.flatten bestSoFar) cores
+
+-- | use the best solution in the log to find a good point for init thetas
+applyDerivedMetricalConstraints :: FilterLog -> [Filter] -> [Filter]
+applyDerivedMetricalConstraints fLog fs = let
+  initThetas = fst $ findMinByVal fLog
+  -- apply the params of f1 to the structure of f2
+  filterParamsOverFilter f1 f2 = fmap (\n -> paramsOverNode n $ findSameNode f1 n) f2
+ in
+  map (filterParamsOverFilter initThetas) fs
+
+-- | the greedy part of greedy refinement - given a set of options for the next filter
+--   run all of them and see which is best, then take that
+takeBestFilter :: S.Options -> AudioFormat -> [Filter] -> IO Filter
+takeBestFilter settings outAudio fs = do
+  let
+    testFilter' = testFilter (S.inputExample settings) (S.outputExample settings, outAudio)
+  dists <- mapM testFilter' fs
+  return $ fst $ findMinByVal $ M.fromList $ zip fs dists
+
+
 
 cores :: [DSPNode]
 cores = 

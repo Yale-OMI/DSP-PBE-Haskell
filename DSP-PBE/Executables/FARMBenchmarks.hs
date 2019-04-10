@@ -52,4 +52,3 @@ main = do
         , epsilon = 50  --this one seems to be more difficult, so lets set a higher epsilon
         , filterLogSizeTimeout = 1
         }
-

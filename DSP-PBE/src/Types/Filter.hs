@@ -23,6 +23,7 @@ import Data.Maybe
 import Data.List
 import Data.Functor.Classes
 import Data.Data
+import Control.Monad.Zip
 
 import GHC.Generics
 import Control.Lens
@@ -39,7 +40,7 @@ type Filter = T.Tree DSPNodeL
 
 drawFilter :: Filter -> String
 drawFilter = 
-  drawTree. fmap (show. toConstr. nodeContent)
+  drawTree. fmap (show. nodeContent)
 
 
 -- | check that two filters have the same structure, ignoring parameters
@@ -89,16 +90,28 @@ filterDiff f1 f2 = let
 filterFieldChange :: Filter -> Filter -> [Char]
 filterFieldChange f1 f2 = let
   -- TODO change 0.0000001 to something else
-   fieldDiff p1 p2 = if (snd p1-snd p2) < 0.00000001 then Nothing else Just $ fst p1
+   fieldDiff p1 p2 = if (abs (snd p1-snd p2)) < 0.00000001 then Nothing else Just $ fst p1
    nodeDiff n1 n2 = zipWith fieldDiff (getParams $ nodeContent n1) (getParams $ nodeContent n2)
    diffTree :: T.Tree ([Maybe String])
-   diffTree = liftA2 nodeDiff f1 f2
+   diffTree = zipTree nodeDiff f1 f2
  in 
-   checkStructureThen f1 f2 "No change" $
-     case catMaybes $ concat $ T.flatten diffTree of
-     [] -> "No change"
-     xs -> head xs
-  
+   case catMaybes $ concat $ T.flatten diffTree of
+   []  -> "No change"
+   [x] -> x
+   xs  -> error $ "Multiple fields changed at once"++ show diffTree
+
+zipTree :: (a -> b -> c) -> T.Tree a -> T.Tree b -> T.Tree c
+zipTree f t1 t2 = Node {
+    rootLabel = f (rootLabel t1) (rootLabel t2)
+  , subForest = zipSubForest f (subForest t1) (subForest t2)
+  }
+
+zipSubForest :: (a -> b -> c) -> [T.Tree a] -> [T.Tree b] -> [T.Tree c]
+zipSubForest f [] [] = []
+zipSubForest f (x:xs) (y:ys) = (zipTree f x y): zipSubForest f xs ys
+zipSubForest f [] _ = error "Structural mismatch"
+zipSubForest f _ [] = error "structural mismatch"
+
 -- | find a node in f that is the same DSPNode as n
 --   if no such node is found, give back n
 findSameNode :: Filter -> DSPNodeL -> DSPNodeL

@@ -9,7 +9,9 @@ import System.CPUTime
 
 import Control.Exception
 import Control.Exception.Base
+import Control.Monad
 import System.Timeout
+import Data.Either
 
 import Numeric
 import System.FilePath
@@ -25,6 +27,7 @@ runBenchmarkTimed to fp options = do
   start <- getCPUTime
   result <- try $ timeout to $ synthCode options :: IO (Either SomeException (Maybe _))
   end   <- getCPUTime
+  when (isLeft result) $ print $ fromLeft (error "") result
   let diff = (fromIntegral (end - start)) / (10^12)
   let outputString = formatResult result options diff
   appendFile fp $ outputString

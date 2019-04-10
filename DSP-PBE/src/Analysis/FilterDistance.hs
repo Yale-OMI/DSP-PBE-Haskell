@@ -14,6 +14,7 @@ import Types.Common
 import Types.Filter
 import Utils
 import Vivid
+import System.FilePath
 
 -- | Tells us the distance between the current filter results and the target audio data
 testFilter :: FilePath -> (FilePath, AudioFormat) -> Filter -> IO AuralDistance
