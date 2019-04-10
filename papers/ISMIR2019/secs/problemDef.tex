@@ -1,14 +1,14 @@
 
 \section{Problem Statement}
-From one perspective, \textit{Approximate Programming by Example} (\approximatePBE) can be seen as a generalization of classic Programming by Example (PBE).
-Specifically, \approximatePBE relaxes the correctness criteria of PBE.
-The problem statement of PBE is roughly to find a program that correctly maps every given input-output examples, and generalizes this mapping in a reasonable way across the input space, for a definition of reasonable that varies across application domains and search algorithms.
-In contrast, \approximatePBE searches for a program that only \textit{closely} maps every given input-output example, and again generalizes the mapping across the input space.
-The key difference is that in \approximatePBE, we do not require the examples must be mapped exactly.
 
+One of the core challenges in applying programming by example for DSP is to quantify how close our synthesized solution is to the correct solution.
+In this case, the closeness of two audio files is a subjective measure - we do not necessarily know what features of the input/output audio pair the user is trying to emulate.
+We use as the distance function, $\distFxn$, between two audio files, an audio fingerprinting technique~\cite{SantolucitoFARM} that approximates a measure of how different two audio clips sound to the human ear.
+This metric is focused on measuring the amplitudes of frequency peaks obtains from a sliding window FFT.
 
-\subsection{Measuring closeness}
-One of the core aspect of \approximatePBE for DPS is in that we have some way of quantifying what approximate means.
+\markk{add metric}
+
+p
 A \textit{metric space}~\cite{textbook} is a set with a structure that allows us to measure this sense of approximate.
 A metric space is defined as a pair $(M,d)$, where S is a set and $d:M \times M \to \reals$ is a distance metric between all elements in the set. 
 To form a metric space, the metric $d$ must obey the properties:
@@ -19,45 +19,37 @@ To form a metric space, the metric $d$ must obey the properties:
   \item $d(x,z) \le d(x,y) + d(y, z)$ - triangle inequality
 \end{enumerate}
 
+
+
+This is not actually a metirc space. Here is an example of two audio files that violate the identity of indiscernibles property of a metric space.
+However, this is a pathological examples and in most cases is close enough for us. 
+We show that this is a metric space by running a set of tests of real world audio files
+
 \subsection{Defining the search space}
 
-We will use context-free, parameterized grammars to capture the types of programs we will synthesize.
-The formalization of a grammar will allow us to describe how we refine how search space during the synthesis procedure.
-A \textit{grammar} $G$ is defined as a tuple $(N,\Sigma,\productionRules,S)$.
-The $\nonterminals$ and $\terminals$ denote sets of the nonterminal and terminal symbols of the grammar respectively.
-A nonterminal $\nonterminals$ may be either a string constant, or a string constant parameterized with constants $\constants$ that are restricted to a range of continuous values $\reals$.
-We write $X\ [a,b]^2 \ [c,d]$ to denote a nonterminal string constant $X$ with two constants over the range $[a,b]$ and one constant over the range $[c,d]$,
+In order to formalize the search space of DSP-PBE, we define a grammar of filters.
+This grammar captures all allowable DSP programs that our synthesis technique will be able to find.
 
-The set of production rules, $\productionRules$, define how an expression of terminals and nonterminals on the left-hand side are transformed into a new expression on the right-hand side, $LHS \to RHS$.
-The left-hand side, $LHS = (\terminals \cup \nonterminals)^{*} \ \nonterminals \ \ (\terminals \cup \nonterminals)^{*}$, must contain at least one terminal, 
-  and may be transformed on the right-hand side into any sequence of terminals and nonterminals $RHS = (\terminals \cup \nonterminals)^{*}$, including the empty string $\epsilon$.
-The type of production rules can also be written in set notation $\productionRules :: \{(LHS,\{RHS\})\}$.
-We use $proj_{LHS} :: P \to \{LHS\}$ as a projection function on the set of production rules.
-Likewise, we write $proj_{RHS} :: LHS \to \{RHS\}$ as a projection function to extract the set of $RHS$ corresponding to a $LHS$ production rule.
-The last part of the tuple, $S$ denotes the starting symbol of this generative grammar $G$.
+\begin{figure}
+\begin{flalign*}
+DSP := & \\
+& |\ P \arrComp P\ \qquad & \text{\color{gray} sequential composition} & \\
+& |\ P \parallelCompose P\ & \text{\color{gray} parallel composition} &\\
+& |\ P & \\
+P := & & \\
+& |\ LPF \ [0,20k] \ [0,1] &\\
+& |\ HPF \ [0,20k] \ [0,1] &\\
+& |\ Ringz \ [0,20k] \ [0,1] &\\
+& |\ PitchShift\ [0,20k] \ [0,1] &\\
+& |\ WN \ [0,1] & 
+\end{flalign*}
+\caption{The grammar of DSP filters we consider}
+\end{figure}
 
-For convenience of notation, we introduce the type symbol $\typeOfGrammar = (N,\Sigma,\productionRules,S)$ to denote the type of a grammar that is constructed as above.
-The language of a grammar $\languageOf{G}$ is the set of all words that can be generated by the grammar $G$, where each word is the concatenation of some number of terminal symbols $\terminals^{*}$.
-In our context of \approximatePBE, $\languageOf{G}$ is the set of all syntactically well-formed programs.
-
-
-\begin{exmp}
-\approximatePBE for Commutative Audio DSP filters.
-
-In Audio DSP, the \exampleDomain is audio waveforms of type \texttt{[Double]}.
-As an illustrative running example, we will choose a small grammar, $G$, of simple DSP filters, defined as follows:
-
-\begin{align*}
-DSP &= P \arrComp P\ |\ P \\
-P   & = LPF \ [0,20k] \ [0,1] \ |\ HPF \ [0,20k] \ [0,1] \ |\ WN \ [0,1]
-\end{align*}
-
-For our metric space, we will use as the distance function $\distFxn$ an audio fingerprinting technique~\cite{SantolucitoFARM} that measures how different two audio clips sound to the human ear.
 
 For a program $p \in \languageOf{G}$ generated from this grammar, we must fix constants for each parameterized node of the AST.
 In this case, we must then choose $\constants :: \reals^{5}$ to generate an executable $p:\exampleDomain \to \exampleDomain$. 
 
-\end{exmp}
 
 \subsection{APBE as Optimization}
 Note that this is distinct from a PBE setting with noisy examples - we cannot throw away examples that are anomalous and learn over the remaining examples~\cite{raychev2016learning}.

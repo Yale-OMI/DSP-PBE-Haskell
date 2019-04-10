@@ -1,12 +1,19 @@
 
 \section{Introduction}
 
-Approximate programming-by-example combines reasoning-based program search with numerical search methods from machine learning.
-The high-level idea is to shrink the search space as much as possible with formal methods, then switch over to machine learning.
+There has been a proliferation of new programming languages for audio Digital Signal Processing (DSP) with languages such as SueprCollider, Faust, MaxMSP, PureData.
+These languages provide a high-level interface to make DSP programming more approachable for new-comers to the field of audio programming.
+DSP programming poses a particular challenge to novice programmers as writing a DSP program requires an understanding of traditional programming concepts such as loops and conditionals, as well as the ability to reason about DSP issues such as time vs frequency domain.
+To assist beginning DSP programmers we turn to the Programming by Example paradigm.
 
-%\markk{when do we want approximate solutions? how do we formalize when it is ok}
+Programming by Example (PBE) is a program synthesis technique that allows users to provide input and output examples to system that then automatically generates code that models the illustrated functionality.
+This technique has found particular success in spreadsheets with the FlashFill tool.
+In a similar vein, we hope to make DSP programming more accessible to a larger audience by using Digital Signal Processing Programming by Example.
+
 
 \subsection{Motivating Example}
+
+\markk{I think we should switch this - this is more motivating for epople that don't know what DSP code looks like}
 
 \begin{figure}
 \begin{lstlisting}
@@ -32,14 +39,12 @@ As difficult as the syntax is in SuperCollider, that is not the most difficult p
 It is far harder to accomplish the conceptual goal, which is to discover the correct combination of DSP filters to reproduce an audio effect on a new sample.
 
 
-%\markk{when do we want approximate solutions? how do we formalize when it is ok}
-
 This paper makes the following contributions:
 
 \begin{enumerate}
-\item We present a comparison between programming-by-example and supervised learning using a common notation in order to understand the difference between the two problems.
-\item We define the Approximate Programming-by-example class of problems, which lies at the intersection of these two problem domains.
-\item We propose a counter-example guided synthesis algorithm for Approximate Programming-by-example and present an implementation and evaluation of this in the domain of Digital Signal Processing program synthesis 
+\item We propose framework for the synthesis of DSP programs that utilize noncommutative filter types 
+\item We propose an algorithm for search through the possible structural forms of a DSP filter program
+\item We present our tool, \ourTool, which synthesizes SuperCollider programs from audio input/output examples, and evaluate \ourTool over a set of benchmarks
 \end{enumerate}
 
 
