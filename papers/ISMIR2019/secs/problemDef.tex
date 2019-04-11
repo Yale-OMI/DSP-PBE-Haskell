@@ -39,8 +39,8 @@ We leave the problem of finding an aural distance that forms a metric space to f
 In order to formalize the search space of DSP-PBE, we define a grammar of filters, as shown in Fig.~\ref{fig:grammar}.
 This grammar defines the tree-like structure of all allowable DSP programs that our synthesis technique is able to find.
 The grammar states that we may construct a DSP filter program, $DSP$, by composing programs in one of two ways.
-We allow parallel composition with the $\arrComp$ operator, which indicates the two component programs share input, and their output is summed in the time domain.
-We also allow sequential composition with the $\parallelCompose$ operator, which indicates that the first component program pipes its output audio to the next component program.
+We allow sequential composition with the $\arrComp$ operator, which indicates the two component programs share input, and their output is summed in the time domain.
+We also allow parallel composition with the $\parallelCompose$ operator, which indicates that the first component program pipes its output audio to the next component program.
 We additionally allow $Nodes$, which is the set of primitive filters available to synthesis.
 This set can be expanded as needed by the user depending on the use case.
 We limit the set of $Nodes$ here to a core set illustrating both commutative ($LFP, HPF, WN$) and noncommutative ($Reverb, PitchShift$) operators.
