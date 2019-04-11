@@ -1,14 +1,10 @@
 \section{Evaluation}
 
 To evaluate our approach, we apply our synthesis algorithm to two sets of input/output examples.
-The first set captures the use case of \ourTool where a user wants to model real world sounds.
-This set consists of trumpet sounds with various mutes.
-The second set of example input/output we run \ourTool on focuses on more creative applications.
-Here we attempt to transform whitenoise into various clips from Brian Eno's Music for Airports.
+The first set examines the effectiveness of the initial structure construction as described in Sec~\ref{sec:initStruct}.
+The second benchmark set captures the use case of \ourTool where a user wants to model real world sounds.
+This set consists of examples where the input is a trumpet without a mute, and the output examples are the same trumpet with various mutes.
 
-The results of running \ourTool on the trumpet mute sounds benchmarks are reported in Table~\ref{table:eval}.
-
-We need to normalize all files as the distance metric is amplitude analysis.
 
 \begin{table}
 \begin{tabular}{|l|l|c|c|c|}
@@ -18,9 +14,12 @@ We need to normalize all files as the distance metric is amplitude analysis.
 {\\ \hline \csvcoli & \csvcolii & \csvcoliv & \csvcolvi}
 \\ \hline
 \end{tabular}
-\caption{Demonstrating the accuracy of the user provided refinements for the initial filter.}
+\caption{The process for initial structure construction speeds up synthesis of simple filters.}
 \label{table:evalInit}
 \end{table}
+
+The results of running \ourTool on the trumpet mute sounds benchmarks are reported in Table~\ref{table:eval}.
+This table was generates with the maximum structural attempts set to 6 and the maximum metrical attempts per structure set to 5.
 
 \begin{table*}[]
 \begin{tabular}{|l|l|c|c|c|}

@@ -3,21 +3,23 @@
 
 One of the core challenges in applying programming by example for DSP is to quantify how close our synthesized solution is to the correct solution.
 In this case, the closeness of two audio files is a subjective measure - we do not necessarily know what features of the input/output audio pair the user is trying to emulate.
-We use as the distance function, $\distFxn$, between two audio files, an audio fingerprinting technique~\cite{SantolucitoFARM} that approximates a measure of how different two audio clips sound to the human ear.
-This metric is focused on measuring the amplitudes of frequency peaks obtains from a sliding window FFT.
+We use as the distance function, $\distFxn$, between two audio files, an audio fingerprinting technique~\cite{SantolucitoFARM} that approximates a measure of how different two audio clips sound to the human ear in a similar style to audio fingerprinting~\cite{wang2003industrial,fingerprinting}.
+This metric takes a sliding window FFT over time points $ts$, plot the constellation of amplitude and frequency peaks $p$, then takes the euclidean distance between the points of the constellation.
 
 %
 \begin{align*}
-\sum_{t=0}^{ts}\ \sum_{i=0}^{p} euclid\Big(\ &peak(i,toC(x)@t), \\ &peak(i,toC(y)@t)\ \Big)
+\distFxn(x,y) =  \sum_{t=0}^{ts}\ \sum_{i=0}^{p} euclid\Big(\ &peak(i,C(x)@t), \\ &peak(i,C(y)@t)\ \Big)
 \end{align*}
 %
 
 While measuring frequency peaks require temporally aligned audio, this can be achieved with advances in dynamic time warping techniques for audio~\cite{carabias2015audio}.
 To contain the scope of the DSP-PBE problem, we assume that the user has provided audio that is temporally aligned.
-As a technical note, this also requires that the sample rates of the audio match, which again we assume the user handles for simplicity.
+As a technical note, this also requires that the sample rates of the audio match and the amplitudes of the examples have been normalized.
+Again we assume the user handles amplitude normalization and resampling to align sample rates as necessary for simplicity.
 
-A \textit{metric space}~\cite{textbook} is a set with a structure that allows us to measure this sense of approximate.
-A metric space is defined as a pair $(M,d)$, where S is a set and $d:M \times M \to \reals$ is a distance metric between all elements in the set. 
+While the work of~\cite{SantolucitoFARM} shows that this distance metric obeys some properties (commutativity, musically motivated properties) that intuitively make sense for audio,
+  we point to a weakness of this measure - that it does not obey the properties of a \textit{metric space}.
+A metric space~\cite{frechet1906quelques} is defined as a pair $(A,d)$, where S is a set and $d:A \times A \to \reals$ is a distance metric between all elements in the set (in DSP-PBE, $A$ is an audio file).
 To form a metric space, the metric $d$ must obey the properties:
 
 \begin{enumerate}
@@ -26,11 +28,11 @@ To form a metric space, the metric $d$ must obey the properties:
   \item $d(x,z) \le d(x,y) + d(y, z)$ - triangle inequality
 \end{enumerate}
 
-
-
-This is not actually a metirc space. Here is an example of two audio files that violate the identity of indiscernibles property of a metric space.
-However, this is a pathological examples and in most cases is close enough for us. 
-We show that this is a metric space by running a set of tests of real world audio files
+An easy counterexample to show that $\distFxn$ does not form a metric space are two audio files that are otherwise identical except for switching the amplitudes of the peaks of the first time slice.
+These inputs then violate the ``identity of indiscernibles'' property of a metric space.
+However, this is a pathological examples and in most cases $\distFxn$ is close enough for the purposes of DSP-PBE.
+We leave the problem of finding an aural distance that forms a metric space to future work.
+ 
 
 \subsection{Defining the search space}
 
@@ -55,7 +57,7 @@ Node := & & \\
 & |\ HPF \ [0,20k] \ [0,1] &\text{\color{gray} threshold, app}\\
 & |\ Reverb \ [0,1] \ [0,1] \ [0,1] & \text{\color{gray} room size, mix, app}\\
 & |\ PitchShift\ [-1,1] \ [0,1] & \text{\color{gray} pitch shift amount, app}\\
-& |\ WN \ [0,1] \text{\color{gray} app}& 
+& |\ WN \ [0,1] &\text{\color{gray} app}
 \end{flalign*}
 \caption{The grammar of DSP filters we consider}
 \label{fig:grammar}
