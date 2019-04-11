@@ -44,5 +44,5 @@ We could quickly check many threshold values over the input and output examples.
 \subsection{Structural Synthesis}
 
 During each loop of our synthesis procedure, we attempt to build a new structure based on the results of our previous attempts.
-We compare several different mutations of the current structure \markk{what are these mutations?} and select the mutation that minimizes distance from our output file.
+We compare several different mutations of the current structure \brandon{what are these mutations?} and select the mutation that minimizes distance from our output file.
 We continue this process until we either timeout or have reached a program whose output is close enough to the desired output (that is, the distance between the given output file and the output of the program is below some user-specified threshold).
