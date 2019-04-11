@@ -36,11 +36,11 @@ main = do
 
     oneSecond = 1000000
     runOne fp =
-      runBenchmarkTimed (5 * 60 * oneSecond) results_file $ 
+      runBenchmarkTimed (7 * 60 * oneSecond) results_file $ 
         trumpetConfig {
               outputExample = dir++fp
             , smartStructuralRefinement = True
-            , thetaLogSizeTimeout = 2
+            , thetaLogSizeTimeout = 4
             , filterLogSizeTimeout = 5
             , epsilon = 10 } 
       

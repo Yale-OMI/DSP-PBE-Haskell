@@ -27,7 +27,7 @@ main = do
 
   let
     dir = "Sounds/SynthesisBenchmarks/Recordings/BrianEno/" 
-    input = dir++"eno1.wav"
+    input = dir++"saw.wav"
     trumpetConfig = defaultOptions
                       { inputExample = input }
 
@@ -38,13 +38,13 @@ main = do
 
     oneSecond = 1000000
     runOne fp =
-      runBenchmarkTimed (20 * 60 * oneSecond) results_file $ 
+      runBenchmarkTimed (10 * 60 * oneSecond) results_file $ 
         trumpetConfig {
               outputExample = dir++fp
             , smartStructuralRefinement = True
-            , thetaLogSizeTimeout = 3
+            , thetaLogSizeTimeout = 4
             , filterLogSizeTimeout = 10
-            , epsilon = 10 } 
+            , epsilon = 8 } 
       
 
 --  allMuteAudio <- mapM getFile allMuteSounds'

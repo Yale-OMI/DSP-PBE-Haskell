@@ -88,11 +88,11 @@ takeBestFilter settings outAudio fs = do
 cores :: [DSPNode]
 cores = 
   [ ID 0
-  , HPF 0 0 
-  , LPF 0 0 
-  , PitchShift 0 0 
-  , Ringz 0 0 0 
-  , WhiteNoise 0 
+  , HPF 1 0 
+  , LPF 1 0 
+  , PitchShift 0.1 0.1
+  , Ringz 0.1 0.1 0 
+  , WhiteNoise 0.1
   ]
 
 allCores :: [[DSPNode]]

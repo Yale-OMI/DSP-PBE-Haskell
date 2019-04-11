@@ -22,7 +22,7 @@ getParams = \case
   LPF t a -> [("LPF_thres",t), ("LPF_app",a)]
   PitchShift t a -> [("PitchShift_thres",t), ("PitchShift_app",a)]
   Ringz f d a -> [("Ringz_freq",f), ("Ringz_delay",d), ("Ringz_app",a)]
-  WhiteNoise a -> [("WhiteNoide_app",a)]
+  WhiteNoise a -> [("WhiteNoise_app",a)]
   AmpApp a -> [("Amp_app",a)]
 
 -- Equivelence of ndoes modulo parameters

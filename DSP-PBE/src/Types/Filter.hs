@@ -144,7 +144,8 @@ nodeToVivid = \case
   LPF t a                -> (\bufs -> (ampScale a::Float) ~* lpf (freq_ (freqScale t::Float), in_ bufs))
   PitchShift t a         -> (\bufs -> (ampScale a::Float) ~* freqShift (freq_ (freqScalePitchShift t::Float), in_ bufs)) -- there is also pitchShift in vivid, but it is more complex
   WhiteNoise a           -> (\bufs -> (ampScale a::Float) ~* whiteNoise) --TODO mix bufs into output
-  Ringz f d a            -> (\bufs -> (ampScale a::Float) ~* ringz (freq_ (freqScale f::Float), decaySecs_ (delayScale d::Float), in_ bufs))
+  --Ringz f d a            -> (\bufs -> (ampScale a::Float) ~* ringz (freq_ (freqScale f::Float), decaySecs_ (delayScale d::Float), in_ bufs))
+  Ringz f d a            -> (\bufs -> (ampScale a::Float) ~* freeVerb (mix_ (ampScale f::Float), room_ (ampScale d::Float), in_ bufs))
   AmpApp a               -> (\bufs -> (ampScale a::Float) ~* bufs)
 
 -- | Given a filter structure, extract the theta selctors that we need to do parameter synthesis
