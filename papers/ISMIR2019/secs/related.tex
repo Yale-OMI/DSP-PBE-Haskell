@@ -1,29 +1,28 @@
-
-
 \section{Related}
 
-Previously, the machine learning and semantic modelling approach to program synthesis have been viewed as at odds with one another.
-Depending on the context, one outperforms the other, as evidenced by the tool RobustFill~\cite{devlin2017robustfill}.
-% also see the work of https://arxiv.org/pdf/1611.01855.pdf and https://openreview.net/forum?id=Skp1ESxRZ
-In particular, this work finds that traditional PBE systems are more accurate when \textit{all} examples are correct, while their neural network approach is more accurate when \textit{most} examples are correct.
-RobustFill works by generating a ``latent'' program representation (a neural network), that is then translated into a program.
-we produce readable programs directly. \markk{Is there a benefit to using a synthesis technique that is transparent. Do we need to know how a program was found. Certainly we want to know how the program works (what is the code), but does the search methodology matter. Something doesn't feel right about these NN but I can't honestly see anything wrong if we can generate a program that we can inspect at the end... Does this whole approach make sense then...}
-\markk{Maybe in this particular case we are really looking at program spaces that are partially continuous - rather than having to remap a discrete space to a continuous one, then do learning, then go back to a discrete space, lets use the discrete techniques in for the discrete problem and the continuous techniques for the continuous problem}
+Prior work introduced the problem of DSP-PBE, but was limited to commutative filters~\cite{SantolucitoFARM}.
+This limitation is too restrictive for the tool to be useful in practice, as the set of commutative filters is a essentially a set of non-overlapping bandpass filters.
+These types of filters are already captured by room impulse response measuring techniques.
+In our work, we extend DSP-PBE to noncommutative filter by allowing the exploration of new structural forms for the DSP program - achieving a synthesis technique that is more powerful than current techniques.
 
-
-which puts this work in the space of \textit{explainable AI}.
-
-The work of~\cite{misailovic2011probabilistically} introduces a notion of approximate correctness of program transformation over probabilistic programs.
-Aside from our work focusing on synthesis, we also are working over deterministic programs - our notion of approximate is not with respect to probabilistic outcomes, but closeness in the metric space.
-
-The work of~\cite{Feng2018} presents a program synthesis technique that uses conflict driven clause learning to learn from mistakes of candidate programs.
-In this case, there is still a requirement that at the end of synthesis the specification is fully satisfied.
-
-Programming by Example with noisy data has been explored~\cite{raychev2016learning}, but is a distinct problem.
+Programming by Example with noisy data has been explored in prior~\cite{raychev2016learning}, but captures a distinct domain compared to DSP-PBE.
 In Noisy Programming by Example context, the interpretation of noisy is as anomalous - some examples are outliers and should be disregarded.
 This is an appropriate assumption in the context of, for example, in faulty sensors or excel spreadsheets, where a value may fall completely outside the normal range due to an electrical error or a typo.
-This work could be seen as taking an alternative interpretation of noise - that as small variations from the true value.
-This may be the case in, for example in poor-quality sensors, where a value may vary slightly from the true value.
-Another example might be typos in an excel spreadsheet, but taking as the distance function of our metric space the physical distance of a letter on a keyboard.
-Combining these two approaches would be an exciting new direction.
+DSP-PBE could be seen as taking an alternative interpretation of noise - that as small variations from the true value.
+In DSP-PBE we do not treat the sample pairs from the input and output audio files as hard constraints on the system - rather we are looking for a program that maps these points as closely as possible to each other.
+
+Further work in the PBE has combined machine learning approaches to learning approximate solutions, such as in the tool RobustFill~\cite{devlin2017robustfill}.
+% also see the work of https://arxiv.org/pdf/1611.01855.pdf and https://openreview.net/forum?id=Skp1ESxRZ
+In particular, this work finds that traditional PBE systems are more accurate when \textit{all} examples are correct, while their neural network approach is more accurate when \textit{most} examples are correct.
+Again, in the domain of DSP-PBE, we must handle the case when \textit{none} of the examples are \textit{correct}, but rather all examples are approximately correct.
+RobustFill works by generating a ``latent'' program representation (a neural network), that is then translated into a program.
+On our work, we have leveraged machine learning (stochastic gradient descent), in combination with a greedy search algorithm to handle the discrete aspect of a DSP filter (the structure).
+There may be fruitful opportinties to combine these approach and apply a neural network-guided approach to DSP-PBE.
+
+
+
+
+
+
+
 
