@@ -98,7 +98,7 @@ filterFieldChange f1 f2 = let
    case catMaybes $ concat $ T.flatten diffTree of
    []  -> "No change"
    [x] -> x
-   xs  -> error $ "Multiple fields changed at once"++ show diffTree
+   xs  -> head xs --error $ "Multiple fields changed at once"++ show diffTree --this shouldnt really happen, but for now just give the head of the list
 
 zipTree :: (a -> b -> c) -> T.Tree a -> T.Tree b -> T.Tree c
 zipTree f t1 t2 = Node {

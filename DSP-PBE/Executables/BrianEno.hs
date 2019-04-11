@@ -27,7 +27,7 @@ main = do
 
   let
     dir = "Sounds/SynthesisBenchmarks/Recordings/BrianEno/" 
-    input = dir++"saw.wav"
+    input = dir++"eno1.wav"
     trumpetConfig = defaultOptions
                       { inputExample = input }
 

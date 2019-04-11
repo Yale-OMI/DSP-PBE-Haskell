@@ -8,6 +8,20 @@ Here we attempt to transform whitenoise into various clips from Brian Eno's Musi
 
 The results of running \ourTool on the trumpet mute sounds benchmarks are reported in Table~\ref{table:eval}.
 
+We need to normalize all files as the distance metric is amplitude analysis.
+
+\begin{table}
+\begin{tabular}{|l|l|c|c|c|}
+\hline
+\textbf{Input} & \textbf{Filter} & \textbf{dist(o, $f$(i))} & \textbf{Time (sec)}
+\csvreader{results/farm.csv}{}
+{\\ \hline \csvcoli & \csvcolii & \csvcoliv & \csvcolvi}
+\\ \hline
+\end{tabular}
+\caption{Demonstrating the accuracy of the user provided refinements for the initial filter.}
+\label{table:evalInit}
+\end{table}
+
 \begin{table*}[]
 \begin{tabular}{|l|l|c|c|c|}
 \hline
