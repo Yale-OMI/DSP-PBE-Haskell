@@ -3,7 +3,10 @@
 
 The structural synthesis stage of our algorithm consists of two parts.
 First we guess at an initial filter structure based on a preliminary analysis of the input/output audio examples.
+In the second stage, which occurs during the synthesis loop, we iteratively pick new structures to try during metrical synthesis.
+For this second stage we have implemented a greedy algorithm to pick the best structure out of the possible next choices.
 
+\subsection{Initial Structure Construction}
 In the grammar of our running example, we have two filters, a low-pass filter, $LFP \ [0,20k]\ [0,1]$, and a high-pass filter $HPF\ [0,20k]\ [0,1]$.
 A low-pass filter lets frequencies lower than a given threshold pass through to the output.
 Concertizing the threshold constants of $LPF$ at a value of 1500 Hz, and the application constant at 1, we then get $LPF \ 1500 \ 1$.
@@ -35,3 +38,6 @@ Notice that in these refinement types, we only need to calculate the spectrogram
 As opposed to the current technique of generating filters, applying them, and the calculating the aural distance, this approach is relatively static.
 We could quickly check many threshold values over the input and output examples.
 
+\subsection{Structural Synthesis}
+
+During each loop of our synthesis procedure, we attempt to build a new structure based on the results of our previous attempts.

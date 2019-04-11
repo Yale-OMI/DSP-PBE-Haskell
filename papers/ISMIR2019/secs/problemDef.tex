@@ -6,9 +6,16 @@ In this case, the closeness of two audio files is a subjective measure - we do n
 We use as the distance function, $\distFxn$, between two audio files, an audio fingerprinting technique~\cite{SantolucitoFARM} that approximates a measure of how different two audio clips sound to the human ear.
 This metric is focused on measuring the amplitudes of frequency peaks obtains from a sliding window FFT.
 
-\markk{add metric}
+%
+\begin{align*}
+\sum_{t=0}^{ts}\ \sum_{i=0}^{p} euclid\Big(\ &peak(i,toC(x)@t), \\ &peak(i,toC(y)@t)\ \Big)
+\end{align*}
+%
 
-p
+While measuring frequency peaks require temporally aligned audio, this can be achieved with advances in dynamic time warping techniques for audio~\cite{carabias2015audio}.
+To contain the scope of the DSP-PBE problem, we assume that the user has provided audio that is temporally aligned.
+As a technical note, this also requires that the sample rates of the audio match, which again we assume the user handles for simplicity.
+
 A \textit{metric space}~\cite{textbook} is a set with a structure that allows us to measure this sense of approximate.
 A metric space is defined as a pair $(M,d)$, where S is a set and $d:M \times M \to \reals$ is a distance metric between all elements in the set. 
 To form a metric space, the metric $d$ must obey the properties:
@@ -27,56 +34,31 @@ We show that this is a metric space by running a set of tests of real world audi
 
 \subsection{Defining the search space}
 
-In order to formalize the search space of DSP-PBE, we define a grammar of filters.
-This grammar captures all allowable DSP programs that our synthesis technique will be able to find.
+In order to formalize the search space of DSP-PBE, we define a grammar of filters, as shown in Fig.~\ref{fig:grammar}.
+This grammar defines the tree-like structure of all allowable DSP programs that our synthesis technique is able to find.
+The grammar states that we may construct a DSP filter program, $DSP$, by composing programs in one of two ways.
+We allow parallel composition with the $\arrComp$ operator, which indicates the two component programs share input, and their output is summed in the time domain.
+We also allow sequential composition with the $\parallelCompose$ operator, which indicates that the first component program pipes its output audio to the next component program.
+We additionally allow $Nodes$, which is the set of primitive filters avaible to synthesis.
+This set can be expanded as needed by the user depending on the use case.
+We limit the set of $Nodes$ here to a core set illustrating both commutative ($LFP, HPF, WN$) and noncommutative ($Reverb, PitchShift$) operators.
+The app level for each node indicates amplitude scaling of the output.
 
 \begin{figure}
 \begin{flalign*}
 DSP := & \\
-& |\ P \arrComp P\ \qquad & \text{\color{gray} sequential composition} & \\
-& |\ P \parallelCompose P\ & \text{\color{gray} parallel composition} &\\
-& |\ P & \\
-P := & & \\
-& |\ LPF \ [0,20k] \ [0,1] &\\
-& |\ HPF \ [0,20k] \ [0,1] &\\
-& |\ Ringz \ [0,20k] \ [0,1] &\\
-& |\ PitchShift\ [0,20k] \ [0,1] &\\
-& |\ WN \ [0,1] & 
+& |\ DSP \arrComp DSP\ \qquad & \text{\color{gray} sequential composition} & \\
+& |\ DSP \parallelCompose DSP\ & \text{\color{gray} parallel composition} &\\
+& |\ Node & \\
+Node := & & \\
+& |\ LPF \ [0,20k] \ [0,1] &\text{\color{gray} threshold, app}\\
+& |\ HPF \ [0,20k] \ [0,1] &\text{\color{gray} threshold, app}\\
+& |\ Reverb \ [0,1] \ [0,1] \ [0,1] & \text{\color{gray} room size, mix, app}\\
+& |\ PitchShift\ [-1,1] \ [0,1] & \text{\color{gray} pitch shift amount, app}\\
+& |\ WN \ [0,1] \text{\color{gray} app}& 
 \end{flalign*}
 \caption{The grammar of DSP filters we consider}
+\label{fig:grammar}
 \end{figure}
 
 
-For a program $p \in \languageOf{G}$ generated from this grammar, we must fix constants for each parameterized node of the AST.
-In this case, we must then choose $\constants :: \reals^{5}$ to generate an executable $p:\exampleDomain \to \exampleDomain$. 
-
-
-\subsection{APBE as Optimization}
-Note that this is distinct from a PBE setting with noisy examples - we cannot throw away examples that are anomalous and learn over the remaining examples~\cite{raychev2016learning}.
-In \approximatePBE we want to find a program that fits as closely as possible to \textit{all} provided examples.
-We additionally distinguish this problem from a general supervised learning problem, since in \approximatePBE, we have an additional constraint that the generated model must be a readable program.
-We then formally state \approximatePBE as the following optimization problem.
-
-\noindent\textbf{Given:}
-\begin{itemize}[topsep=0pt]
-  \item A domain of input-output examples $\exampleDomain$, and a distance function $d:\exampleDomain \to \exampleDomain \to \reals$ such that $(\exampleDomain,\distFxn)$ is a metric space.
-  \item A user specified threshold $\epsilon \in \reals$ for minimal distance with respect to the metric space.
-  \item A set of input,output examples $\{(i_0,o_0),...,(i_n,o_n)\}$ where $\forall 0 \leq j \leq n.\ i_j,o_j \in \exampleDomain$.
-  \item A grammar $G$ of programs over the input-output example domain. 
-        We notate the space of programs that can be generated from a grammar $G$ as $\languageOf{G}$.
-        The grammar $G$ generates programs structures, that must be completed with constants $\constants$ - $\forall p \in \languageOf{G}.\ f: \constants \to \exampleDomain \to \exampleDomain$. 
-        The program structure can be made into an function over the example space by fixing the constants, $\constants$, so that partial application of the program yields, $p(\constants): \exampleDomain \to \exampleDomain$. 
-        The type of $\constants$ should be over a continuous space, for example $\reals^n$. 
-  \item A cost function $\costFxn : \constants \to \languageOf{G} \to (\exampleDomain,\exampleDomain)^n \to \reals$ that calculates how well a particular $p(\constants) \in \languageOf{G}$ maps the $n$ input examples to the corresponding $n$ output examples. This is a user-defined error aggregation function of distance function, $\distFxn$, for example in $\costFxn(\constants,p,(i,o)) = \sum_{j=0}^{n} (\distFxn(o_j,p(\constants,i_j)))$.
-\end{itemize}
-\textbf{Minimize:}
-
-Find a program $p \in \languageOf{G}$ and constants $\constants$ to minimize $\costFxn(\constants,p,(i,o))$. 
-With respect to terminating synthesis, find $p$ and $k$ such that $\costFxn(\constants,p,(i,o)) \leq \epsilon$.
-\vspace{\baselineskip}
-
-There are a number of existing tools and techniques to solve general minimization/optimization problems over metric spaces~\cite{optmizationTextbook}.
-However, one of the core components of such optimizations is the need for repeated computation of the cost function $\costFxn$ with candidate solutions, $p \in \languageOf{G}$.
-When $c$ is particularly slow to compute, for instance when $\distFxn$ uses blackbox I/O, exploring the complete space of $\languageOf{G}$ is prohibitively expensive.
-To overcome this challenge, we can proactively prune the search space before applying optimization techniques.
-Since the optimization problem of \approximatePBE is over a space of programs, we can leverage techniques from formal methods to first refine the search space by generating a $G'$ such that $\languageOf{G'} \subset \languageOf{G}$.
