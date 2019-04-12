@@ -1,7 +1,7 @@
 
 \section{Problem Statement}
 
-One of the core challenges in applying programming by example to DSP is to quantify how close our synthesized solution is to the correct solution.
+One of the core challenges in applying Programming by Example to DSP (DSP-PBE) is to quantify how close our synthesized solution is to the correct solution.
 However, the closeness of two audio files is a subjective measure - we do not necessarily know what features of the input/output audio pair the user is trying to emulate.
 We use an audio distance measure from~\cite{SantolucitoFARM} to calculate the distance between two audio files.
 This metric approximates a measure of how different two audio clips sound to the human ear in a similar style to audio fingerprinting~\cite{wang2003industrial,fingerprinting}.
@@ -25,7 +25,7 @@ This property is called the \textit{identity of indiscernibles}~\cite{frechet190
 Unfortunately however, this property does not hold for the \distFxn function that we use.
 An easy counterexample to show that $\distFxn$ violates the identity of indiscernibles property is to take two audio files that have identical peaks, but differ in amplitudes at frequencies outside the peaks.
 These inputs then violate the property as two audio files have distance zero as calculated by $\distFxn$, but are not identical audio files.
-This is something of a pathological examples, as in most cases $\distFxn$ is close enough for the purposes of DSP-PBE.
+This is something of a pathological example, as in most cases $\distFxn$ is close enough for the purposes of DSP-PBE.
 We simply remark that finding an aural distance that obeys the identity of indiscernibles property is a valuable direction for future work 
 
 \subsection{Defining the search space}
