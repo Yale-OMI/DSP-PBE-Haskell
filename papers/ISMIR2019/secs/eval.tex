@@ -5,21 +5,24 @@ The first set examines the effectiveness of the initial structure construction a
 The second benchmark set captures the use case of \ourTool where a user wants to model real world sounds.
 This set consists of examples where the input is a trumpet without a mute, and the output examples are the same trumpet with various mutes.
 
-
-\begin{table}
+\setlength{\tabcolsep}{0.9em}
+\def\arraystretch{1.1}
+\begin{table*}[]
 \begin{tabular}{|l|l|c|c|c|}
 \hline
-\textbf{Input} & \textbf{Filter} & \textbf{dist(o, $f$(i))} & \textbf{Time (sec)}
+\textbf{Input} & \textbf{Filter} & \textbf{Synthesized Filter} & \textbf{dist(o, $f$(i))} & \textbf{Time (sec)}
 \csvreader{results/farm.csv}{}
-{\\ \hline \csvcoli & \csvcolii & \csvcoliv & \csvcolvi}
+{\\ \hline \csvcoli & \csvcolii & \csvcoliii & \csvcoliv & \csvcolvi}
 \\ \hline
 \end{tabular}
-\caption{The process for initial structure construction speeds up synthesis of simple filters.}
+\caption{The process for initial structure construction helps guide the synthesis, especially of simple filters.}
 \label{table:evalInit}
-\end{table}
+\end{table*}
 
-The results of running \ourTool  on the trumpet mute sounds benchmarks are reported in Table~\ref{table:eval}.
-This table was generates with the maximum structural attempts set to 6 and the maximum metrical attempts per structure set to 5.
+The results of running \ourTool on the set of known filter benchmarks sounds are reported in Table~\ref{table:evalInit}.
+Here we know the ``ground truth'' filter that was used to produce the output sound, and our synthesis is trying to reconstruct this filter from the examples.
+The only filter nodes used here are LPF and HPF to demonstrate the effectiveness of the initial structural construction.
+
 
 \begin{table*}[]
 \begin{tabular}{|l|l|c|c|c|}
@@ -32,6 +35,9 @@ This table was generates with the maximum structural attempts set to 6 and the m
 \caption{Evaluation on a set of benchmarks.}
 \label{table:eval}
 \end{table*}
+
+The results of running \ourTool  on the trumpet mute sounds benchmarks are reported in Table~\ref{table:eval}.
+This table was generated with the maximum structural attempts set to 6 and the maximum metrical attempts per structure set to 5.
 
 \subsection{SuperCollider Program Generation}
 

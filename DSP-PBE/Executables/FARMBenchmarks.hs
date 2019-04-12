@@ -12,7 +12,7 @@ results_file = "farm_benchmark_results.txt"
 main = do
   
   writeHeader results_file
-
+{-
   runBenchmark results_file $ 
     defaultOptions
         { inputExample = "Sounds/SynthesisBenchmarks/Constructed/cartoon010.wav" 
@@ -44,7 +44,7 @@ main = do
         , epsilon = 10 
         , filterLogSizeTimeout = 1
         }
-
+-}
   runBenchmark results_file $ 
     defaultOptions
         { inputExample = "Sounds/SynthesisBenchmarks/Constructed/Holst.wav" 

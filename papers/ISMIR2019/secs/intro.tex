@@ -8,7 +8,11 @@ To assist beginning DSP programmers we turn to the Programming by Example paradi
 
 Programming by Example (PBE) is a program synthesis technique that allows users to provide input and output examples to system that then automatically generates code that models the illustrated functionality.
 This technique has found particular success in spreadsheets with the FlashFill tool.
-In a similar vein, we hope to make DSP programming more accessible to a larger audience by using Digital Signal Processing Programming by Example.
+In a similar vein, we hope to make DSP programming more accessible to a larger audience by using Digital Signal Processing Programming by Example (DSP-PBE).
+
+The goal of DSP-PBE is to take an input and output audio example from the user, and synthesize the DSP program, $F$, that minimizes the distance between the transformed input, $F(i)$, and the output $o$.
+In this way, a user can automatically generate the program code that captures the audio transformation demonstrated by the provided examples.
+A key part of this technique is that the user receives readable DSP program code that can be further tuned or edited as the user sees fit, opening the door for learning opportunities and creative invention.
 
 
 \subsection{Motivating Example}

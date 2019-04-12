@@ -28,9 +28,12 @@ To form a metric space, the metric $d$ must obey the properties:
   \item $d(x,z) \le d(x,y) + d(y, z)$ - triangle inequality
 \end{enumerate}
 
-An easy counterexample to show that $\distFxn$ does not form a metric space are two audio files that are otherwise identical except for switching the amplitudes of the peaks of the first time slice.
-These inputs then violate the ``identity of indiscernibles'' property of a metric space.
-However, this is a pathological examples and in most cases $\distFxn$ is close enough for the purposes of DSP-PBE.
+An easy counterexample to show that $\distFxn$ does not form a metric space are two audio files that have identical peaks, but differ in amplitudes at frequencies outside the peaks.
+These inputs then violate the ``identity of indiscernibles'' property of a metric space as two audio files that have distance zero are not identical.
+This is something of a pathological examples, as in most cases $\distFxn$ is close enough for the purposes of DSP-PBE.
+
+In DSP-PBE the goal is to find a DSP filter $F$ to minimize the distance between $F$ applied to an input audio file, $i$, and an output audio file $o$.
+If \distFxn is a metric space, then by the identity of indiscernibles, if $\distFxn(F(i),o) = 0$, we have successfully mapped the input to the output, i.e. $F(i) = o$.
 We leave the problem of finding an aural distance that forms a metric space to future work.
  
 
@@ -41,7 +44,7 @@ This grammar defines the tree-like structure of all allowable DSP programs that 
 The grammar states that we may construct a DSP filter program, $DSP$, by composing programs in one of two ways.
 We allow sequential composition with the $\arrComp$ operator, which indicates the two component programs share input, and their output is summed in the time domain.
 We also allow parallel composition with the $\parallelCompose$ operator, which indicates that the first component program pipes its output audio to the next component program.
-We additionally allow $Nodes$, which is the set of primitive filters available to synthesis.
+The content at base level of a filter is a $Node$, which is selected from the set of primitive filters available to synthesis.
 This set can be expanded as needed by the user depending on the use case.
 We limit the set of $Nodes$ here to a core set illustrating both commutative ($LFP, HPF, WN$) and noncommutative ($Reverb, PitchShift$) operators.
 The app level for each node indicates amplitude scaling of the output.
