@@ -1,44 +1,57 @@
+
 # Synthesis Synthesis
 
-The goal of this project is to build filter by providing example sound files
+The goal of this project is to build a filter by providing example sound files
 
-to read more on this project, see paper on DSP-PBE
-
-## Milestones
-
-- [x] Compare aural 'distance' of two sound files
-- [x] Use stochastic gradient descent to find a DSP filter to fit the examples
-- [x] generate Vivid program from DSP filter
-- [ ] output generated program in runable form
-- [ ] Use refinement types to find better initial guess for SGD
-- [ ] build online interface
 
 ## Usage
 
-To install 
+To install (on linux), run the following commands (taken from the [travis build file](.travis.yml)). This will take a good while
 
-   sudo pip install scipy numpy matplotlib
-   sudo apt-get install python-tk supercollider
-   scide #supercollider needs to be opened and closed once in order to initialize some folders that are used by the vivid api
-   cabal sandbox init
-   cabal new-install
+```
+sudo add-apt-repository -y ppa:hvr/ghc
+sudo apt-get update
+sudo apt-get install cabal-install-head ghc-8.4.3
+export PATH=/opt/ghc/head/bin:/opt/cabal/8.4.3/bin:$PATH
+sudo apt-get install python-tk supercollider
+sudo pip install scipy numpy matplotlib
+xvfb-run --server-args="-screen 0, 1280x800x24" sclang & sleep 5 ; kill %1
+cd DSP-PBE
+cabal --version
+ghc --version
+cabal update
+cabal sandbox init
+cabal install
+```
 
-To test
+To run the test suite
 
-  cabal new-test 
-
-To test a benchmark set
-
-  cabal new-run farm_benchmarks -- --color=always
-  cabal new-run pldi_benchmarks -- --color=always
-  cabal new-run trumpet_benchmark -- --color=always
-
-Running a benchmark will drop the audio files that are produced by the synthesized code into the 'final' directory
+```
+cabal new-test
+```
 
 To run the executable
 
-  .cabal-sandbox/bin/musicSynth input-file output-file target-file
-  
+```
+.cabal-sandbox/bin/musicSynth input-file output-file target-file
+```
+ 
+or, run one of the benchmark executables
+
+```
+cabal new-run farm_benchmarks -- --color-always
+cabal new-run pldi_benchmarks -- --color=always
+cabal new-run trumpet_benchmark -- --color=always
+```
+
+Running a benchmark will drop the audio files that are produced by the synthesized code into the 'final' directory
+
 ## Inputs
 
-must be stereo tracks at 44.1k
+for help on the inputs to the executable, run
+
+```
+.cabal-sandbox/bin/musicSynth --help
+```
+
+audio inputs must be stereo tracks at 44.1k

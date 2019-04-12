@@ -38,12 +38,22 @@ To run the executable
 .cabal-sandbox/bin/musicSynth input-file output-file target-file
 ```
  
-or
+or, run one of the benchmark executables
 
 ```
 cabal new-run farm_benchmarks -- --color-always
+cabal new-run pldi_benchmarks -- --color=always
+cabal new-run trumpet_benchmark -- --color=always
 ```
+
+Running a benchmark will drop the audio files that are produced by the synthesized code into the 'final' directory
 
 ## Inputs
 
-must be stereo tracks at 44.1k
+for help on the inputs to the executable, run
+
+```
+.cabal-sandbox/bin/musicSynth --help
+```
+
+audio inputs must be stereo tracks at 44.1k
