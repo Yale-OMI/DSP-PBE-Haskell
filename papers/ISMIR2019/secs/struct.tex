@@ -14,35 +14,28 @@ In DSP-PBE, we do not want to allow infinitely many bandpass filters, as the syn
 Thus, we mimic the room impulse response measurement technique using only the available \dspnode in our grammar.
 
 In the grammar listed in Fig.~\ref{fig:grammar}, we have two filters which are similar to the bandpass filters used in measuring room impulse response - a low-pass filter, $LFP \ [0,20k]\ [0,1]$, and a high-pass filter $HPF\ [0,20k]\ [0,1]$.
-In order to quickly discover approximate values for each \dspnode, we run an analysis of the frequencies present in the input example that do not appear in the output example.
-
-As an example, consider 
-Concertizing the threshold constants of $LPF$ at a value of 1500 Hz, and the application constant at 1, we then get $LPF \ 1500 \ 1$.
-
-Applying $LPF \ 1500 \ 1$ to an audio file with a flat frequency response look as follows:
-
-We then build a relation from this observation, using a similar syntax to the refinement type system for Haskell, LiquidHaskell~\cite{vazou2014refinement}, 
-Based on the above observation, we can write a refinement type on $LPF$ to describe that says the amplitude of the frequencies greater than the threshold frequency have decreased in the output Audio.
+In order to quickly discover approximate values for each \dspnode, we run an analysis of the frequencies present in the input example that have decreased in amplitude in the output example.
+To analyze the inputs and 
+We then build a relation from this observation.
+To formalize this approach, we write a formula that describes that how to find an initial threshold value for a lowpass filter in our synthesized code.
+We use $t$ to represents the threshold of the lowpass filter, \texttt{spectrogram} to represent a function that runs a FFT on a sound sample and returns a list of peaks, $f_i$ to represent a frequency, and \texttt{amp()} to represent a function to retrieve the amplitude of the frequency. 
 %
 \begin{align*}
-  &\texttt{lpf :: t:\reals} \to  \texttt{xs:Audio} \to\ \texttt{ys:Audio}\ \mid \\
-  &\forall f_1 \in  \texttt{spectrogram(xs)}.\ \forall f_2 \in \texttt{spectrogram(ys)}. \\
-  &(f_1 > \texttt{t}  \land  f_2 > \texttt{t}  \land f_1 == f_2) \implies \texttt{amp}(f_1) > \texttt{amp}(f_2)
+&\text{Given input audio }i\text{ and }o\text{, find }t\text{ such that} \\
+&\forall f_1 \in  \texttt{spectrogram(i)}.\ \forall f_2 \in \texttt{spectrogram(o)}. \\
+&(f_1 > t \land  f_2 > t \land f_1 == f_2) \implies \texttt{amp}(f_1) > \texttt{amp}(f_2)
 \end{align*}
 
-Where \texttt{t} represents the level at which the lowpass filter is applied, \texttt{spectrogram} represents the spectrogram of the sound sample, $f_i$ represents a frequency, and \texttt{amp()} represents the amplitude of the frequency. 
 
-Similarly, we can build a relation to describe a high-pass filter as a refinement type that says the amplitude of the frequencies less than the threshold frequency have decreased in the output Audio.
+Similarly, we can build a formula to describe how to calculate an initial value for a high-pass.
+Here we look for the lowest frequency where amplitude has decreased in the output audio - this is then a starting point for the threshold of a high pass filter.
 %
 \begin{align*}
-  &\texttt{hpf :: t:\reals} \to\ \texttt{xs:Audio} \to\ \texttt{ys:Audio}\ \mid \\
-  &(\forall f_1 \in \texttt{spectrogram(xs)}. \forall f_2 \in \texttt{spectrogram(ys)}). \\
-  &(f_1 < \texttt{t} \land f_2 < \texttt{t} \land f_1 == f_2) \implies \texttt{amp(}f_1\texttt{)} > \texttt{amp(} f_2 \texttt{)} 
+&\text{Given input audio }i\text{ and }o\text{, find }t\text{ such that} \\
+&\forall f_1 \in \texttt{spectrogram(i)}.\ \forall f_2 \in \texttt{spectrogram(o)}. \\
+&(f_1 < t \land f_2 < t \land f_1 == f_2) \implies \texttt{amp(}f_1\texttt{)} > \texttt{amp(} f_2 \texttt{)} 
 \end{align*}
 
-Notice that in these refinement types, we only need to calculate the spectrogram for the input and output statically.
-As opposed to the current technique of generating filters, applying them, and the calculating the aural distance, this approach is relatively static.
-We could quickly check many threshold values over the input and output examples.
 
 \subsection{Structural Synthesis}
 

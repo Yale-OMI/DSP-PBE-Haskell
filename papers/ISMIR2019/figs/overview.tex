@@ -1,5 +1,5 @@
 
-\begin{figure}[t]
+\begin{figure}[h]
   \centering
   \tikzstyle{b} = [rectangle, draw, fill=none, text centered, sharp corners, minimum height=3em, text width=2cm, node distance=6em]
   \tikzstyle{data} = [rectangle, draw, fill=blue!5, text centered, sharp corners, minimum height=3em, text width=2cm, node distance=5em]
@@ -33,7 +33,7 @@
     \path [l] (thres) -- (synth);
 
 \end{tikzpicture}
-  \caption{Synthesis first prunes the search space with user provided refinements, then uses a feedback loop to generate strucutal constraints on $G$, and metrical weights on $\constants$, to futher guide the search process.}
+  \caption{Synthesis searches for an initial structure, then uses a feedback loop to alternate between metrical synthesis and generating new structures for the filter.}
   \label{fig:overview}
 \end{figure}
 
