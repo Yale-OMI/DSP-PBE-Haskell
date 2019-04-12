@@ -7,7 +7,8 @@ This set consists of examples where the input is a trumpet without a mute, and t
 
 \setlength{\tabcolsep}{0.9em}
 \def\arraystretch{1.1}
-\begin{table*}[]
+\begin{table*}[t!]
+\centering
 \begin{tabular}{|l|l|c|c|c|}
 \hline
 \textbf{Input} & \textbf{Filter} & \textbf{Synthesized Filter} & \textbf{dist(o, $f$(i))} & \textbf{Time (sec)}
@@ -23,8 +24,11 @@ The results of running \ourTool on the set of known filter benchmarks sounds are
 Here we know the ``ground truth'' filter that was used to produce the output sound, and our synthesis is trying to reconstruct this filter from the examples.
 The only filter nodes used here are LPF and HPF to demonstrate the effectiveness of the initial structural construction.
 
+The results of running \ourTool  on the trumpet mute sounds benchmarks are reported in Table~\ref{table:eval}.
+This table was generated with the maximum structural attempts set to 6 and the maximum metrical attempts per structure set to 5.
 
-\begin{table*}[]
+\begin{table*}[t!]
+\centering
 \begin{tabular}{|l|l|c|c|c|}
 \hline
 \textbf{Input} & \textbf{Output} & \textbf{dist(o, $f$(i))} & \textbf{Structural Attempts} & \textbf{Time (sec)}
@@ -36,8 +40,6 @@ The only filter nodes used here are LPF and HPF to demonstrate the effectiveness
 \label{table:eval}
 \end{table*}
 
-The results of running \ourTool  on the trumpet mute sounds benchmarks are reported in Table~\ref{table:eval}.
-This table was generated with the maximum structural attempts set to 6 and the maximum metrical attempts per structure set to 5.
 
 \begin{table}
 \begin{tabular}{|c|c|c|c|}

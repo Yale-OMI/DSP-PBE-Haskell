@@ -4,11 +4,12 @@
 One of the core challenges in applying programming by example for DSP is to quantify how close our synthesized solution is to the correct solution.
 In this case, the closeness of two audio files is a subjective measure - we do not necessarily know what features of the input/output audio pair the user is trying to emulate.
 We use as the distance function, $\distFxn$, between two audio files, an audio fingerprinting technique~\cite{SantolucitoFARM} that approximates a measure of how different two audio clips sound to the human ear in a similar style to audio fingerprinting~\cite{wang2003industrial,fingerprinting}.
-This metric takes a sliding window FFT over time points $ts$, plot the constellation of amplitude and frequency peaks $p$, then takes the euclidean distance between the points of the constellation.
+This metric takes a sliding window FFT of fixed size, denoted $FFT(x,t)$ for the FFT of audio $x$ at time point $t$, over all time points $ts$.
+We then plot the constellation of amplitude and frequency peaks $p$, and take the euclidean distance between the points of the constellation.
 
 %
 \begin{align*}
-\distFxn(x,y) =  \sum_{t=0}^{ts}\ \sum_{i=0}^{p} euclid\Big(\ &peak(i,C(x)@t), \\ &peak(i,C(y)@t)\ \Big)
+\distFxn(x,y) =  \sum_{t=0}^{ts}\ \sum_{i=0}^{p} euclid\Big(\ &peak(i,FFT(x,t)), \\ &peak(i,FFT(y,t))\ \Big)
 \end{align*}
 %
 
@@ -44,22 +45,22 @@ This grammar defines the tree-like structure of all allowable DSP programs that 
 The grammar states that we may construct a DSP filter program, $DSP$, by composing programs in one of two ways.
 We allow sequential composition with the $\arrComp$ operator, which indicates the two component programs share input, and their output is summed in the time domain.
 We also allow parallel composition with the $\parallelCompose$ operator, which indicates that the first component program pipes its output audio to the next component program.
-The content at base level of a filter is a $Node$, which is selected from the set of primitive filters available to synthesis.
+The content at base level of a filter is a \dspnode, which is selected from the set of primitive filters available to synthesis.
 This set can be expanded as needed by the user depending on the use case.
-We limit the set of $Nodes$ here to a core set illustrating both commutative ($LFP, HPF, WN$) and noncommutative ($Reverb, PitchShift$) operators.
+We limit the set of \dspnode here to a core set illustrating both commutative ($LFP, HPF, WN$) and noncommutative ($Reverb, PitchShift$) operators.
 The app level for each node indicates amplitude scaling of the output.
 
 \begin{figure}
 \begin{flalign*}
-DSP := & \\
-& |\ DSP \arrComp DSP\ \qquad & \text{\color{gray} sequential composition} & \\
-& |\ DSP \parallelCompose DSP\ & \text{\color{gray} parallel composition} &\\
-& |\ Node & \\
-Node := & & \\
+DSP & := \\
+& |\ DSP \arrComp DSP\ \qquad & \text{\color{gray} sequential composition}  \\
+& |\ DSP \parallelCompose DSP\ & \text{\color{gray} parallel composition} \\
+& |\ \dspnode& \\
+DSP&Node :=  & \\
 & |\ LPF \ [0,20k] \ [0,1] &\text{\color{gray} threshold, app}\\
 & |\ HPF \ [0,20k] \ [0,1] &\text{\color{gray} threshold, app}\\
 & |\ Reverb \ [0,1] \ [0,1] \ [0,1] & \text{\color{gray} room size, mix, app}\\
-& |\ PitchShift\ [-1,1] \ [0,1] & \text{\color{gray} pitch shift amount, app}\\
+& |\ PitchShift\ [-1,1] \ [0,1] & \text{\color{gray} shift amount, app}\\
 & |\ WhiteNoise \ [0,1] &\text{\color{gray} app}
 \end{flalign*}
 \caption{The grammar of DSP filters we consider}

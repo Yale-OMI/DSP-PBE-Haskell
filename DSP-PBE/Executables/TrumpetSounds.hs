@@ -51,7 +51,8 @@ main = do
 --  mapM (\a -> auralDistance (head as) a >>= (\x -> print ((fst a)++"    "++show x)) ) as
 
 
-  mapM_ runOne  allMuteSounds
+--  mapM_ runOne  allMuteSounds
+  runOne "mute_01_hat.wav"
 
 
 

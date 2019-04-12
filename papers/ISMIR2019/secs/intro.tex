@@ -17,33 +17,42 @@ A key part of this technique is that the user receives readable DSP program code
 
 \subsection{Motivating Example}
 
-\markk{I think we should switch this - this is more motivating for epople that don't know what DSP code looks like}
 
 \begin{figure}
 \begin{lstlisting}
-b = Buffer.read(s, 
-  Platform.resourceDir +/+ "x.wav");
+( 
+SynthDef(\dsp_pbe, {|out=0|
 
-SynthDef(\myLPF, {| out = 0, buf |
-  Out.ar(out,
-    LPF.ar(
-      PlayBuf.ar(1, 
-                 buf, 
-                 BufRateScale.kr(buf)),
-      2000)
-  )
-}).play(s, [\buf, b]);
+   var main_in, id7, out6, lpf5, hpf4, psh1;
+   main_in = PlayBuf.ar(2, ~buf);
+   psh1 = FreqShift.ar(pitchRatio: -399.999, 
+                       mul: 0.55, 
+                       in: In.ar());
+   hpf4 = HPF.ar(freq: 10100.0, 
+                 mul: 1.562e-10, 
+                 in: psh1);
+   lpf5 = LPF.ar(freq: 3860.002, 
+                 mul: 0.85, 
+                 in: psh1);
+   out6 = Mix.ar(2, [hpf4, lpf5]);
+   id7 = 0.7 * out6;
+   Out.ar(out, id7);
+
+}).add;
+)
 \end{lstlisting}
-\caption{A program in SuperCollider that applies a low-pass filter to an audio buffer}
+\caption{The SuperCollider program synthesized by \ourTool to simulate the effect of a trumpet hat mute .}
 \label{fig:sc_code}
 \end{figure}
 
-Fig.~\ref{fig:sc_code} presents a simple program in SuperCollider.
-As difficult as the syntax is in SuperCollider, that is not the most difficult part for beginners.
-It is far harder to accomplish the conceptual goal, which is to discover the correct combination of DSP filters to reproduce an audio effect on a new sample.
+We demonstrate the application of \ourTool by showing how the tool is used to build a SuperCollider program that mimics the effect of a trumpet mute.
+A user may want to construct a program in order to apply the effect of a trumpet mute to another sound.
+To start, a user would provide an audio input example file of the trumpet without a mute (``00 none'' in Table~\ref{table:eval}), and an audio output example file (``01 hat'' in Table~\ref{table:eval}) of the trumpet playing the same note with the mute.
+The user then invokes \ourTool on these two files, and the tool generates the SuperCollider program shown in Fig.~\ref{fig:sc_code}.
+With this code, the user can then use the program directly in a larger SuperCollider project.
+In addition, the user may wish to edit the code themselves - for example changing the mul argument to the HPF to a larger value.
 
-
-This paper makes the following contributions:
+In summary, this paper makes the following contributions.
 
 \begin{enumerate}
 \item We propose framework for the synthesis of DSP programs that utilize noncommutative filter types 

@@ -1,8 +1,9 @@
 \section{Overview}
 
-The core of our synthesis algorithm operates on a two layer feedback loop that incrementally refines both the possible structure and the constants of the function.
-After each synthesis attempt that fails to produce a solution below the given minimum threshold $\epsilon$, we extra new information about possible future solutions.
-The algorithm is illustrated in Fig.~\ref{fig:overview}.
+The core of our synthesis algorithm operates on a two layer feedback loop that incrementally refines both the possible structure and the constants of the function, as illustrated in Fig.~\ref{fig:overview}.
+The algorithm terminates when, for input $i$ and output $o$, the synthesized function maps the input such that $\distFxn(\synthedFilter(i),o)$ is below a user-provided given minimum threshold $\epsilon$.
+When metrical synthesis fails to produce a solution that is below the $\epsilon$ threshold, we restart synthesis by searching for a new structure.
+After generating a new structure, we apply the metrical values from the previous metrical synthesis attempt to the new structure, and begin metrical synthesis again.
 
 \input{figs/overview}
 

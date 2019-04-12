@@ -101,7 +101,7 @@ getSCInfoNode = \case
                                   ("decaytime", show $ delayScale d), 
                                   ("mul", show $ ampScale a)
                                 ])
-    PitchShift t a          -> ("PitchShift.ar", [("pitchRatio", show $ freqScalePitchShift t), ("mul", show $ ampScale a)])
+    PitchShift t a          -> ("FreqShift.ar", [("pitchRatio", show $ freqScalePitchShift t), ("mul", show $ ampScale a)])
     WhiteNoise x            -> ("WhiteNoise.ar", [("mul", show $ ampScale x)]) 
 
 getArgString :: [(String, String)] -> String
