@@ -1,3 +1,8 @@
 \section{Conclusions}
 
-...
+With \ourTool, we generate SuperCollider code from input and output example files, assisting novice DSP programmers in creating audio effects that are unfamiliar to them.
+We produce code that users can read, inspect, and modify, instead of a black-box program.
+We improve on previous solutions by supporting non-commutative DSP filters with a new structural synthesis algorithm.
+Future work may include composing filters in a directed graph structure, which would better enable time-varying parameters, and defining a true metric space for distance between audio files.
+Other possible improvements could include informing the program of which filters commute, increasing performance where two different structures have the same effect on audio processing, and automatic removal or replacement of filters whose effect is non-zero but trivial (e.g., $PitchShift$ with a small $app$).
+Future work may also include a user study to determine if \ourTool proves beneficial to novice DSP programmers.

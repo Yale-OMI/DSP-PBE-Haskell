@@ -33,6 +33,19 @@ This table was generates with the maximum structural attempts set to 6 and the m
 \label{table:eval}
 \end{table*}
 
+\begin{table*}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Metrical Limit} & \textbf{Structural Limit} & \textbf{Score} & \textbf{Time}
+\csvreader{results/timeout.csv}{}
+{\\ \hline \csvcoliii & \csvcoliv & \csvcolvi & \csvcolviii}
+\\ \hline
+\end{tabular}
+	\caption{\brandon{computing new results... this may end up not being interesting}}
+\label{table:timeout}
+\end{table*}
+
+
 \subsection{SuperCollider Program Generation}
 
 The generated model is represented by a data structure as described in the grammar in Fig.~\ref{fig:grammar}. 
