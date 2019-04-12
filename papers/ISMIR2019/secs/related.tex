@@ -10,7 +10,6 @@ One way to look at the problem of DSP-PBE is a specialized type of feature extra
 There has been significant work in the domain of feature extraction for audio, from low-level~\cite{muller2011chroma}, mid-level~\cite{AljanakiS18}, and high-level~\cite{PandaMP18, mathieu2010yaafe, lidy2005evaluation} features.
 It may be possible to correlate these features to particular filter values and structures in order to leverage existing feature extraction work for the purposes of DSP-PBE.
 
-
 Programming by Example with noisy data has been explored in prior~\cite{raychev2016learning}, but captures a distinct domain compared to DSP-PBE.
 In Noisy Programming by Example context, the interpretation of noisy is as anomalous - some examples are outliers and should be disregarded.
 This is an appropriate assumption in the context of, for example, in faulty sensors or excel spreadsheets, where a value may fall completely outside the normal range due to an electrical error or a typo.
@@ -25,9 +24,8 @@ RobustFill works by generating a ``latent'' program representation (a neural net
 On our work, we have leveraged machine learning (stochastic gradient descent), in combination with a greedy search algorithm to handle the discrete aspect of a DSP filter (the structure).
 There may be fruitful opportinties to combine these approach and apply a neural network-guided approach to DSP-PBE.
 
-
-
-
-
-
-
+The most closely related work in audio signal processing is a technique called resynthesis~\cite{masri1996improved}.
+Resynthesis is the process of decomposing a sound into its spectrogram, and then building a synthesizer to recreate a similar sound.
+The limitation here is that resynthesis builds a generative synthesizer, which does not take into account any information about the input audio file or the filters used to create the output sound.
+This limitation means that resynthesis cannot be used to understand the process by which the original sound was modified, whereas \ourTool allows users to understand the modifications that are applied to a sound in order to create their own programs.
+For example, resynthesis could be used to recreate the sound of a muted trumpet, but \ourTool allows users to understand how to write a program that transforms an unmuted trumpet sound into the muted trumpet.
