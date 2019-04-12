@@ -2,7 +2,7 @@
 
 The goal of this project is to build filter by providing example sound files
 
-to read more on this project, see http://marksantolucito.com/dsp-pbe.pdf
+to read more on this project, see paper on DSP-PBE
 
 ## Milestones
 
@@ -27,9 +27,13 @@ To test
 
   cabal new-test 
 
-To test one benchmark
+To test a benchmark set
 
   cabal new-run farm_benchmarks -- --color=always
+  cabal new-run pldi_benchmarks -- --color=always
+  cabal new-run trumpet_benchmark -- --color=always
+
+Running a benchmark will drop the audio files that are produced by the synthesized code into the 'final' directory
 
 To run the executable
 

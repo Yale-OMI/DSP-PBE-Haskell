@@ -1,11 +1,12 @@
 
 \section{Problem Statement}
 
-One of the core challenges in applying programming by example for DSP is to quantify how close our synthesized solution is to the correct solution.
-In this case, the closeness of two audio files is a subjective measure - we do not necessarily know what features of the input/output audio pair the user is trying to emulate.
-We use as the distance function, $\distFxn$, between two audio files, an audio fingerprinting technique~\cite{SantolucitoFARM} that approximates a measure of how different two audio clips sound to the human ear in a similar style to audio fingerprinting~\cite{wang2003industrial,fingerprinting}.
-This metric takes a sliding window FFT of fixed size, denoted $FFT(x,t)$ for the FFT of audio $x$ at time point $t$, over all time points $ts$.
-We then plot the constellation of amplitude and frequency peaks $p$, and take the euclidean distance between the points of the constellation.
+One of the core challenges in applying programming by example to DSP is to quantify how close our synthesized solution is to the correct solution.
+However, the closeness of two audio files is a subjective measure - we do not necessarily know what features of the input/output audio pair the user is trying to emulate.
+We use an audio distance measure from~\cite{SantolucitoFARM} to calculate the distance between two audio files.
+This metric approximates a measure of how different two audio clips sound to the human ear in a similar style to audio fingerprinting~\cite{wang2003industrial,fingerprinting}.
+To calculate the distance beteen two files, the function takes a sliding window FFT of fixed size, denoted $FFT(x,t)$ for the FFT of audio $x$ at time point $t$, over all time points $ts$.
+It then plots the constellation of amplitude and frequency peaks $p$, and takes the euclidean distance between the points of the constellation.
 
 %
 \begin{align*}
@@ -13,30 +14,19 @@ We then plot the constellation of amplitude and frequency peaks $p$, and take th
 \end{align*}
 %
 
-While measuring frequency peaks require temporally aligned audio, this can be achieved with advances in dynamic time warping techniques for audio~\cite{carabias2015audio} and other audio alignment techniques~\cite{ArztL18}.
+While measuring frequency peaks requires temporally aligned audio, alignment can be achieved by using recent advances in dynamic time warping techniques for audio~\cite{carabias2015audio} and other audio alignment techniques~\cite{ArztL18}.
 To contain the scope of the DSP-PBE problem, we assume that the user has provided audio that is temporally aligned.
 As a technical note, this also requires that the sample rates of the audio match and the amplitudes of the examples have been normalized.
 Again we assume the user handles amplitude normalization and resampling to align sample rates as necessary for simplicity.
 
-While the work of~\cite{SantolucitoFARM} shows that this distance metric obeys some properties (commutativity, musically motivated properties) that intuitively make sense for audio,
-  we point to a weakness of this measure - that it does not obey the properties of a \textit{metric space}.
-A metric space~\cite{frechet1906quelques} is defined as a pair $(A,d)$, where S is a set and $d:A \times A \to \reals$ is a distance metric between all elements in the set (in DSP-PBE, $A$ is an audio file).
-To form a metric space, the metric $d$ must obey the properties:
-
-\begin{enumerate}
-  \item $d(x,y) = 0 \Leftrightarrow x = y$ - identity of indiscernibles
-  \item $d(x,y)  = d(y,x)$ - symmetry
-  \item $d(x,z) \le d(x,y) + d(y, z)$ - triangle inequality
-\end{enumerate}
-
-An easy counterexample to show that $\distFxn$ does not form a metric space are two audio files that have identical peaks, but differ in amplitudes at frequencies outside the peaks.
-These inputs then violate the ``identity of indiscernibles'' property of a metric space as two audio files that have distance zero are not identical.
-This is something of a pathological examples, as in most cases $\distFxn$ is close enough for the purposes of DSP-PBE.
-
 In DSP-PBE the goal is to find a DSP filter $F$ to minimize the distance between $F$ applied to an input audio file, $i$, and an output audio file $o$.
-If \distFxn is a metric space, then by the identity of indiscernibles, if $\distFxn(F(i),o) = 0$, we have successfully mapped the input to the output, i.e. $F(i) = o$.
-We leave the problem of finding an aural distance that forms a metric space to future work.
- 
+The intuition is that if $\distFxn(F(i),o) = 0$, we have successfully mapped the input to the output, i.e. $F(i) = o$.
+This property is called the \textit{identity of indiscernibles}~\cite{frechet1906quelques} - given a distance metric $d$, it must hold that $d(x,y) = 0 \Leftrightarrow x = y$.
+Unfortunately however, this property does not hold for the \distFxn function that we use.
+An easy counterexample to show that $\distFxn$ violates the identity of indiscernibles property is to take two audio files that have identical peaks, but differ in amplitudes at frequencies outside the peaks.
+These inputs then violate the property as two audio files have distance zero as calculated by $\distFxn$, but are not identical audio files.
+This is something of a pathological examples, as in most cases $\distFxn$ is close enough for the purposes of DSP-PBE.
+We simply remark that finding an aural distance that obeys the identity of indiscernibles property is a valuable direction for future work 
 
 \subsection{Defining the search space}
 

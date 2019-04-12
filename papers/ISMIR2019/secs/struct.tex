@@ -10,14 +10,12 @@ For this second stage we have implemented a greedy algorithm to pick the best st
 \label{sec:initStruct}
 In order to find an initial structure for our synthesized filter, we use an adaption of room impulse response measurement.
 When measuring the impulse response of a room, we can reconstruct the band-pass filter exactly by playing a sound in the room, recording the sound, then examining the differences.
-In DSP-PBE, we do not want to allow infinitely many bandpass filters, as the synthesized program should be relatively small and human-readable, as code that might have been manually written.
+In DSP-PBE, we do not want to allow infinitely many bandpass filters, as the synthesized program should be relatively small and human-readable, in the same way as code would be readable if it had been manually written.
 Thus, we mimic the room impulse response measurement technique using only the available \dspnode in our grammar.
 
 In the grammar listed in Fig.~\ref{fig:grammar}, we have two filters which are similar to the bandpass filters used in measuring room impulse response - a low-pass filter, $LFP \ [0,20k]\ [0,1]$, and a high-pass filter $HPF\ [0,20k]\ [0,1]$.
 In order to quickly discover approximate values for each \dspnode, we run an analysis of the frequencies present in the input example that have decreased in amplitude in the output example.
-To analyze the inputs and 
-We then build a relation from this observation.
-To formalize this approach, we write a formula that describes that how to find an initial threshold value for a lowpass filter in our synthesized code.
+To describe the analysis, we write a formula that show how to find an initial threshold value for a lowpass filter in our synthesized code.
 We use $t$ to represents the threshold of the lowpass filter, \texttt{spectrogram} to represent a function that runs a FFT on a sound sample and returns a list of peaks, $f_i$ to represent a frequency, and \texttt{amp()} to represent a function to retrieve the amplitude of the frequency. 
 %
 \begin{align*}

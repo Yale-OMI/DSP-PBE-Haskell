@@ -51,13 +51,13 @@ Rather than writing the code from scratch, we demonstrate the application of \ou
 To start, a user would provide an audio input example file of the trumpet without a mute (``00 none'' in Table~\ref{table:eval}), and an audio output example file (``01 hat'' in Table~\ref{table:eval}) of the trumpet playing the same note with the mute.
 The user then invokes \ourTool on these two files, and the tool generates the SuperCollider program shown in Fig.~\ref{fig:sc_code}.
 With this code, the user can then use the program directly in a larger SuperCollider project.
-In addition, the user may wish to edit the code themselves - for example changing the mul argument to the HPF to a larger value.
+In addition, the user may wish to edit the code themselves - for example changing the \texttt{mul} argument to the \texttt{HPF} to a larger value.
 
 In summary, this paper makes the following contributions.
 
 \begin{enumerate}
-\item We propose framework for the synthesis of DSP programs that utilize noncommutative filter types 
-\item We propose an algorithm for search through the possible structural forms of a DSP filter program
+\item We propose a framework for the synthesis of DSP programs that utilize noncommutative filter types 
+\item We propose an algorithm to search through the possible structural forms of a DSP filter program
 \item We present our tool, \ourTool, which synthesizes SuperCollider programs from audio input/output examples, and evaluate \ourTool over a set of benchmarks
 \end{enumerate}
 
