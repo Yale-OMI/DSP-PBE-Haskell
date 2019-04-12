@@ -13,7 +13,7 @@ We then plot the constellation of amplitude and frequency peaks $p$, and take th
 \end{align*}
 %
 
-While measuring frequency peaks require temporally aligned audio, this can be achieved with advances in dynamic time warping techniques for audio~\cite{carabias2015audio}.
+While measuring frequency peaks require temporally aligned audio, this can be achieved with advances in dynamic time warping techniques for audio~\cite{carabias2015audio} and other audio alignment techniques~\cite{ArztL18}.
 To contain the scope of the DSP-PBE problem, we assume that the user has provided audio that is temporally aligned.
 As a technical note, this also requires that the sample rates of the audio match and the amplitudes of the examples have been normalized.
 Again we assume the user handles amplitude normalization and resampling to align sample rates as necessary for simplicity.
@@ -63,7 +63,7 @@ DSP&Node :=  & \\
 & |\ PitchShift\ [-1,1] \ [0,1] & \text{\color{gray} shift amount, app}\\
 & |\ WhiteNoise \ [0,1] &\text{\color{gray} app}
 \end{flalign*}
-\caption{The grammar of DSP filters we consider}
+\caption{The grammar of DSP filters we consider includes lowpass filters (LPF), highpass filters (HPF), and can also be extended with other user supplied primitives.}
 \label{fig:grammar}
 \end{figure}
 

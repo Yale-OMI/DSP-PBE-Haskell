@@ -1,9 +1,15 @@
 \section{Related}
 
-Prior work introduced the problem of DSP-PBE, but was limited to commutative filters~\cite{SantolucitoFARM}.
-This limitation is too restrictive for the tool to be useful in practice, as the set of commutative filters is a essentially a set of non-overlapping bandpass filters.
-These types of filters are already captured by room impulse response measuring techniques.
+Prior work introduced the problem of DSP-PBE, but was limited to progams that had a fixed structure and only used LPF, HPF, and white noise~\cite{SantolucitoFARM} .
+This limitation is too restrictive for the tool to be useful in practice, these types of filters are already captured by room impulse response measuring techniques.
+Many interesting DSP program go beyond this functionality.
+In addition, in order to be useful as a tool for learning, DSP-PBE must support the synthesis of a code with different structures to expose the new users to various programming constructs.
 In our work, we extend DSP-PBE to noncommutative filter by allowing the exploration of new structural forms for the DSP program - achieving a synthesis technique that is more powerful than current techniques.
+
+One way to look at the problem of DSP-PBE is a specialized type of feature extraction, where the target feature is a block of executable code.
+There has been significant work in the domain of feature extraction for audio, from low-level~\cite{muller2011chroma}, mid-level~\cite{AljanakiS18}, and high-level~\cite{PandaMP18, mathieu2010yaafe, lidy2005evaluation} features.
+It may be possible to correlate these features to particular filter values and structures in order to leverage existing feature extraction work for the purposes of DSP-PBE.
+
 
 Programming by Example with noisy data has been explored in prior~\cite{raychev2016learning}, but captures a distinct domain compared to DSP-PBE.
 In Noisy Programming by Example context, the interpretation of noisy is as anomalous - some examples are outliers and should be disregarded.

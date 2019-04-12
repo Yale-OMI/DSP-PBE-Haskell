@@ -1,14 +1,15 @@
 
 \section{Introduction}
 
-There has been a proliferation of new programming languages for audio Digital Signal Processing (DSP) with languages such as SuperCollider, Faust, MaxMSP, PureData.
+There has been a proliferation of new programming languages for audio Digital Signal Processing (DSP) including languages such as SuperCollider, Faust, MaxMSP, PureData.
 These languages provide a high-level interface to make DSP programming more approachable for new-comers to the field of audio programming.
-DSP programming poses a particular challenge to novice programmers as writing a DSP program requires an understanding of traditional programming concepts such as loops and conditionals, as well as the ability to reason about DSP issues such as time vs frequency domain.
+DSP programming poses a particular challenge to novice programmers, as writing a DSP program requires an understanding of traditional programming concepts such as loops and conditionals, as well as the ability to reason about DSP issues such as time vs frequency domain.
 To assist beginning DSP programmers we turn to the Programming by Example paradigm.
 
-Programming by Example (PBE) is a program synthesis technique that allows users to provide input and output examples to system that then automatically generates code that models the illustrated functionality.
-This technique has found particular success in spreadsheets with the FlashFill tool.
-In a similar vein, we hope to make DSP programming more accessible to a larger audience by using Digital Signal Processing Programming by Example (DSP-PBE).
+Programming by Example (PBE) is a program synthesis technique that allows users to provide input and output examples to a system that then automatically generates code that implements the illustrated functionality.
+This technique has found particular success in spreadsheets with the FlashFill tool~\cite{flashfill}.
+In a similar way, we hope to make DSP programming more accessible to a larger audience by using Digital Signal Processing Programming by Example (DSP-PBE).
+In order to do this, we extend prior work on DSP-PBE with the ability to generate SuperCollider programs, as well as the ability to support noncommutative filter types and various code structures.
 
 The goal of DSP-PBE is to take an input and output audio example from the user, and synthesize the DSP program, $F$, that minimizes the distance between the transformed input, $F(i)$, and the output $o$.
 In this way, a user can automatically generate the program code that captures the audio transformation demonstrated by the provided examples.
@@ -45,8 +46,8 @@ SynthDef(\dsp_pbe, {|out=0|
 \label{fig:sc_code}
 \end{figure}
 
-We demonstrate the application of \ourTool by showing how the tool is used to build a SuperCollider program that mimics the effect of a trumpet mute.
 A user may want to construct a program in order to apply the effect of a trumpet mute to another sound.
+Rather than writing the code from scratch, we demonstrate the application of \ourTool by showing how the tool is used to build a SuperCollider program that mimics the effect of a trumpet mute.
 To start, a user would provide an audio input example file of the trumpet without a mute (``00 none'' in Table~\ref{table:eval}), and an audio output example file (``01 hat'' in Table~\ref{table:eval}) of the trumpet playing the same note with the mute.
 The user then invokes \ourTool on these two files, and the tool generates the SuperCollider program shown in Fig.~\ref{fig:sc_code}.
 With this code, the user can then use the program directly in a larger SuperCollider project.

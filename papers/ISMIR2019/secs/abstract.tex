@@ -1,6 +1,6 @@
-DSP programming requires users to have experience with both programming fundamentals and an understanding of digital audio.
+Digital Sginal Processing (DSP) programming requires users to have experience with both programming fundamentals and an understanding of digital audio.
 To assist novice DSP programmers in writing code, we introduce a tool for automatically generating SuperCollider programs from examples of audio input and output.
-A user provides two audio files, and the system generates a SuperCollider program that transforms the input to the output.
-While commutative filter can be found by measuring the room impulse response, noncommutative filters do not behave in such predictable ways.
-In order to support noncommutative filters, we introduce a new synthesis algorithm that searches for a structural form of a filter and the parameter values for the filter in two seperate stages.
+A user provides an example of an audio transformation in the form of an two audio files, an input and an output file.
+The system takes these two audio files and generates a SuperCollider program that transforms the input to the output.
+In order to support synthesis of DSP programs on complex filters such as noncommutative filters, we introduce a new synthesis algorithm that searches for a structural form of a filter and the parameter values for the filter in two seperate stages.
 We present the results of running our tool on a set of benchmark audio example pairs.
