@@ -39,6 +39,19 @@ The only filter nodes used here are LPF and HPF to demonstrate the effectiveness
 The results of running \ourTool  on the trumpet mute sounds benchmarks are reported in Table~\ref{table:eval}.
 This table was generated with the maximum structural attempts set to 6 and the maximum metrical attempts per structure set to 5.
 
+\begin{table}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\makecell{\textbf{Metrical} \\ \textbf{Limit}} & \makecell{\textbf{Structural} \\ \textbf{Limit}} & \textbf{Score} & \textbf{Time}
+\csvreader{results/timeout.csv}{}
+{\\ \hline \csvcoliii & \csvcoliv & \csvcolvi & \csvcolviii}
+\\ \hline
+\end{tabular}
+	\caption{\brandon{computing new results... this may end up not being interesting}}
+\label{table:timeout}
+\end{table}
+
+
 \subsection{SuperCollider Program Generation}
 
 The generated model is represented by a data structure as described in the grammar in Fig.~\ref{fig:grammar}. 
