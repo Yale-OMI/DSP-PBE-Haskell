@@ -6,15 +6,21 @@ These languages provide a high-level interface to make DSP programming more appr
 DSP programming poses a particular challenge to novice programmers, as writing a DSP program requires an understanding of traditional programming concepts such as loops and conditionals, as well as the ability to reason about DSP issues such as time vs frequency domain.
 To assist beginning DSP programmers we turn to the Programming by Example paradigm.
 
-Programming by Example (PBE)~\cite{cypher93,lieberman01} is a program synthesis technique that allows users to provide input and output examples to a system that then automatically generates code that implements the illustrated functionality.
-This technique has found particular success in spreadsheets with the FlashFill tool~\cite{flashfill}.
-Similarly, our goal is to make DSP programming more accessible to a larger audience by using Digital Signal Processing Programming by Example (DSP-PBE)~\cite{SantolucitoFARM}.
+Programming by Example (PBE)~\cite{cypher93,lieberman01} is a program synthesis technique 
+where users do not write code directly, but instead they provide examples that illustrate how the envisioned 
+code should behave. A PBE synthesis engine takes those input and output examples and 
+automatically generates code that implements the illustrated functionality. Of course, there might be more than
+one program that is a good fit for the given examples, so if needed, the user might need to provide more examples.
+However, the PBE techniques are based on various additional knowledge and heuristics, and they have been 
+successfully applied even in industrial software, for example  in spreadsheets with the FlashFill tool~\cite{flashfill}.
+
+Our goal is to make DSP programming more accessible to a larger audience by using Digital Signal Processing Programming by Example (DSP-PBE)~\cite{SantolucitoFARM}.
 In order to do this, we developed a tool called, \ourTool, for DSP-PBE.
 DSP-PBE is a paradigm that uses techniques from programming languages research to generate DSP programs based on audio input and output examples.
 \ourTool extends prior work on DSP-PBE~\cite{SantolucitoFARM} with the ability to synthesize nontrivial filter types and generate a range of various code structures.
 Additionally, \ourTool generates executable code, in SuperCollider, that allows the user to inspect, modify, and reuse the result of synthesis in their own coding projects.
 
-The goal of DSP-PBE is to take an input and output audio example from the user, and synthesize the DSP program, $F$, that minimizes the distance between the transformed input, $F(i)$, and the output $o$.
+\ourTool takes an input $i$ and output $o$, which are audio files, and synthesizes the DSP program, $F$, that minimizes the distance between the transformed input, $F(i)$, and the output $o$.
 With DSP-PBE, a user does not need to manually write code from scratch, but can simple provide audio files that demonstrates the desired functionality and the DSP-PBE tool will automatically generate the program code that captures the audio transformation.
 A key part of this technique is that the user receives readable DSP program code that can be further tuned or edited as the user sees fit, opening the door for learning opportunities and creative invention.
 
