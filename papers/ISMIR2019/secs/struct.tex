@@ -19,7 +19,7 @@ To describe the analysis, we write a formula that show how to find an initial th
 We use $t$ to represents the threshold of the lowpass filter, \texttt{spectrogram} to represent a function that runs a FFT on a sound sample and returns a list of peaks, $f_i$ to represent a frequency, and \texttt{amp()} to represent a function to retrieve the amplitude of the frequency. 
 %
 \begin{align*}
-&\text{Given input audio }i\text{ and }o\text{, find }t\text{ such that} \\
+&\text{Given input audio }i\text{ and output audio }o\text{, find }t\text{ such that} \\
 &\forall f_1 \in  \texttt{spectrogram(i)}.\ \forall f_2 \in \texttt{spectrogram(o)}. \\
 &(f_1 > t \land  f_2 > t \land f_1 == f_2) \implies \texttt{amp}(f_1) > \texttt{amp}(f_2)
 \end{align*}
@@ -29,7 +29,7 @@ Similarly, we can build a formula to describe how to calculate an initial value 
 Here we look for the lowest frequency where amplitude has decreased in the output audio - this is then a starting point for the threshold of a high pass filter.
 %
 \begin{align*}
-&\text{Given input audio }i\text{ and }o\text{, find }t\text{ such that} \\
+&\text{Given input audio }i\text{ and output audio }o\text{, find }t\text{ such that} \\
 &\forall f_1 \in \texttt{spectrogram(i)}.\ \forall f_2 \in \texttt{spectrogram(o)}. \\
 &(f_1 < t \land f_2 < t \land f_1 == f_2) \implies \texttt{amp(}f_1\texttt{)} > \texttt{amp(} f_2 \texttt{)} 
 \end{align*}

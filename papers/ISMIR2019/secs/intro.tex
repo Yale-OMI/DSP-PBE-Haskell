@@ -8,8 +8,9 @@ To assist beginning DSP programmers we turn to the Programming by Example paradi
 
 Programming by Example (PBE)~\cite{cypher93,lieberman01} is a program synthesis technique that allows users to provide input and output examples to a system that then automatically generates code that implements the illustrated functionality.
 This technique has found particular success in spreadsheets with the FlashFill tool~\cite{flashfill}.
-Similarly, we hope to make DSP programming more accessible to a larger audience by using Digital Signal Processing Programming by Example (DSP-PBE).
-In order to do this, we introduce our tool, \ourTool, for DSP-PBE.
+Similarly, our goal is to make DSP programming more accessible to a larger audience by using Digital Signal Processing Programming by Example (DSP-PBE)~\cite{SantolucitoFARM}.
+In order to do this, we developed a tool called, \ourTool, for DSP-PBE.
+DSP-PBE is a paradigm that uses techniques from programming languages research to generate DSP programs based on audio input and output examples.
 \ourTool extends prior work on DSP-PBE~\cite{SantolucitoFARM} with the ability to synthesize nontrivial filter types and generate a range of various code structures.
 Additionally, \ourTool generates executable code, in SuperCollider, that allows the user to inspect, modify, and reuse the result of synthesis in their own coding projects.
 
@@ -48,9 +49,9 @@ SynthDef(\dsp_pbe, {|out=0|
 \label{fig:sc_code}
 \end{figure}
 
-A user may want to construct a program in order to apply the effect of a trumpet mute to another sound.
-Rather than writing the code from scratch, we demonstrate the application of \ourTool by showing how the tool is used to build a SuperCollider program that mimics the effect of a trumpet mute.
-To start, a user would provide an audio input example file of the trumpet without a mute (``00 none'' in Table~\ref{table:eval}), and an audio output example file (``01 hat'' in Table~\ref{table:eval}) of the trumpet playing the same note with the mute.
+In order to illustrate how \ourTool works, consider a scenario where a user wants apply the effect of a trumpet mute on their own sound, for example a recording of their voice.
+Rather than writing the code from scratch to achieve this, the user can use \ourTool to build a SuperCollider program that mimics the effect of a trumpet mute.
+To start, a user provides an audio input example file of the trumpet without a mute (``00 none'' in Table~\ref{table:eval}), and an audio output example file (``01 hat'' in Table~\ref{table:eval}) of the trumpet playing the same note with the mute.
 The user then invokes \ourTool on these two files, and the tool generates the SuperCollider program shown in Fig.~\ref{fig:sc_code}.
 With this code, the user can then use the program directly in a larger SuperCollider project.
 In addition, the user may wish to edit the code themselves - for example changing the \texttt{mul} argument to the \texttt{HPF} to a larger value.
