@@ -45,7 +45,7 @@ library
      , extra >=1.5 && <1.6
      , array >=0.5 && <0.6
      , HCodecs >=0.5
-     , vivid
+     , vivid >= 0.4.2.3
      , directory
      , filepath
      , dsp >= 0.2.4
