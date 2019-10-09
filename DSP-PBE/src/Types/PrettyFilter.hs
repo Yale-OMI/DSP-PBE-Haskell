@@ -11,7 +11,7 @@ import Data.Tree
 -- | A convience datatype that acts as a DSL for specifying filters
 data PrettyFilter = 
     Node_p DSPNode
-  | AmpApp_p Double PrettyFilter --TODO why? what makes AmpApp different than pitchShift?
+  | ID_p Double PrettyFilter 
   | ParallelCompose PrettyFilter PrettyFilter
   | SequentialCompose PrettyFilter PrettyFilter
 
@@ -27,7 +27,7 @@ toInternalFilter :: PrettyFilter -> Filter
 toInternalFilter = toInternalFilter' 0 
 toInternalFilter' :: Int -> PrettyFilter -> Filter
 toInternalFilter' counter = \case 
-  AmpApp_p a f             -> T.Node {rootLabel = DSPNodeL{nodeId = counter, nodeContent = AmpApp a}, 
+  ID_p a f             -> T.Node {rootLabel = DSPNodeL{nodeId = counter, nodeContent = ID a}, 
                                       subForest = case f of 
                                          ParallelCompose _ _ -> toInternalSubForest (counter+1) f
                                          _                     -> [toInternalFilter' (counter+1) f]}
@@ -51,9 +51,9 @@ fromInternalFilter f = let
   dspNode = nodeContent $ rootLabel f
  in
   case dspNode of
-    AmpApp a -> AmpApp_p a $ 
+    ID a -> ID_p a $ 
       case subForest f of
-        []   -> error "AmpApp must have subforest" --TODO why? what makes AmpApp different than pitchShift?
+        []   -> error "ID must have subforest" 
         [d]  -> SequentialCompose (Node_p dspNode) $ fromInternalFilter d
         d:ds -> foldl (\accum n -> ParallelCompose (fromInternalFilter n) accum) (fromInternalFilter d) ds
     dspNode -> 

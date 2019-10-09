@@ -38,7 +38,6 @@ multiVarSGD settings costFxn g currentCache thetaSelectors currentTheta = do
     (bestThetas, bestScore) = findMinByVal newCache
     
     -- build the call to try again using updatedThetas, allowing us to explore worse directions, but every n step returning to best
-    -- TODO use Reader monad
     callToContinueGD =  multiVarSGD settings costFxn (snd $ next g) newCache
 
     -- converge if we try to descend and still find the same best thetas (within the goal threshold)

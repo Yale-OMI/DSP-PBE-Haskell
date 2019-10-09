@@ -14,6 +14,9 @@ import System.Directory
 --  These are settings that the user passes in to the tool
 --
 ----------
+
+-- It isnt really worth wrappign this into a reader monad, as we access these settings all over the place
+-- only real benefit would be to make sure they dont get changed by accident
     
 data Options 
   = SynthesisOptions {

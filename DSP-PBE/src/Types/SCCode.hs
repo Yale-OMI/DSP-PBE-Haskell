@@ -69,7 +69,7 @@ makeSCFilter f ioid inn = let
                     scf2 = makeSCFilter f2 ((oid scf1) + 1) inn
                     newOid = (oid scf2) + 1
                     new_vars = ("out" ++ (show newOid)):((vars scf2) ++ (vars scf1))
-      (AmpApp_p a f)      -> SCSeqCompose { oid=(oid scf2), vars=new_vars, iname=inn, f=scf1, f'=scf2 }
+      (ID_p a f)      -> SCSeqCompose { oid=(oid scf2), vars=new_vars, iname=inn, f=scf1, f'=scf2 }
               where scf1 = makeSCFilter f (ioid + 1) inn
                     scf2 = makeSCFilter (Node_p $ ID a) ((oid scf1) + 1) ((vars scf1) !! 0)
                     new_vars = (vars scf2) ++ (vars scf1)
@@ -80,7 +80,7 @@ makeSCFilterNode d ioid inn scfname scargs = case d of
   LPF t a         -> SCFilter { oid=ioid, vars=["lpf"++(show ioid)], function=scfname, args=("in", inn):scargs }
   HPF t a         -> SCFilter { oid=ioid, vars=["hpf"++(show ioid)], function=scfname, args=("in", inn):scargs } 
   PitchShift t a  -> SCFilter { oid=ioid, vars=["psh"++(show ioid)], function=scfname, args=("in", inn):scargs }
-  Ringz t d a     -> SCFilter { oid=ioid, vars=["rgz"++(show ioid)], function=scfname, args=("in", inn):scargs }
+  --Ringz t d a     -> SCFilter { oid=ioid, vars=["rgz"++(show ioid)], function=scfname, args=("in", inn):scargs }
   WhiteNoise x    -> SCWhiteNoise { oid=ioid, vars=["wns"++(show ioid)], iname=inn, function=scfname, args=scargs }
 
 getSCInfo :: PrettyFilter -> (String, [(String, String)])
@@ -88,19 +88,19 @@ getSCInfo = \case
     Node_p d -> getSCInfoNode d
     SequentialCompose f f'  -> ("", [])
     ParallelCompose f f'    -> ("", [])
-    AmpApp_p a f            -> ("", [])
+    ID_p a f            -> ("", [])
 
 getSCInfoNode :: DSPNode -> (String, [(String,String)])
 getSCInfoNode = \case
     ID a                    -> ((show $ ampScale a) ++ " * ", [])  
     LPF t a                 -> ("LPF.ar", [("freq", show $ freqScale t), ("mul", show $ ampScale a)])
     HPF t a                 -> ("HPF.ar", [("freq", show $ freqScale t), ("mul", show $ ampScale a)])
-    Ringz t d a             -> ("Ringz.ar", 
+    {-Ringz t d a             -> ("Ringz.ar", 
                                 [
                                   ("freq", show $ freqScale t), 
                                   ("decaytime", show $ delayScale d), 
                                   ("mul", show $ ampScale a)
-                                ])
+                                ])-}
     PitchShift t a          -> ("FreqShift.ar", [("pitchRatio", show $ freqScalePitchShift t), ("mul", show $ ampScale a)])
     WhiteNoise x            -> ("WhiteNoise.ar", [("mul", show $ ampScale x)]) 
 

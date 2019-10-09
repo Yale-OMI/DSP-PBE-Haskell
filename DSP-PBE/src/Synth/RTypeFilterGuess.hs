@@ -27,12 +27,12 @@ guessInitFilter in_audio out_audio = do
   let idapp = if isNothing lpf_init && isNothing hpf_init then 1 else (-1)
 
   return $ toInternalFilter $
-    AmpApp_p 1 $
+    ID_p 1 $
       ParallelCompose (Node_p $ LPF (fromMaybe 0 lpf_init) (maybe (-1) (\x -> 1) lpf_init)) $
         (Node_p $ HPF (fromMaybe 0 hpf_init) (maybe (-1) (\x -> 1) hpf_init))
 
 {-
-    AmpApp 1 $
+    ID_p 1 $
       ParallelCompose 
         (SequentialCompose (PitchShift (-0.5) 1) (LPF (-0.8) 1))
         (ParallelCompose (Ringz (-0.8) (0) (-0.8)) $
@@ -40,7 +40,7 @@ guessInitFilter in_audio out_audio = do
             ParallelCompose (ID (-1)) $
               (WhiteNoise (-1)))
  
-    AmpApp 1 $
+    ID_p 1 $
       ParallelCompose (LPF (fromMaybe 0 lpf_init) (maybe (-1) (\x -> 1) lpf_init)) $
         ParallelCompose (HPF (fromMaybe 0 hpf_init) (maybe (-1) (\x -> 1) hpf_init)) $
           ParallelCompose (PitchShift 0 (-1)) $

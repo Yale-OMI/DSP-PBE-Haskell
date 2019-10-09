@@ -6,26 +6,38 @@ module Types.DSPNode where
 import Data.Data
 
 data DSPNode = 
-    ID Double
-  | HPF Double Double
-  | LPF Double Double
-  | PitchShift Double Double
-  | Ringz Double Double Double
-  | WhiteNoise Double
-  | AmpApp Double --TODO how is amp differnet from ID?
+    ID AmpDouble
+  | HPF FreqDouble AmpDouble
+  | LPF FreqDouble AmpDouble
+  | PitchShift Double AmpDouble
+  | FreeVerb FreqDouble Double AmpDouble
+  | WhiteNoise AmpDouble
   deriving (Show, Eq, Ord, Data)
+
+type FreqDouble = Double 
+type AmpDouble = Double 
+
+freqScale :: FreqDouble -> Float
+freqScale (x) = realToFrac $ ((x+1)*10000)+100  -- freq operations 100<x<16k Hz
+
+freqScalePitchShift x = realToFrac $ x*2000  -- pitchshift -2000<x<2000 Hz
+invFreqScale x = ((x-100)/10000)-1
+
+ampScale :: AmpDouble -> Float
+ampScale (x) = realToFrac $ (x+1)/2           
+
+delayScale x = realToFrac $ (x+1)/10             -- delay operations 0<x<.2
 
 getParams :: DSPNode -> [(String,Double)]
 getParams = \case
-  ID a -> [("Id_app",a)]
-  HPF t a -> [("HPF_thres",t), ("HPF_app",a)]
-  LPF t a -> [("LPF_thres",t), ("LPF_app",a)]
-  PitchShift t a -> [("PitchShift_thres",t), ("PitchShift_app",a)]
-  Ringz f d a -> [("Ringz_freq",f), ("Ringz_delay",d), ("Ringz_app",a)]
-  WhiteNoise a -> [("WhiteNoise_app",a)]
-  AmpApp a -> [("Amp_app",a)]
+  ID (a) -> [("Id_app",a)]
+  HPF (t) (a) -> [("HPF_thres",t), ("HPF_app",a)]
+  LPF (t) (a) -> [("LPF_thres",t), ("LPF_app",a)]
+  PitchShift t (a) -> [("PitchShift_thres",t), ("PitchShift_app",a)]
+  FreeVerb (f) d (a) -> [("FreeVerb_freq",f), ("FreeVerb_delay",d), ("FreeVerb_app",a)]
+  WhiteNoise (a) -> [("WhiteNoise_app",a)]
 
--- Equivelence of ndoes modulo parameters
+-- Equivelence of nodes modulo parameters
 sameConstructor :: DSPNode -> DSPNode -> Bool
 sameConstructor l r = toConstr l == toConstr r
 

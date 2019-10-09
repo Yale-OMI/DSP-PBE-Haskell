@@ -1,5 +1,8 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE PartialTypeSignatures #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
 
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE DeriveAnyClass #-}
@@ -55,12 +58,6 @@ instance Ord Filter where
 
 -- A log of the best filter for each structure
 type FilterLog = M.Map Filter Double
-
-freqScale x = realToFrac $ ((x+1)*10000)+100  -- freq operations 100<x<16k Hz
-freqScalePitchShift x = realToFrac $ x*2000  -- pitchshift -2000<x<2000 Hz
-invFreqScale x = ((x-100)/10000)-1
-ampScale x = realToFrac $ (x+1)/2           
-delayScale x = realToFrac $ (x+1)/10             -- delay operations 0<x<.2
 
 {-showAmp amp = "amp@"++(printf "%.2f" $ ampScale amp)
 showFreq freq = "freq@" ++ (printf "%.0f" $ freqScale freq)
@@ -145,8 +142,7 @@ nodeToVivid = \case
   PitchShift t a         -> (\bufs -> (ampScale a::Float) ~* freqShift (freq_ (freqScalePitchShift t::Float), in_ bufs)) -- there is also pitchShift in vivid, but it is more complex
   WhiteNoise a           -> (\bufs -> (ampScale a::Float) ~* whiteNoise) --TODO mix bufs into output
   --Ringz f d a            -> (\bufs -> (ampScale a::Float) ~* ringz (freq_ (freqScale f::Float), decaySecs_ (delayScale d::Float), in_ bufs))
-  Ringz f d a            -> (\bufs -> (ampScale a::Float) ~* freeVerb (mix_ (ampScale f::Float), room_ (ampScale d::Float), in_ bufs))
-  AmpApp a               -> (\bufs -> (ampScale a::Float) ~* bufs)
+  FreeVerb f d a         -> (\bufs -> (ampScale a::Float) ~* freeVerb (mix_ (freqScale f::Float), room_ (delayScale d::Float), in_ bufs))
 
 -- | Given a filter structure, extract the theta selctors that we need to do parameter synthesis
 extractThetaUpdaters :: Filter -> [Filter -> (Double -> Double) -> Filter]
@@ -155,15 +151,21 @@ extractThetaUpdaters filter =
 
 -- | Using the nodeId, we can get a function that updates the particular node of interest
 --   this allows us to do SGD with multiple copies of the same DSPNode in a single Filter
+getUpdater :: DSPNodeL -> [Filter -> (Double -> Double) -> Filter]
 getUpdater dspNode = let
+  updater :: _ -> _ -> Filter -> (Double -> Double) -> Filter
   updater nodeType nodeParam = (\ts f -> fmap (\n -> if nodeId n == nodeId dspNode then n{nodeContent = nodeType $ f nodeParam} else n) ts)
  in 
   case nodeContent dspNode of 
-    ID a                   -> [updater ID a]
-    HPF t a                -> [updater (\newT -> HPF newT a) t, updater (\newA -> HPF t newA) a] 
-    LPF t a                -> [updater (\newT -> LPF newT a) t, updater (\newA -> LPF t newA) a]
-    PitchShift t a         -> [updater (\newT -> PitchShift newT a) t, updater (\newA -> PitchShift t newA) a]
-    WhiteNoise a           -> [updater WhiteNoise a]
-    Ringz t d a            -> [updater (\newT -> Ringz newT d a) t, updater (\newD -> Ringz t newD a) d, updater (\newA -> Ringz t d newA) a]
-    AmpApp a               -> [updater AmpApp a]
+    ID a                   -> [ updater ID a]
+    HPF t a                -> [ updater (\newT -> HPF newT a) t
+                              , updater (\newA -> HPF t newA) a] 
+    LPF t a                -> [ updater (\newT -> LPF newT a) t
+                              , updater (\newA -> LPF t newA) a]
+    PitchShift t a         -> [ updater (\newT -> PitchShift newT a) t
+                              , updater (\newA -> PitchShift t newA) a]
+    WhiteNoise a           -> [ updater WhiteNoise a]
+    FreeVerb t d a         -> [ updater (\newT -> FreeVerb newT d a) t
+                              , updater (\newD -> FreeVerb t newD a) d
+                              , updater (\newA -> FreeVerb t d newA) a]
 

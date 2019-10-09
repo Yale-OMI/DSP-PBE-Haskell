@@ -3,12 +3,14 @@ module Settings.FixedSettings where
 debug = True
 
 
--- TODO Move this whole file to Settings.Options
 ----------------
 --
 -- FFT settings
---
+-- 
 ----------------
+
+-- These settings do not really need to be changed by the average user
+
 
 -- each bin is 1Hz and each frame is 1s
 frameRes :: Int
