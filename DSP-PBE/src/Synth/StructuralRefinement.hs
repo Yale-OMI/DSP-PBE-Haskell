@@ -91,7 +91,7 @@ cores =
   , HPF 1 0 
   , LPF 1 0 
   , PitchShift 0.1 0.1
-  , Ringz 0.1 0.1 0 
+  --, Ringz 0.1 0.1 0 
   , WhiteNoise 0.1
   ]
 
@@ -129,7 +129,7 @@ combine _ _ = error "tried to combine incorrect num of ops and filters"
     |allPairs|    = |allCores| * |composes|
     = 1,492,992
 -}
-allFilters = map (AmpApp_p 0) $ map (uncurry combine) allFilterComposePairs
+allFilters = map (ID_p 0) $ map (uncurry combine) allFilterComposePairs
 
 {-
 toList f = case f of

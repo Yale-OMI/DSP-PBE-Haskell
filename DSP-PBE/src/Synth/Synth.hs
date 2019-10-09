@@ -28,7 +28,6 @@ import System.FilePath
 
 -- | The main runner for DSP-PBE
 --   this is a wrapper that handles the file io for runSynth
--- TODO have synthesis export a runnable filter
 synthCode :: S.Options -> IO (Filter, Double, Int)
 synthCode settings@S.SynthesisOptions{..} = do
   S.checkOptions settings

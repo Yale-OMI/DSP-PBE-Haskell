@@ -1,2 +1,2 @@
 Input, Output, Solution, Score, Structural Attempts, Time (sec)
-Holst, Holst-hpf3500, None , N/A , N/A , Timeout
+Holst, Holst-hpf3500, Node {rootLabel = DSPNodeL {nodeId = 3, nodeContent = PitchShift 1.0 0.1}, subForest = [Node {rootLabel = DSPNodeL {nodeId = 0, nodeContent = ID 1.0}, subForest = [Node {rootLabel = DSPNodeL {nodeId = 1, nodeContent = LPF 0.0 (-1.0)}, subForest = []},Node {rootLabel = DSPNodeL {nodeId = 2, nodeContent = HPF (-0.841) 0.9999999997822897}, subForest = []}]}]}, 18.485, 2, 43.979
